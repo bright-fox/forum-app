@@ -5,20 +5,25 @@ const postSchema = new mongoose.Schema({
   content: String,
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    index: true
   },
   author: {
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    },
-    username: String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
   },
   community: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Community"
   },
   upvotes: Integer
+  // popular: {
+  //   type: Boolean,
+  //   default: false
+  // }
 });
+
+postSchema.index({ author: 1, createdAt: -1 });
+postSchema.index({ community: 1, createdAt: -1 });
 
 export default mongoose.model("Post", postSchema);

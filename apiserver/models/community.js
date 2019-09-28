@@ -16,10 +16,7 @@ const communitySchema = new mongoose.Schema({
   },
   Description: String,
   tags: [String],
-  members: {
-    type: Number,
-    index: true
-  }
+  members: Number
 });
 
 export default mongoose.model("Community", communitySchema);

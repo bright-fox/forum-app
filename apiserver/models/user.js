@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     }
   ],
   karma: Number
+  // TODO: Password is missing
 });
 
 export default mongoose.model("User", userSchema);
