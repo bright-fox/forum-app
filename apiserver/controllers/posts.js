@@ -1,12 +1,11 @@
 import express from "express";
-import mongoose from "mongoose";
 import handleError from "../handleError";
 import Post from "../models/Post";
 
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  Post.find({}, (err, posts) => {
+  Post.findMany({}, (err, posts) => {
     if (err) {
       handleError(res, err.message, "Failed to fetch the posts!");
     } else {
