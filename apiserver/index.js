@@ -10,7 +10,7 @@ const app = express();
 
 mongoose.connect(
   process.env.MONGODB_URI || "mongodb://localhost:27017/forum_api",
-  { useNewUrlParser: true }
+  { useNewUrlParser: true, useCreateIndex: true }
 );
 mongoose.set("useFindAndModify", false);
 
