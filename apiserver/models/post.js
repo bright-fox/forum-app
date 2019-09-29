@@ -16,7 +16,7 @@ const postSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Community"
   },
-  upvotes: Integer
+  upvotes: Number
   // popular: {
   //   type: Boolean,
   //   default: false

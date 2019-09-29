@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 
 import postRoutes from "./controllers/posts";
+import userRoutes from "./controllers/users";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // ROUTES
+app.use("/users", userRoutes);
 app.use("/posts", postRoutes);
 
 const server = app.listen(process.env.PORT || 8080, () => {

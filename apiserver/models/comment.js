@@ -14,7 +14,7 @@ const commentSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User"
   },
-  upvotes: Integer
+  upvotes: Number
 });
 
 commentSchema.index({ post: 1, createdAt: -1 });
