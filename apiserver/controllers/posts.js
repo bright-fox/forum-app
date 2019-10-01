@@ -5,13 +5,15 @@ import Post from "../models/Post";
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  Post.findMany({}, (err, posts) => {
-    if (err) {
-      handleError(res, err.message, "Failed to fetch the posts!");
-    } else {
-      res.status(200).json(posts);
-    }
-  });
+  Post.find({})
+    .sort({ createdAt: -1 })
+    .exec((err, posts) => {
+      if (err) {
+        handleError(res, err.message, "Failed to fetch the posts!");
+      } else {
+        res.status(200).json(posts);
+      }
+    });
 });
 
 router.post("/", (req, res) => {

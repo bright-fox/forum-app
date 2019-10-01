@@ -14,9 +14,12 @@ const communitySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
   },
-  Description: String,
+  description: String,
   tags: [String],
-  members: Number
+  members: {
+    type: Number,
+    default: 0
+  }
 });
 
 export default mongoose.model("Community", communitySchema);

@@ -16,8 +16,14 @@ const postSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Community"
   },
-  upvotes: Number,
-  comments: Number
+  upvotes: {
+    type: Number,
+    default: 0
+  },
+  comments: {
+    type: Number,
+    default: 0
+  }
   // popular: {
   //   type: Boolean,
   //   default: false
