@@ -1,6 +1,7 @@
 import express from "express";
 import User from "../models/user";
 import Post from "../models/post";
+import Comment from "../models/comment";
 import handleError from "../handleError";
 
 const router = express.Router();
@@ -104,6 +105,22 @@ router.get("/:user_id/posts", (req, res) => {
     }
 
     res.status(200).json(posts);
+  });
+});
+
+router.get("/:user_id/comments", (req, res) => {
+  Comment.find({ author: req.params.user_id }, (err, comments) => {
+    if (err) {
+      handleError(res, err.message, "Failed to fetch comments of the user");
+      return;
+    }
+
+    if (!comments[0]) {
+      res.status(400).json({ error: "The user has no comments" });
+      return;
+    }
+
+    res.status(200).json(comments);
   });
 });
 
