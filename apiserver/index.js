@@ -6,7 +6,7 @@ import communityRoutes from "./controllers/communities";
 import postRoutes from "./controllers/posts";
 import userRoutes from "./controllers/users";
 import commentRoutes from "./controllers/comments";
-import { handleError, logError } from "./middlewares";
+import { handleError, handleMongoError, logError } from "./middlewares";
 
 const app = express();
 
@@ -27,6 +27,7 @@ app.use("/posts/:post_id/comments", commentRoutes);
 
 // Error handling middleware
 app.use(logError);
+app.use(handleMongoError);
 app.use(handleError);
 
 const server = app.listen(process.env.PORT || 8080, () => {
