@@ -1,20 +1,42 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
+import User from "./user";
+import Community from "./community";
+import { checkExistenceInDatabase } from "../util";
 
-const postSchema = new mongoose.Schema({
-  title: String,
-  content: String,
+const postSchema = new Schema({
+  title: {
+    type: String,
+    trim: true,
+    required: [true, "Title for post required"]
+  },
+  content: {
+    type: String,
+    trim: true,
+    required: [true, "Content for post required"]
+  },
   createdAt: {
     type: Date,
     default: Date.now,
     index: true
   },
   author: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "User for post required"],
+    validate: {
+      validator: author_id => checkExistenceInDatabase(User, author_id),
+      message: "User does not exist"
+    }
   },
   community: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Community"
+    type: Schema.Types.ObjectId,
+    ref: "Community",
+    required: [true, "Community for post required"],
+    validate: {
+      validator: community_id =>
+        checkExistenceInDatabase(Community, community_id),
+      message: "Community does not exist"
+    }
   },
   upvotes: {
     type: Number,
@@ -33,4 +55,4 @@ const postSchema = new mongoose.Schema({
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ community: 1, createdAt: -1 });
 
-export default mongoose.model("Post", postSchema);
+export default model("Post", postSchema);

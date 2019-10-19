@@ -1,15 +1,23 @@
 import mongoose from "mongoose";
+import Community from "./community";
+import { checkExistenceInDatabase } from "../util";
 
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
-    index: true,
-    unique: true
+    index: {
+      unique: true,
+      collation: { locale: "en", strength: 2 }
+    },
+    trim: true,
+    required: [true, "You need to enter an username"]
   },
   email: {
     type: String,
     index: true,
-    unique: true
+    unique: true,
+    trim: true,
+    required: [true, "You need to enter an email"]
   },
   createdAt: {
     type: Date,
@@ -18,7 +26,12 @@ const userSchema = new mongoose.Schema({
   communities: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Community"
+      ref: "Community",
+      validate: {
+        validator: community_id =>
+          checkExistenceInDatabase(Community, community_id),
+        message: "Community does not exist"
+      }
     }
   ],
   karma: {

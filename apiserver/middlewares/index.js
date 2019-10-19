@@ -5,11 +5,12 @@ export const logError = (err, req, res, next) => {
 
 export const handleMongoError = (err, req, res, next) => {
   if (err.name === "CastError")
-    return res.status(500).json({ status: 500, message: "Invalid ID" });
-  if (err.name === "MongoError" && err.code === 11000)
-    return res
-      .status(500)
-      .json({ status: 500, message: "duplicate key error" });
+    return res.status(500).json({ status: 500, message: "The ID is invalid" });
+  if (err.code === 11000)
+    return res.status(500).json({
+      status: 500,
+      message: "The username or email is already in use"
+    });
   if (err.name === "MongoError")
     return res
       .status(500)

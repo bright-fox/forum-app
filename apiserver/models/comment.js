@@ -1,18 +1,34 @@
 import { Schema, model } from "mongoose";
+import Post from "./post";
+import User from "./user";
+
+import { checkExistenceInDatabase } from "../util";
 
 const commentSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now
   },
-  content: String,
+  content: {
+    type: String,
+    trim: true,
+    required: [true, "The comment is empty"]
+  },
   post: {
     type: Schema.Types.ObjectId,
-    ref: "Post"
+    ref: "Post",
+    validate: {
+      validator: post_id => checkExistenceInDatabase(Post, post_id),
+      message: "Post does not exist"
+    }
   },
   author: {
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    validate: {
+      validator: author_id => checkExistenceInDatabase(User, author_id),
+      message: "User does not exist"
+    }
   },
   upvotes: {
     type: Number,

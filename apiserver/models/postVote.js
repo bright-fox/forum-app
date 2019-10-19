@@ -1,4 +1,7 @@
 import { Schema, model } from "mongoose";
+import Post from "./post";
+import User from "./user";
+import { checkExistenceInDatabase } from "../util";
 
 const postVoteModel = new Schema({
   createdAt: {
@@ -9,11 +12,19 @@ const postVoteModel = new Schema({
   post: {
     type: Schema.Types.ObjectId,
     ref: "Post",
-    index: true
+    index: true,
+    validate: {
+      validator: post_id => checkExistenceInDatabase(Post, post_id),
+      message: "Post does not exist"
+    }
   },
   user: {
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
+    validate: {
+      validator: user_id => checkExistenceInDatabase(User, user_id),
+      message: "User does not exist"
+    }
   }
 });
 

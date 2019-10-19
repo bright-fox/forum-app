@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
+//import expressValidator from "express-validator";
 
 import communityRoutes from "./controllers/communities";
 import postRoutes from "./controllers/posts";
@@ -18,6 +19,7 @@ mongoose.set("useFindAndModify", false);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(expressValidator());
 
 // ROUTES
 app.use("/users", userRoutes);

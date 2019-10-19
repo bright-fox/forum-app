@@ -1,14 +1,29 @@
 import express from "express";
+import { validationResult } from "express-validator";
+
 import User from "../models/user";
 import Post from "../models/post";
 import Comment from "../models/comment";
 
+import {
+  validateCreateUser,
+  validateUpdateUser
+} from "../middlewares/validation";
+import { checkValidationErrors } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
 
+router.get("/", (req, res, next) => {
+  User.find({}, (err, users) => {
+    if (err) return next(err);
+
+    res.status(200).json(users);
+  });
+});
+
 router.get("/:user_id", (req, res, next) => {
-  User.findOne({ _id: req.params.user_id }, (err, user) => {
+  User.findById(req.params.user_id, (err, user) => {
     if (err) return next(err);
     if (!user) return next(new CustomError("No user found"));
 
@@ -16,39 +31,51 @@ router.get("/:user_id", (req, res, next) => {
   });
 });
 
-router.post("/", (req, res, next) => {
-  User.create(req.body, (err, user) => {
-    if (err) return next(err);
+router.post("/", validateCreateUser(), (req, res, next) => {
+  const { username, email } = req.body;
+  if (checkValidationErrors(req)) return next(new CustomError(400));
 
-    res.status(200).json(user);
+  const user = new User({ username, email });
+  user.save((err, savedUser) => {
+    if (err) return next(err);
+    res.status(200).json(savedUser);
   });
 });
 
-router.put("/:user_id", (req, res, next) => {
-  User.findOneAndUpdate(
-    { _id: req.params.user_id },
-    { $set: req.body },
-    { new: true },
-    (err, updatedUser) => {
+router.put("/:user_id", validateUpdateUser(), (req, res, next) => {
+  if (checkValidationErrors(req)) return next(new CustomError(400));
+
+  User.findById(req.params.user_id, (err, user) => {
+    const { username, email } = req.body;
+
+    if (err) return next(err);
+    if (!user) return next(new CustomError(404, "No user found to be updated"));
+
+    user.username = username || user.username;
+    user.email = email || user.email;
+
+    user.save((err, updatedUser) => {
       if (err) return next(err);
-      if (!updatedUser)
-        return next(new CustomError(404, "No user found to be updated"));
 
       res.status(200).json(updatedUser);
-    }
-  );
+    });
+  });
 });
 
 router.delete("/:user_id", (req, res, next) => {
-  User.findOneAndDelete({ _id: req.params.user_id }, err => {
+  User.findById(req.params.user_id, (err, user) => {
     if (err) return next(err);
+    if (!user) return next(new CustomError(404, "No user found to be deleted"));
 
-    res.status(200).json(req.params.user_id); // needs to be changed, so it reacts to not valid id
+    user.remove(err => {
+      if (err) return next(err);
+      res.status(200).json(req.params.user_id);
+    });
   });
 });
 
 router.get("/:user_id/home", (req, res, next) => {
-  User.findOne({ _id: req.params.user_id }, (err, user) => {
+  User.findById(req.params.user_id, (err, user) => {
     if (err) return next(err);
     if (!user) return next(new CustomError("No user found"));
 
@@ -57,7 +84,7 @@ router.get("/:user_id/home", (req, res, next) => {
       if (posts.length <= 0)
         return next(new CustomError(404, "You did not join any communities!"));
 
-      res.status(400).json(posts);
+      res.status(200).json(posts);
     });
   });
 });
@@ -80,6 +107,18 @@ router.get("/:user_id/comments", (req, res, next) => {
 
     res.status(200).json(comments);
   });
+});
+
+router.get("/:user_id/communities", (req, res, next) => {
+  User.findById(req.params.user_id)
+    .populate("communities")
+    .exec((err, user) => {
+      // only response with communities?
+      if (err) return next(err);
+      if (!user) return next(new CustomError(404, "No user found"));
+
+      res.status(200).json(user);
+    });
 });
 
 export default router;

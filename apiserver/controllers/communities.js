@@ -2,6 +2,11 @@ import express from "express";
 import Community from "../models/community";
 import Post from "../models/post";
 
+import {
+  validateCreateCommunity,
+  validateUpdateCommunity
+} from "../middlewares/validation";
+import { checkValidationErrors } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
@@ -14,8 +19,13 @@ router.get("/", (req, res, next) => {
   });
 });
 
-router.post("/", (req, res, next) => {
-  Community.create(req.body, (err, createdCommunity) => {
+router.post("/", validateCreateCommunity(), (req, res, next) => {
+  const { name, creator, description } = req.body;
+  if (checkValidationErrors(req)) return next(new CustomError(400));
+
+  const community = new Community({ name, creator, description });
+
+  community.save((err, createdCommunity) => {
     if (err) return next(err);
 
     res.status(200).json(createdCommunity);
@@ -23,7 +33,7 @@ router.post("/", (req, res, next) => {
 });
 
 router.get("/:community_id", (req, res, next) => {
-  Community.findOne({ _id: req.params.community_id }, (err, community) => {
+  Community.findById(req.params.community_id, (err, community) => {
     if (err) return next(err);
     if (!community) return next(new CustomError(404, "No community found"));
 
@@ -31,26 +41,36 @@ router.get("/:community_id", (req, res, next) => {
   });
 });
 
-router.put("/:community_id", (req, res, next) => {
-  Community.findOneAndUpdate(
-    { _id: req.params.community_id },
-    { $set: req.body },
-    { new: true },
-    (err, updatedCommunity) => {
-      if (err) return next(err);
-      if (!updatedCommunity)
-        return next(new CustomError(404, "No community found to be updated"));
+router.put("/:community_id", validateUpdateCommunity(), (req, res, next) => {
+  if (checkValidationErrors(req)) return next(new CustomError(400));
 
+  Community.findById(req.params.community_id, (err, community) => {
+    const { name, description } = req.body;
+
+    if (err) return next(err);
+    if (!community)
+      return next(new CustomError(404, "No community found to be updated"));
+
+    community.name = name || community.name;
+    community.description = description || community.description;
+
+    community.save((err, updatedCommunity) => {
+      if (err) return next(err);
       res.status(200).json(updatedCommunity);
-    }
-  );
+    });
+  });
 });
 
 router.delete("/:community_id", (req, res, next) => {
-  Community.findOneAndDelete({ _id: req.params.community_id }, err => {
+  Community.findById(req.params.community_id, (err, community) => {
     if (err) return next(err);
+    if (!community)
+      return next(new CustomError(404, "No community found to be deleted"));
 
-    res.status(200).json(req.params.community_id);
+    community.remove(err => {
+      if (err) return next(err);
+      res.status(200).json(req.params.community_id);
+    });
   });
 });
 
@@ -58,7 +78,7 @@ router.get("/:community_id/posts", (req, res, next) => {
   Post.find({ community: req.params.community_id }, (err, posts) => {
     if (err) return next(err);
 
-    if (!posts[0])
+    if (posts.length <= 0)
       return next(new CustomError(404, "No posts for this community found"));
 
     res.status(200).json(posts);
