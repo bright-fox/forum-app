@@ -1,5 +1,6 @@
 import express from "express";
 import Post from "../models/Post";
+import PostVote from "../models/postVote";
 
 import {
   validateCreatePost,
@@ -71,6 +72,36 @@ router.delete("/:post_id", (req, res, next) => {
 
       res.status(200).json(req.params.post_id);
     });
+  });
+});
+
+router.post("/:post_id/postvotes", (req, res, next) => {
+  const { vote, user } = req.body;
+  const postVote = new PostVote({ vote, user, post: req.params.post_id });
+
+  PostVote.findOne({ post: req.params.post_id, user }, (err, foundPostVote) => {
+    if (err) return next(err);
+    if (foundPostVote) {
+      foundPostVote.remove(err => {
+        if (err) return next(err);
+      });
+    }
+  });
+
+  postVote.save((err, createdPostVote) => {
+    if (err) return next(err);
+
+    res.status(200).json(createdPostVote);
+  });
+});
+
+router.delete("/:post_id/postvotes/:postVote_id", (req, res, next) => {
+  PostVote.findById(req.params.postVote_id, (err, postVote) => {
+    if (err) return next(err);
+    if (!postVote)
+      return next(new CustomError(404, "No vote found to be deleted"));
+
+    res.status(200).json(req.params.postVote_id);
   });
 });
 

@@ -1,18 +1,25 @@
 import { Schema, model } from "mongoose";
 import Post from "./post";
 import User from "./user";
-import { checkExistenceInDatabase } from "../util";
+import { checkExistenceInDatabase, updateParentField } from "../util";
 
-const postVoteModel = new Schema({
+const postVoteSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now
   },
-  vote: Number,
+  vote: {
+    type: Number,
+    required: true,
+    validate: {
+      validator: num => num === -1 || num === 1,
+      message: "Vote not valid"
+    }
+  },
   post: {
     type: Schema.Types.ObjectId,
     ref: "Post",
-    index: true,
+    required: true,
     validate: {
       validator: post_id => checkExistenceInDatabase(Post, post_id),
       message: "Post does not exist"
@@ -21,6 +28,7 @@ const postVoteModel = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
+    required: true,
     validate: {
       validator: user_id => checkExistenceInDatabase(User, user_id),
       message: "User does not exist"
@@ -28,6 +36,19 @@ const postVoteModel = new Schema({
   }
 });
 
-postVoteModel.index({ user: 1, vote: -1, createdAt: -1 });
+postVoteSchema.index({ post: 1, user: 1 });
+postVoteSchema.index({ user: 1, vote: -1, createdAt: -1 });
 
-export default model("PostVote", postVoteModel);
+postVoteSchema.pre("save", async function() {
+  updateParentField(Post, this.post, { upvotes: this.vote });
+  const post = await Post.findById(this.post);
+  updateParentField(User, post.author, { karma: this.vote * 3 });
+});
+
+postVoteSchema.post("remove", async function() {
+  updateParentField(Post, this.post, { upvotes: this.vote * -1 });
+  const post = await Post.findById(this.post);
+  updateParentField(User, post.author, { karma: this.vote * -3 });
+});
+
+export default model("PostVote", postVoteSchema);

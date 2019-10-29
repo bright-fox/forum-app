@@ -1,7 +1,10 @@
 import { Schema, model } from "mongoose";
 import User from "./user";
 import Community from "./community";
-import { checkExistenceInDatabase } from "../util";
+import PostVote from "./postVote";
+import Comment from "./comment";
+import { checkExistenceInDatabase, removeDependentDocs } from "../util";
+import { log } from "util";
 
 const postSchema = new Schema({
   title: {
@@ -46,13 +49,17 @@ const postSchema = new Schema({
     type: Number,
     default: 0
   }
-  // popular: {
-  //   type: Boolean,
-  //   default: false
-  // }
 });
 
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ community: 1, createdAt: -1 });
+
+postSchema.post("remove", async function() {
+  console.log("Inside Post remove middleware");
+  removeDependentDocs(Comment, { post: this._id });
+  PostVote.deleteMany({ post: this._id }, err => {
+    if (err) throw err;
+  });
+});
 
 export default model("Post", postSchema);

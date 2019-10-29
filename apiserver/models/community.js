@@ -1,6 +1,8 @@
 import { Schema, model } from "mongoose";
 import User from "./user";
-import { checkExistenceInDatabase } from "../util";
+import Post from "./post";
+import CommunityMember from "./communityMember";
+import { checkExistenceInDatabase, removeDependentDocs } from "../util";
 
 const communitySchema = new Schema({
   name: {
@@ -21,6 +23,7 @@ const communitySchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
     required: [true, "Creator of community required"],
+    index: true,
     validate: {
       validator: user_id => checkExistenceInDatabase(User, user_id),
       message: "The user does not exist"
@@ -31,11 +34,18 @@ const communitySchema = new Schema({
     trim: true,
     required: [true, "You need to describe your community"]
   },
-  tags: [{ type: String, trim: true }],
+  //tags: [{ type: String, trim: true }],
   members: {
     type: Number,
     default: 0
   }
+});
+
+communitySchema.post("remove", async function() {
+  removeDependentDocs(Post, { community: this._id });
+  CommunityMember.deleteMany({ community: this._id }, err => {
+    if (err) throw err;
+  });
 });
 
 export default model("Community", communitySchema);

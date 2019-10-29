@@ -1,6 +1,7 @@
 import express from "express";
 
 import Comment from "../models/comment";
+import CommentVote from "../models/commentVote";
 import {
   validateCreateComment,
   validateUpdateComment
@@ -23,16 +24,17 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/", validateCreateComment(), (req, res, next) => {
-  const { content, author, post } = req.body;
+  const { content, author } = req.body;
   if (checkValidationErrors(req)) return next(new CustomError(400));
 
-  const comment = new Comment({ content, author, post });
+  const comment = new Comment({ content, author, post: req.params.post_id });
   comment.save((err, createdComment) => {
     if (err) return next(err);
     res.status(200).json(createdComment);
   });
 });
 
+// TODO: findOneAndUpdate is better so it does not trigger save
 router.put("/:comment_id", validateUpdateComment(), (req, res, next) => {
   if (checkValidationErrors(req)) return next(new CustomError(400));
 
@@ -56,10 +58,52 @@ router.delete("/:comment_id", (req, res, next) => {
     if (!comment)
       return next(new CustomError(404, "No comment found to be deleted"));
 
-    comment.remove(err => {
+    Comment.deleteOne(
+      { _id: req.params.comment_id, post: req.params.post_id },
+      err => {
+        if (err) return next(err);
+        res.status(200).json(req.params.comment_id);
+      }
+    );
+  });
+});
+
+router.post("/:comment_id/commentvotes", (req, res, next) => {
+  console.log("hit");
+  const { vote, user } = req.body;
+  const commentVote = new CommentVote({
+    vote,
+    user,
+    comment: req.params.comment_id,
+    post: req.params.post_id
+  });
+
+  CommentVote.findOne(
+    { comment: req.params.comment_id, user },
+    (err, foundCommentVote) => {
       if (err) return next(err);
-      res.status(200).json(req.params.comment_id);
-    });
+      if (foundCommentVote) {
+        console.log("We found him");
+        foundCommentVote.remove(err => {
+          if (err) return next(err);
+        });
+      }
+    }
+  );
+
+  commentVote.save((err, createdCommentVote) => {
+    if (err) return next(err);
+    res.status(200).json(createdCommentVote);
+  });
+});
+
+router.delete("/:comment_id/commentvotes/:commentVote_id", (req, res, next) => {
+  CommentVote.findById(req.params.commentVote_id, (err, commentVote) => {
+    if (err) return next(err);
+    if (!commentVote)
+      return next(new CustomError(404, "No vote found to be deleted"));
+
+    res.status(200).json(req.params.commentVote_id);
   });
 });
 

@@ -4,6 +4,7 @@ import { validationResult } from "express-validator";
 import User from "../models/user";
 import Post from "../models/post";
 import Comment from "../models/comment";
+import CommunityMember from "../models/communityMember";
 
 import {
   validateCreateUser,
@@ -11,9 +12,11 @@ import {
 } from "../middlewares/validation";
 import { checkValidationErrors } from "../util";
 import CustomError from "../util/CustomError";
+import { log } from "util";
 
 const router = express.Router();
 
+// need to get rid of that for deployment
 router.get("/", (req, res, next) => {
   User.find({}, (err, users) => {
     if (err) return next(err);
@@ -63,15 +66,19 @@ router.put("/:user_id", validateUpdateUser(), (req, res, next) => {
 });
 
 router.delete("/:user_id", (req, res, next) => {
-  User.findById(req.params.user_id, (err, user) => {
+  User.deleteOne({ _id: req.params.user_id }, err => {
     if (err) return next(err);
-    if (!user) return next(new CustomError(404, "No user found to be deleted"));
-
-    user.remove(err => {
-      if (err) return next(err);
-      res.status(200).json(req.params.user_id);
-    });
+    res.status(200).json(req.params.user_id);
   });
+  // User.findById(req.params.user_id, (err, user) => {
+  //   if (err) return next(err);
+  //   if (!user) return next(new CustomError(404, "No user found to be deleted"));
+
+  //   user.remove(err => {
+  //     if (err) return next(err);
+  //     res.status(200).json(req.params.user_id);
+  //   });
+  // });
 });
 
 router.get("/:user_id/home", (req, res, next) => {
@@ -110,14 +117,18 @@ router.get("/:user_id/comments", (req, res, next) => {
 });
 
 router.get("/:user_id/communities", (req, res, next) => {
-  User.findById(req.params.user_id)
-    .populate("communities")
-    .exec((err, user) => {
-      // only response with communities?
+  CommunityMember.find({ member: req.params.user_id })
+    .populate("community")
+    .exec((err, communityMembers) => {
       if (err) return next(err);
-      if (!user) return next(new CustomError(404, "No user found"));
+      if (communityMembers.length <= 0)
+        return next(new CustomError(404, "You did not join any communitites"));
 
-      res.status(200).json(user);
+      const communities = communityMembers.map(
+        communityMember => communityMember.community
+      );
+
+      res.status(200).json(communities);
     });
 });
 

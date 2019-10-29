@@ -1,17 +1,27 @@
 import { Schema, model } from "mongoose";
 import Comment from "./comment";
-import { checkExistenceInDatabase } from "../util";
+import Post from "./post";
+import User from "./user";
 
-const commentVoteModel = new Schema({
+import { checkExistenceInDatabase, updateParentField } from "../util";
+
+const commentVoteSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now
   },
-  vote: Number,
+  vote: {
+    type: Number,
+    required: true,
+    validate: {
+      validator: num => num === -1 || num === 1,
+      message: "Vote not valid"
+    }
+  },
   comment: {
     type: Schema.Types.ObjectId,
     ref: "Comment",
-    index: true,
+    required: true,
     validate: {
       validator: comment_id => checkExistenceInDatabase(Comment, comment_id),
       message: "Comment does not exist"
@@ -20,12 +30,36 @@ const commentVoteModel = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    index: true,
+    required: true,
     validate: {
       validator: user_id => checkExistenceInDatabase(User, user_id),
       message: "User does not exist"
     }
+  },
+  post: {
+    type: Schema.Types.ObjectId,
+    ref: "Post",
+    required: true,
+    validate: {
+      validator: post_id => checkExistenceInDatabase(Post, post_id),
+      message: "Post does not exist"
+    }
   }
 });
 
-export default model("CommentVote", commentVoteModel);
+commentVoteSchema.index({ user: 1, vote: -1, createdAt: -1 });
+commentVoteSchema.index({ comment: 1, user: 1 });
+
+commentVoteSchema.pre("save", async function() {
+  updateParentField(Comment, this.comment, { upvotes: this.vote });
+  const comment = await Comment.findById(this.comment);
+  updateParentField(User, comment.author, { karma: this.vote * 2 });
+});
+
+commentVoteSchema.post("remove", async function() {
+  updateParentField(Comment, this.comment, { upvotes: this.vote * -1 });
+  const comment = await Comment.findById(this.comment);
+  updateParentField(User, comment.author, { karma: this.vote * -2 });
+});
+
+export default model("CommentVote", commentVoteSchema);

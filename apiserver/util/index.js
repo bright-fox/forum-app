@@ -20,3 +20,21 @@ export const checkValidationErrors = req => {
   const errors = validationResult(req);
   return !errors.isEmpty();
 };
+
+// removes dependent documents which also triggers the remove hooks (mongoose)
+export const removeDependentDocs = (model, selector) => {
+  model.find(selector, (err, docs) => {
+    if (err) throw err;
+    docs.forEach(doc => {
+      doc.remove(err => {
+        if (err) throw err;
+      });
+    });
+  });
+};
+
+export const updateParentField = (model, id, incOption) => {
+  model.findOneAndUpdate({ _id: id }, { $inc: incOption }, err => {
+    if (err) throw err;
+  });
+};

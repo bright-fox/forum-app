@@ -1,6 +1,15 @@
 import mongoose from "mongoose";
+
+import Post from "./post";
+import Comment from "./comment";
 import Community from "./community";
-import { checkExistenceInDatabase } from "../util";
+import PostVote from "./postVote";
+import CommentVote from "./commentVote";
+import CommunityMember from "./CommunityMember";
+
+import { checkExistenceInDatabase, removeDependentDocs } from "../util";
+import { runInNewContext } from "vm";
+import { log } from "util";
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -23,22 +32,20 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  communities: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Community",
-      validate: {
-        validator: community_id =>
-          checkExistenceInDatabase(Community, community_id),
-        message: "Community does not exist"
-      }
-    }
-  ],
   karma: {
     type: Number,
     default: 1
   }
   // TODO: Password is missing
+});
+
+userSchema.post("remove", async function() {
+  removeDependentDocs(CommentVote, { user: this._id });
+  removeDependentDocs(PostVote, { user: this._id });
+  removeDependentDocs(Comment, { author: this._id });
+  removeDependentDocs(Post, { author: this._id });
+  removeDependentDocs(CommunityMember, { member: this._id });
+  removeDependentDocs(Community, { creator: this._id });
 });
 
 export default mongoose.model("User", userSchema);

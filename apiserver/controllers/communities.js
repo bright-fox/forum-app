@@ -1,5 +1,6 @@
 import express from "express";
 import Community from "../models/community";
+import CommunityMember from "../models/communityMember";
 import Post from "../models/post";
 
 import {
@@ -84,5 +85,41 @@ router.get("/:community_id/posts", (req, res, next) => {
     res.status(200).json(posts);
   });
 });
+
+router.post("/:community_id/communitymember", (req, res, next) => {
+  const { user } = req.body;
+
+  const communityMember = new CommunityMember({
+    user,
+    community: req.params.community_id
+  });
+
+  communityMember.save((err, createdCommunityMember) => {
+    if (err) return next(err);
+
+    res.status(200).json(createdCommunityMember);
+  });
+});
+
+router.delete(
+  "/:community_id/communitymember/:communitymember_id",
+  (req, res, next) => {
+    CommunityMember.findById(
+      req.params.communitymember_id,
+      (err, communityMember) => {
+        if (err) return next(err);
+        if (!communityMember)
+          return next(
+            new CustomError(404, "No Communitymember found to be deleted")
+          );
+
+        communityMember.remove(err => {
+          if (err) return next(err);
+          res.status(200).json(req.params.communitymember_id);
+        });
+      }
+    );
+  }
+);
 
 export default router;
