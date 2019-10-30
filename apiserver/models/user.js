@@ -40,12 +40,12 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.post("remove", async function() {
-  removeDependentDocs(CommentVote, { user: this._id });
-  removeDependentDocs(PostVote, { user: this._id });
-  removeDependentDocs(Comment, { author: this._id });
-  removeDependentDocs(Post, { author: this._id });
-  removeDependentDocs(CommunityMember, { member: this._id });
-  removeDependentDocs(Community, { creator: this._id });
+  await removeDependentDocs(CommentVote, { user: this._id });
+  await removeDependentDocs(PostVote, { user: this._id });
+  await removeDependentDocs(Comment, { author: this._id });
+  await removeDependentDocs(Post, { author: this._id });
+  await removeDependentDocs(CommunityMember, { member: this._id });
+  await removeDependentDocs(Community, { creator: this._id });
 });
 
 export default mongoose.model("User", userSchema);

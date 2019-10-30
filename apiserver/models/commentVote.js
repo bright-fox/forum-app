@@ -51,15 +51,15 @@ commentVoteSchema.index({ user: 1, vote: -1, createdAt: -1 });
 commentVoteSchema.index({ comment: 1, user: 1 });
 
 commentVoteSchema.pre("save", async function() {
-  updateParentField(Comment, this.comment, { upvotes: this.vote });
+  await updateParentField(Comment, this.comment, { upvotes: this.vote });
   const comment = await Comment.findById(this.comment);
-  updateParentField(User, comment.author, { karma: this.vote * 2 });
+  await updateParentField(User, comment.author, { karma: this.vote * 2 });
 });
 
 commentVoteSchema.post("remove", async function() {
-  updateParentField(Comment, this.comment, { upvotes: this.vote * -1 });
+  await updateParentField(Comment, this.comment, { upvotes: this.vote * -1 });
   const comment = await Comment.findById(this.comment);
-  updateParentField(User, comment.author, { karma: this.vote * -2 });
+  await updateParentField(User, comment.author, { karma: this.vote * -2 });
 });
 
 export default model("CommentVote", commentVoteSchema);

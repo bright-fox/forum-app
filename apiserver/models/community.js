@@ -42,10 +42,8 @@ const communitySchema = new Schema({
 });
 
 communitySchema.post("remove", async function() {
-  removeDependentDocs(Post, { community: this._id });
-  CommunityMember.deleteMany({ community: this._id }, err => {
-    if (err) throw err;
-  });
+  await removeDependentDocs(Post, { community: this._id });
+  await CommunityMember.deleteMany({ community: this._id }).exec();
 });
 
 export default model("Community", communitySchema);

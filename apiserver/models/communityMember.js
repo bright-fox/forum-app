@@ -33,11 +33,11 @@ const communityMemberSchema = new Schema({
 communityMemberSchema.index({ member: 1, community: 1 }, { unique: true });
 
 communityMemberSchema.pre("save", function async() {
-  updateParentField(Community, this.community, { members: 1 });
+  await updateParentField(Community, this.community, { members: 1 });
 });
 
 communityMemberSchema.post("remove", function async() {
-  updateParentField(Community, this.community, { members: -1 });
+  await updateParentField(Community, this.community, { members: -1 });
 });
 
 export default model("CommunityMember", communityMemberSchema);

@@ -2,22 +2,12 @@ import CustomError from "../util/CustomError";
 import { validationResult } from "express-validator";
 
 // async handler
-export const asyncHandler = fn => (req, res, next) =>
-  fn(req, res, next).catch(next);
+export const asyncHandler = fn => (req, res, next) => fn(req, res, next).catch(next);
 
-export const checkExistenceInDatabase = (model, id) => {
-  return new Promise((resolve, reject) => {
-    model.findOne({ _id: id }, (err, doc) => {
-      if (doc) {
-        return resolve(true);
-      }
-      return reject(
-        new Error(
-          `FK Constraint 'checkObjectsExists' for '${id.toString()}' failed`
-        )
-      );
-    });
-  });
+export const checkExistenceInDatabase = async (model, id) => {
+  const doc = await model.findOne({ _id: id }).exec();
+  if (doc) return true;
+  throw new Error(`FK Constraint 'checkObjectsExists' for '${id.toString()}' failed`);
 };
 
 export const checkValidationErrors = req => {
@@ -26,19 +16,12 @@ export const checkValidationErrors = req => {
 };
 
 // removes dependent documents which also triggers the remove hooks (mongoose)
-export const removeDependentDocs = (model, selector) => {
-  model.find(selector, (err, docs) => {
-    if (err) throw err;
-    docs.forEach(doc => {
-      doc.remove(err => {
-        if (err) throw err;
-      });
-    });
-  });
+// DOES THIS WORK???
+export const removeDependentDocs = async (model, selector) => {
+  const docs = await model.find(selector).exec();
+  docs.forEach(doc => await doc.remove());
 };
 
-export const updateParentField = (model, id, incOption) => {
-  model.findOneAndUpdate({ _id: id }, { $inc: incOption }, err => {
-    if (err) throw err;
-  });
+export const updateParentField = async (model, id, incOption) => {
+  await model.findOneAndUpdate({ _id: id }, { $inc: incOption });
 };

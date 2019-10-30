@@ -48,18 +48,14 @@ commentSchema.post("deleteOne", async function() {
   console.log("DeleteOne Post Middleware");
   const { _id, post } = this.getQuery();
 
-  updateParentField(Post, this.post, { comments: -1 });
-  CommentVote.deleteMany({ comment: this._id }, err => {
-    if (err) throw err;
-  });
+  await updateParentField(Post, this.post, { comments: -1 });
+  await CommentVote.deleteMany({ comment: this._id }).exec();
 });
 
 // TODO: Check if comment is 0
 commentSchema.post("remove", async function() {
   console.log("Remove Post Middleware");
-  CommentVote.deleteMany({ comment: this._id }, err => {
-    if (err) throw err;
-  });
+  await CommentVote.deleteMany({ comment: this._id }).exec();
 });
 
 export default model("Comment", commentSchema);

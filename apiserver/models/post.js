@@ -36,8 +36,7 @@ const postSchema = new Schema({
     ref: "Community",
     required: [true, "Community for post required"],
     validate: {
-      validator: community_id =>
-        checkExistenceInDatabase(Community, community_id),
+      validator: community_id => checkExistenceInDatabase(Community, community_id),
       message: "Community does not exist"
     }
   },
@@ -56,10 +55,8 @@ postSchema.index({ community: 1, createdAt: -1 });
 
 postSchema.post("remove", async function() {
   console.log("Inside Post remove middleware");
-  removeDependentDocs(Comment, { post: this._id });
-  PostVote.deleteMany({ post: this._id }, err => {
-    if (err) throw err;
-  });
+  await removeDependentDocs(Comment, { post: this._id });
+  await PostVote.deleteMany({ post: this._id }).exec();
 });
 
 export default model("Post", postSchema);

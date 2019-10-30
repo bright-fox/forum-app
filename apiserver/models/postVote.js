@@ -40,15 +40,15 @@ postVoteSchema.index({ post: 1, user: 1 });
 postVoteSchema.index({ user: 1, vote: -1, createdAt: -1 });
 
 postVoteSchema.pre("save", async function() {
-  updateParentField(Post, this.post, { upvotes: this.vote });
+  await updateParentField(Post, this.post, { upvotes: this.vote });
   const post = await Post.findById(this.post);
-  updateParentField(User, post.author, { karma: this.vote * 3 });
+  await updateParentField(User, post.author, { karma: this.vote * 3 });
 });
 
 postVoteSchema.post("remove", async function() {
-  updateParentField(Post, this.post, { upvotes: this.vote * -1 });
+  await updateParentField(Post, this.post, { upvotes: this.vote * -1 });
   const post = await Post.findById(this.post);
-  updateParentField(User, post.author, { karma: this.vote * -3 });
+  await updateParentField(User, post.author, { karma: this.vote * -3 });
 });
 
 export default model("PostVote", postVoteSchema);
