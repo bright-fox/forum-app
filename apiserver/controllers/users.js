@@ -6,130 +6,91 @@ import Post from "../models/post";
 import Comment from "../models/comment";
 import CommunityMember from "../models/communityMember";
 
-import {
-  validateCreateUser,
-  validateUpdateUser
-} from "../middlewares/validation";
-import { checkValidationErrors } from "../util";
+import { validateCreateUser, validateUpdateUser } from "../middlewares/validation";
+import { checkValidationErrors, asyncHandler } from "../util";
 import CustomError from "../util/CustomError";
-import { log } from "util";
 
 const router = express.Router();
 
-// need to get rid of that for deployment
-router.get("/", (req, res, next) => {
-  User.find({}, (err, users) => {
-    if (err) return next(err);
+//prettier-ignore
+router.get("/", asyncHandler(async (req, res) => {
+  const users = await User.find({}).lean().exec();
+  res.status(200).json(users);
+  })
+);
 
-    res.status(200).json(users);
-  });
-});
+//prettier-ignore
+router.get("/:user_id", asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.user_id).lean().exec()
+  if (!user) throw new CustomError(404, "No user found");
+  res.status(200).json(user);
+}));
 
-router.get("/:user_id", (req, res, next) => {
-  User.findById(req.params.user_id, (err, user) => {
-    if (err) return next(err);
-    if (!user) return next(new CustomError("No user found"));
-
-    res.status(200).json(user);
-  });
-});
-
-router.post("/", validateCreateUser(), (req, res, next) => {
+//prettier-ignore
+router.post("/", validateCreateUser(), asyncHandler(async (req, res) => {
   const { username, email } = req.body;
-  if (checkValidationErrors(req)) return next(new CustomError(400));
+  if (checkValidationErrors(req)) throw new CustomError(400);
 
   const user = new User({ username, email });
-  user.save((err, savedUser) => {
-    if (err) return next(err);
-    res.status(200).json(savedUser);
-  });
-});
+  const savedUser = await user.save();
+  res.status(200).json(savedUser);
+}));
 
-router.put("/:user_id", validateUpdateUser(), (req, res, next) => {
-  if (checkValidationErrors(req)) return next(new CustomError(400));
+//prettier-ignore
+router.put("/:user_id", validateUpdateUser(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
 
-  User.findById(req.params.user_id, (err, user) => {
-    const { username, email } = req.body;
+  const user = await User.findById(req.params.user_id).exec();
+  const { username, email } = req.body;
+  if (!user) throw new CustomError(404, "No user found to be updated");
 
-    if (err) return next(err);
-    if (!user) return next(new CustomError(404, "No user found to be updated"));
+  user.username = username || user.username;
+  user.email = email || user.email;
 
-    user.username = username || user.username;
-    user.email = email || user.email;
+  const updatedUser = await user.save();
+  res.status(200).json(updatedUser);
+}));
 
-    user.save((err, updatedUser) => {
-      if (err) return next(err);
+//prettier-ignore
+router.delete("/:user_id", asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.user_id).exec();
+  if (!user) throw new CustomError(404, "No user found to be deleted");
 
-      res.status(200).json(updatedUser);
-    });
-  });
-});
+  await user.remove();
+  res.status(200).json(req.params.user_id);
+}));
 
-router.delete("/:user_id", (req, res, next) => {
-  User.deleteOne({ _id: req.params.user_id }, err => {
-    if (err) return next(err);
-    res.status(200).json(req.params.user_id);
-  });
-  // User.findById(req.params.user_id, (err, user) => {
-  //   if (err) return next(err);
-  //   if (!user) return next(new CustomError(404, "No user found to be deleted"));
+//prettier-ignore
+router.get("/:user_id/home", asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.user_id).exec();
+  if (!user) throw new CustomError(404, "No user found");
 
-  //   user.remove(err => {
-  //     if (err) return next(err);
-  //     res.status(200).json(req.params.user_id);
-  //   });
-  // });
-});
+  const posts = await Post.find({ community: { $in: user.communities }}).lean().exec();
+  if (posts.length <= 0) throw new CustomError(404, "You did not join any communities!");
+  res.status(200).json(posts);
+}));
 
-router.get("/:user_id/home", (req, res, next) => {
-  User.findById(req.params.user_id, (err, user) => {
-    if (err) return next(err);
-    if (!user) return next(new CustomError("No user found"));
+//prettier-ignore
+router.get("/:user_id/posts", asyncHandler(async (req, res) => {
+  const posts = await Post.find({ author: req.params.user_id }).lean().exec();
+  if (posts.length <= 0) throw new CustomError("You did not post any posts!");
+  res.status(200).json(posts);
+}));
 
-    Post.find({ community: { $in: user.communities } }, (err, posts) => {
-      if (err) return next(err);
-      if (posts.length <= 0)
-        return next(new CustomError(404, "You did not join any communities!"));
+//prettier-ignore
+router.get("/:user_id/comments", asyncHandler(async(req, res) => {
+  const comments = await Comment.find({ author: req.params.user_id }).lean().exec();
+  if (comments.length <= 0) throw new CustomError(404, "You did not write any comments!");
+  res.status(200).json(comments);
+}));
 
-      res.status(200).json(posts);
-    });
-  });
-});
-
-router.get("/:user_id/posts", (req, res, next) => {
-  Post.find({ author: req.params.user_id }, (err, posts) => {
-    if (err) return next(err);
-    if (posts.length <= 0)
-      return next(new CustomError("You did not post any posts!"));
-
-    res.status(200).json(posts);
-  });
-});
-
-router.get("/:user_id/comments", (req, res, next) => {
-  Comment.find({ author: req.params.user_id }, (err, comments) => {
-    if (err) return next(err);
-    if (comments.length <= 0)
-      return next(new CustomError(404, "You did not write any comments!"));
-
-    res.status(200).json(comments);
-  });
-});
-
-router.get("/:user_id/communities", (req, res, next) => {
-  CommunityMember.find({ member: req.params.user_id })
-    .populate("community")
-    .exec((err, communityMembers) => {
-      if (err) return next(err);
-      if (communityMembers.length <= 0)
-        return next(new CustomError(404, "You did not join any communitites"));
-
-      const communities = communityMembers.map(
-        communityMember => communityMember.community
-      );
-
-      res.status(200).json(communities);
-    });
-});
+//prettier-ignore
+router.get("/:user_id/communities", asyncHandler(async (req, res) => {
+  const communityMembers = await CommunityMember.find({ member: req.params.user_id }).populate("community")
+    .lean().exec();
+  if (communityMembers.length <= 0) throw new CustomError(404, "You did not join any communitites");
+  const communities = communityMembers.map(communityMember => communityMember.community);
+  res.status(200).json(communities);
+}));
 
 export default router;

@@ -2,109 +2,68 @@ import express from "express";
 
 import Comment from "../models/comment";
 import CommentVote from "../models/commentVote";
-import {
-  validateCreateComment,
-  validateUpdateComment
-} from "../middlewares/validation";
-import { checkValidationErrors } from "../util";
+import { validateCreateComment, validateUpdateComment } from "../middlewares/validation";
+import { checkValidationErrors, asyncHandler } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/", (req, res, next) => {
-  Comment.find({ post: req.params.post_id }, (err, comments) => {
-    if (err) return next(err);
+//prettier-ignore
+router.get("/", asyncHandler(async (req, res) => {
+  const comments = await Comment.find({ post: req.params.post_id }).lean().exec();
+  if (comments.length <= 0) throw newCustomError(404, "No comments found");
+  res.status(200).json(comments);
+}));
 
-    // TODO: Is that necessary?
-    if (comments.length <= 0)
-      return next(new CustomError(404, "No comments found"));
+//prettier-ignore
+router.post("/", validateCreateComment(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw newCustomError(400);
 
-    res.status(200).json(comments);
-  });
-});
-
-router.post("/", validateCreateComment(), (req, res, next) => {
   const { content, author } = req.body;
-  if (checkValidationErrors(req)) return next(new CustomError(400));
-
   const comment = new Comment({ content, author, post: req.params.post_id });
-  comment.save((err, createdComment) => {
-    if (err) return next(err);
-    res.status(200).json(createdComment);
-  });
-});
+
+  const createdComment = await comment.save();
+  res.status(200).json(createdComment);
+}));
 
 // TODO: findOneAndUpdate is better so it does not trigger save
-router.put("/:comment_id", validateUpdateComment(), (req, res, next) => {
-  if (checkValidationErrors(req)) return next(new CustomError(400));
+//prettier-ignore
+router.put("/:comment_id", validateUpdateComment(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw newCustomError(400);
 
-  Comment.findById(req.params.comment_id, (err, comment) => {
-    if (err) return next(err);
-    if (!comment)
-      return next(new CustomError(404, "No comment found to be updated"));
+  const updatedComment = await Comment.findOneAndUpdate({ _id: req.params.comment_id},
+    { $set: { content: req.body.content}}, { new: true, runValidators: true }).exec();
+  res.status(200).json(updatedComment);
+}));
 
-    comment.content = req.body.content || comment.content;
-    comment.save((err, updatedComment) => {
-      if (err) return next(err);
+//prettier-ignore
+router.delete("/:comment_id", asyncHandler(async (req, res) => {
+  const comment = await Comment.findById(req.params.comment_id).exec();
+  if (!comment) throw newCustomError(404, "No comment found to be deleted");
 
-      res.status(200).json(updatedComment);
-    });
-  });
-});
+  await Comment.deleteOne({ _id: req.params.comment_id, post: req.params.post_id }).exec();
+  res.status(200).json(req.params.comment_id);
+}));
 
-router.delete("/:comment_id", (req, res, next) => {
-  Comment.findById(req.params.comment_id, (err, comment) => {
-    if (err) return next(err);
-    if (!comment)
-      return next(new CustomError(404, "No comment found to be deleted"));
-
-    Comment.deleteOne(
-      { _id: req.params.comment_id, post: req.params.post_id },
-      err => {
-        if (err) return next(err);
-        res.status(200).json(req.params.comment_id);
-      }
-    );
-  });
-});
-
-router.post("/:comment_id/commentvotes", (req, res, next) => {
-  console.log("hit");
+//prettier-ignore
+router.post("/:comment_id/commentvotes", asyncHandler(async (req, res) => {
   const { vote, user } = req.body;
-  const commentVote = new CommentVote({
-    vote,
-    user,
-    comment: req.params.comment_id,
-    post: req.params.post_id
-  });
+  const commentVote = new CommentVote({ vote, user, comment: req.params.comment_id, post: req.params.post_id });
 
-  CommentVote.findOne(
-    { comment: req.params.comment_id, user },
-    (err, foundCommentVote) => {
-      if (err) return next(err);
-      if (foundCommentVote) {
-        console.log("We found him");
-        foundCommentVote.remove(err => {
-          if (err) return next(err);
-        });
-      }
-    }
-  );
+  const foundCommentVote = await CommentVote.findOne({ comment: req.params.comment_id, user }).exec();
+  if (foundCommentVote) await foundCommentVote.remove();
 
-  commentVote.save((err, createdCommentVote) => {
-    if (err) return next(err);
-    res.status(200).json(createdCommentVote);
-  });
-});
+  const createdCommentVote = await commentVote.save();
+  res.status(200).json(createdCommentVote);
+}));
 
-router.delete("/:comment_id/commentvotes/:commentVote_id", (req, res, next) => {
-  CommentVote.findById(req.params.commentVote_id, (err, commentVote) => {
-    if (err) return next(err);
-    if (!commentVote)
-      return next(new CustomError(404, "No vote found to be deleted"));
+//prettier-ignore
+router.delete("/:comment_id/commentvotes/:commentVote_id", asyncHandler(async (req, res) => {
+  const commentVote = await CommentVote.findById(req.params.commentVote_id).exec();
+  if (!commentVote) throw newCustomError(404, "No vote found to be deleted");
 
-    res.status(200).json(req.params.commentVote_id);
-  });
-});
+  await commentVote.remove();
+  res.status(200).json(req.params.commentVote_id);
+}));
 
 export default router;

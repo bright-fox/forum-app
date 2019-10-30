@@ -3,123 +3,82 @@ import Community from "../models/community";
 import CommunityMember from "../models/communityMember";
 import Post from "../models/post";
 
-import {
-  validateCreateCommunity,
-  validateUpdateCommunity
-} from "../middlewares/validation";
-import { checkValidationErrors } from "../util";
+import { validateCreateCommunity, validateUpdateCommunity } from "../middlewares/validation";
+import { checkValidationErrors, asyncHandler } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-  Community.find({}, (err, communities) => {
-    if (err) return next(err);
+//prettier-ignore
+router.get("/", asyncHandler(async (req, res) => {
+  const communities = await Community.find({}).lean().exec();
+  res.status(200).json(communities);
+}));
 
-    res.status(200).json(communities);
-  });
-});
-
-router.post("/", validateCreateCommunity(), (req, res, next) => {
+//prettier-ignore
+router.post("/", validateCreateCommunity(), asyncHandler(async (req, res) => {
   const { name, creator, description } = req.body;
-  if (checkValidationErrors(req)) return next(new CustomError(400));
+  if (checkValidationErrors(req)) throw new CustomError(400);
 
   const community = new Community({ name, creator, description });
+  const createdCommunity = await community.save();
+  res.status(200).json(createdCommunity);
+}));
 
-  community.save((err, createdCommunity) => {
-    if (err) return next(err);
+//prettier-ignore
+router.get("/:community_id", asyncHandler(async (req, res) => {
+  const community = await Community.findById(req.params.community_id).lean().exec();
+  if (!community) throw new CustomError(404, "No community found");
+  res.status(200).json(community);
+}));
 
-    res.status(200).json(createdCommunity);
-  });
-});
+//prettier-ignore
+router.put("/:community_id", validateUpdateCommunity(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
 
-router.get("/:community_id", (req, res, next) => {
-  Community.findById(req.params.community_id, (err, community) => {
-    if (err) return next(err);
-    if (!community) return next(new CustomError(404, "No community found"));
+  const community = await Community.findById(req.params.community_id).exec();
+  if (!community) throw new CustomError(404, "No community found to be updated");
+  const { name, description } = req.body;
 
-    res.status(200).json(community);
-  });
-});
+  community.name = name || community.name;
+  community.description = description || community.description;
 
-router.put("/:community_id", validateUpdateCommunity(), (req, res, next) => {
-  if (checkValidationErrors(req)) return next(new CustomError(400));
+  const updatedCommunity = await community.save();
+  res.status(200).json(updatedCommunity);
+}));
 
-  Community.findById(req.params.community_id, (err, community) => {
-    const { name, description } = req.body;
+//prettier-ignore
+router.delete("/:community_id", asyncHandler(async (req, res) => {
+  const community = await Community.findById(req.params.community_id).exec();
+  if (!community) throw new CustomError(404, "No community found to be deleted");
 
-    if (err) return next(err);
-    if (!community)
-      return next(new CustomError(404, "No community found to be updated"));
+  await community.remove();
+  res.status(200).json(req.params.community_id);
+}));
 
-    community.name = name || community.name;
-    community.description = description || community.description;
+//prettier-ignore
+router.get("/:community_id/posts", asyncHandler(async (req, res) => {
+  const posts = await Post.find({ community: req.params.community_id }).lean().exec();
+  if (posts.length <= 0) throw new CustomError(404, "No posts for this community found");
+  res.status(200).json(posts);
+}));
 
-    community.save((err, updatedCommunity) => {
-      if (err) return next(err);
-      res.status(200).json(updatedCommunity);
-    });
-  });
-});
-
-router.delete("/:community_id", (req, res, next) => {
-  Community.findById(req.params.community_id, (err, community) => {
-    if (err) return next(err);
-    if (!community)
-      return next(new CustomError(404, "No community found to be deleted"));
-
-    community.remove(err => {
-      if (err) return next(err);
-      res.status(200).json(req.params.community_id);
-    });
-  });
-});
-
-router.get("/:community_id/posts", (req, res, next) => {
-  Post.find({ community: req.params.community_id }, (err, posts) => {
-    if (err) return next(err);
-
-    if (posts.length <= 0)
-      return next(new CustomError(404, "No posts for this community found"));
-
-    res.status(200).json(posts);
-  });
-});
-
-router.post("/:community_id/communitymember", (req, res, next) => {
+//prettier-ignore
+router.post("/:community_id/communitymember", asyncHandler(async (req, res) => {
   const { user } = req.body;
+  const communityMember = new CommunityMember({user, community: req.params.community_id});
 
-  const communityMember = new CommunityMember({
-    user,
-    community: req.params.community_id
-  });
+  const createdCommunityMember = await communityMember.save();
+  res.status(200).json(createdCommunityMember);
+}));
 
-  communityMember.save((err, createdCommunityMember) => {
-    if (err) return next(err);
+//prettier-ignore
+router.delete("/:community_id/communitymember/:communitymember_id", asyncHandler(async (req, res) => {
+  const communityMember = await CommunityMember.findById(req.params.communitymember_id).exec();
+  if (!communityMember) throw new CustomError(404, "No Communitymember found to be deleted");
 
-    res.status(200).json(createdCommunityMember);
-  });
-});
-
-router.delete(
-  "/:community_id/communitymember/:communitymember_id",
-  (req, res, next) => {
-    CommunityMember.findById(
-      req.params.communitymember_id,
-      (err, communityMember) => {
-        if (err) return next(err);
-        if (!communityMember)
-          return next(
-            new CustomError(404, "No Communitymember found to be deleted")
-          );
-
-        communityMember.remove(err => {
-          if (err) return next(err);
-          res.status(200).json(req.params.communitymember_id);
-        });
-      }
-    );
-  }
-);
+  await communityMember.remove();
+  res.status(200).json(req.params.communitymember_id);
+}));
 
 export default router;

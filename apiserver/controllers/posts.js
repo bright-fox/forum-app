@@ -2,107 +2,76 @@ import express from "express";
 import Post from "../models/Post";
 import PostVote from "../models/postVote";
 
-import {
-  validateCreatePost,
-  validateUpdatePost
-} from "../middlewares/validation";
-import { checkValidationErrors } from "../util";
+import { validateCreatePost, validateUpdatePost } from "../middlewares/validation";
+import { checkValidationErrors, asyncHandler } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
-  Post.find({})
-    .sort({ createdAt: -1 })
-    .exec((err, posts) => {
-      if (err) return next(err);
+//prettier-ignore
+router.get("/", asyncHandler(async(req, res) => {
+  const posts = await Post.find({}).sort({ createdAt: -1 }).lean().exec();
+  res.status(200).json(posts);
+}));
 
-      res.status(200).json(posts);
-    });
-});
-
-router.post("/", validateCreatePost(), (req, res, next) => {
+//prettier-ignore
+router.post("/", validateCreatePost(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
   const { title, content, author, community } = req.body;
-  if (checkValidationErrors(req)) return next(new CustomError(400));
-
   const post = new Post({ title, content, author, community });
 
-  post.save((err, createdPost) => {
-    if (err) return next(err);
-    res.status(200).json(createdPost);
-  });
-});
+  const createdPost = await post.save();
+  res.status(200).json(createdPost);
+}));
 
-router.get("/:post_id", (req, res, next) => {
-  Post.findById(req.params.post_id, (err, post) => {
-    if (err) return next(err);
-    if (!post) return next(new CustomError(404, "No posts found"));
+//prettier-ignore
+router.get("/:post_id", asyncHandler(async (req, res) => {
+  const post = await Post.findById(req.params.post_id).lean().exec();
+  if (!post) throw new CustomError(404, "No posts found");
+  res.status(200).json(post);
+}));
 
-    res.status(200).json(post);
-  });
-});
+//prettier-ignore
+router.put("/:post_id", validateUpdatePost(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
 
-router.put("/:post_id", validateUpdatePost(), (req, res, next) => {
-  if (checkValidationErrors(req)) return next(new CustomError(400));
+  const post = await Post.findById(req.params.post_id).exec();
+  if (!post) throw new CustomError(404, "No post found to be updated");
+  const { title, content } = req.body;
+  
+  post.title = title || post.title;
+  post.content = content || post.content;
 
-  Post.findById(req.params.post_id, (err, post) => {
-    const { title, content } = req.body;
+  const updatedPost = await post.save();
+  res.status(200).json(updatedPost);
+}));
 
-    if (err) return next(err);
-    if (!post) return next(new CustomError(404, "No post found to be updated"));
+//prettier-ignore
+router.delete("/:post_id", asyncHandler(async (req, res) => {
+  const post = await Post.findById(req.params.post_id).exec();
+  if (!post) throw new CustomError(404, "No post found to be deleted");
 
-    post.title = title || post.title;
-    post.content = content || post.content;
+  await post.remove();
+  res.status(200).json(req.params.post_id);
+}));
 
-    post.save((err, updatedPost) => {
-      if (err) return next(err);
-
-      res.status(200).json(updatedPost);
-    });
-  });
-});
-
-router.delete("/:post_id", (req, res, next) => {
-  Post.findById(req.params.post_id, (err, post) => {
-    if (err) return next(err);
-    if (!post) return next(new CustomError(404, "No post found to be deleted"));
-
-    post.remove(err => {
-      if (err) return next(err);
-
-      res.status(200).json(req.params.post_id);
-    });
-  });
-});
-
-router.post("/:post_id/postvotes", (req, res, next) => {
+//prettier-ignore
+router.post("/:post_id/postvotes", asyncHandler(async (req, res) => {
   const { vote, user } = req.body;
   const postVote = new PostVote({ vote, user, post: req.params.post_id });
 
-  PostVote.findOne({ post: req.params.post_id, user }, (err, foundPostVote) => {
-    if (err) return next(err);
-    if (foundPostVote) {
-      foundPostVote.remove(err => {
-        if (err) return next(err);
-      });
-    }
-  });
+  const foundPostVote = await PostVote.findOne({ post: req.params.post_id, user }).exec();
+  if (foundPostVote) await foundPostVote.remove();
+  const createdPostVote = await postVote.save();
+  res.status(200).json(createdPostVote);
+}));
 
-  postVote.save((err, createdPostVote) => {
-    if (err) return next(err);
-
-    res.status(200).json(createdPostVote);
-  });
-});
-
-router.delete("/:post_id/postvotes/:postVote_id", (req, res, next) => {
-  PostVote.findById(req.params.postVote_id, (err, postVote) => {
-    if (err) return next(err);
-    if (!postVote)
-      return next(new CustomError(404, "No vote found to be deleted"));
-
-    res.status(200).json(req.params.postVote_id);
-  });
-});
+//prettier-ignore
+router.delete("/:post_id/postvotes/:postVote_id", asyncHandler(async (req, res) => {
+  const postVote = await PostVote.findById(req.params.postVote_id).exec();
+  if (!postVote) throw new CustomError(404, "No vote found to be deleted");
+  await postVote.remove();
+  res.status(200).json(req.params.postVote_id);
+}));
 
 export default router;
