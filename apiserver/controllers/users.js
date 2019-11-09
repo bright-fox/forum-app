@@ -1,4 +1,6 @@
 import express from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 
 import User from "../models/user";
@@ -6,11 +8,13 @@ import Post from "../models/post";
 import Comment from "../models/comment";
 import CommunityMember from "../models/communityMember";
 
-import { validateCreateUser, validateUpdateUser } from "../middlewares/validation";
+import { validateUpdateUser } from "../middlewares/validation";
 import { checkValidationErrors, asyncHandler } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
+
+// TODO: REMOVE PASSWORDS FROM RESPONSE with .select("-password")
 
 //prettier-ignore
 router.get("/", asyncHandler(async (req, res) => {
@@ -21,19 +25,9 @@ router.get("/", asyncHandler(async (req, res) => {
 
 //prettier-ignore
 router.get("/:user_id", asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.user_id).lean().exec()
+  const user = await User.findById(req.params.user_id).lean().exec();
   if (!user) throw new CustomError(404, "No user found");
   res.status(200).json(user);
-}));
-
-//prettier-ignore
-router.post("/", validateCreateUser(), asyncHandler(async (req, res) => {
-  const { username, email } = req.body;
-  if (checkValidationErrors(req)) throw new CustomError(400);
-
-  const user = new User({ username, email });
-  const savedUser = await user.save();
-  res.status(200).json(savedUser);
 }));
 
 //prettier-ignore

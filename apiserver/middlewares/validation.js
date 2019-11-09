@@ -2,7 +2,7 @@ import { body } from "express-validator";
 
 // User validation
 
-export const validateCreateUser = () => {
+export const validateRegister = () => {
   return [
     body("username")
       .trim()
@@ -97,4 +97,9 @@ export const validateUpdateComment = () => {
       .trim()
       .escape()
   ];
+};
+
+// Login validation
+export const validateLogin = () => {
+  return [body("username").exists(), body("password").exists()];
 };

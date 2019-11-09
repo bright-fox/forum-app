@@ -1,5 +1,8 @@
-import CustomError from "../util/CustomError";
+import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
+
+import Refreshtoken from "../models/refreshtoken";
+import CustomError from "../util/CustomError";
 
 // async handler
 export const asyncHandler = fn => (req, res, next) => fn(req, res, next).catch(next);
@@ -19,9 +22,28 @@ export const checkValidationErrors = req => {
 // DOES THIS WORK???
 export const removeDependentDocs = async (model, selector) => {
   const docs = await model.find(selector).exec();
-  docs.forEach(doc => await doc.remove());
+  docs.forEach(async doc => await doc.remove());
 };
 
 export const updateParentField = async (model, id, incOption) => {
   await model.findOneAndUpdate({ _id: id }, { $inc: incOption });
+};
+
+export const generateIdToken = payload => {
+  return jwt.sign(payload, process.env.ID_TOKEN_SECRET, { expiresIn: "5m" });
+};
+
+export const generateRefreshToken = async (payload, userId) => {
+  const token = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+  const refreshToken = new Refreshtoken({ token, user: userId });
+  await refreshToken.save();
+  return token;
+};
+
+// auth middleware utility
+
+export const checkDocOwnership = async (model, docId, userId, fieldName) => {
+  const doc = await model.findById(docId).exec();
+  if (!doc) throw new CustomError(404);
+  if (!doc[fieldName].equals(userId)) throw new CustomError(403);
 };

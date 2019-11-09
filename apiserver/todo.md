@@ -1,4 +1,3 @@
-- add mongoose validation
 - ADD UPVOTE SAVE PRE MIDDLEWARE TO CHECK IF UPVOTE IS OVER 0
 - unique keys with custom messages for express handling to be more compact
 - add mongoose pre and post hooks
@@ -17,3 +16,10 @@ Questions:
 - app.use(express.static('uploads'));
 - app.use(express.static('files'));
   --> for uploaded images to the server?
+
+# GREAT NEW THINGS TO DO TO GUARANTEE SECURITY
+
+- after a user changes the password, remove all the refresh tokens
+- after a user change the username, remove all the refresh tokens
+- ENABLE HTTPS FOR COMMUNICATION!!
+- REMOVE PASSWORDS FROM THE ROUTE RESPONSES

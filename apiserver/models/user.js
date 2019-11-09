@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 import Post from "./post";
 import Comment from "./comment";
@@ -35,8 +36,19 @@ const userSchema = new mongoose.Schema({
   karma: {
     type: Number,
     default: 1
+  },
+  password: {
+    type: String,
+    required: true
   }
-  // TODO: Password is missing
+});
+
+userSchema.pre("save", async function() {
+  console.log("INSIDE SAVE USER MIDDLEWARE");
+  if (this.isModified("password")) {
+    console.log("PASSWORD HAS CHANGED OR CREATED");
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 });
 
 userSchema.post("remove", async function() {

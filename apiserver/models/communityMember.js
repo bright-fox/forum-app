@@ -23,8 +23,7 @@ const communityMemberSchema = new Schema({
     ref: "Community",
     index: true,
     validate: {
-      validator: community_id =>
-        checkExistenceInDatabase(Community, community_id),
+      validator: community_id => checkExistenceInDatabase(Community, community_id),
       message: "The community does not exist"
     }
   }
@@ -32,11 +31,11 @@ const communityMemberSchema = new Schema({
 
 communityMemberSchema.index({ member: 1, community: 1 }, { unique: true });
 
-communityMemberSchema.pre("save", function async() {
+communityMemberSchema.pre("save", async function() {
   await updateParentField(Community, this.community, { members: 1 });
 });
 
-communityMemberSchema.post("remove", function async() {
+communityMemberSchema.post("remove", async function() {
   await updateParentField(Community, this.community, { members: -1 });
 });
 
