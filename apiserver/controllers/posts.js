@@ -63,10 +63,11 @@ router.delete("/:post_id", authenticateIdToken, checkPostOwnership, asyncHandler
 
 //prettier-ignore
 router.post("/:post_id/postvotes", authenticateIdToken, asyncHandler(async (req, res) => {
-  const { vote, user } = req.body;
-  const postVote = new PostVote({ vote, user, post: req.params.post_id });
+  const { id } = req.user;  
+  const { vote } = req.body;
+  const postVote = new PostVote({ vote, user: id, post: req.params.post_id });
 
-  const foundPostVote = await PostVote.findOne({ post: req.params.post_id, user }).exec();
+  const foundPostVote = await PostVote.findOne({ post: req.params.post_id, user: id }).exec();
   if (foundPostVote) await foundPostVote.remove();
   const createdPostVote = await postVote.save();
   res.status(200).json(createdPostVote);
