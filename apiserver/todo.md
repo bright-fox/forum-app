@@ -3,15 +3,13 @@
 # GREAT NEW THINGS TO DO TO GUARANTEE SECURITY
 
 - ENABLE HTTPS FOR COMMUNICATION!!
-- REMOVE PASSWORDS FROM THE ROUTE RESPONSES
 
 # GREAT CHANGES TO INCREASE PERFORMANCE
 
-- the function "checkDocOwnership already makes a DB CALL, so maybe pass it to the req object and do operation on that to avoid multiple unessacery DB CALLS
+- check for uneccessary DB CALLS and remove them
 
 # DEFINITE CHANGES TO MAKE
 
-- user changes password or username --> remove old refresh tokens and give him a new one
 - unescape fields after they were found --> GET community
 
 - limit the response size to a certain amount

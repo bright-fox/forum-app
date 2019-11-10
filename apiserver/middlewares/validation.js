@@ -44,11 +44,7 @@ export const validateUsername = () => {
       .not()
       .isEmpty()
       .trim()
-      .isAlphanumeric(),
-    body("biography")
-      .exists()
-      .escape()
-      .trim()
+      .isAlphanumeric()
   ];
 };
 

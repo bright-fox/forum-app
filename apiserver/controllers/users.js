@@ -54,7 +54,7 @@ router.put("/:user_id/username", authenticateIdToken, checkUserOwnership,
 
   const payload = { username: updatedUser.username, id: updatedUser._id };
   const idToken = generateIdToken(payload);
-  const refreshToken = generateRefreshToken(payload, updatedUser._id);
+  const refreshToken = await generateRefreshToken(payload, updatedUser._id);
 
   res.status(200).json({success: "You succesfully updated your username!", idToken, refreshToken});
 }));
@@ -76,7 +76,7 @@ router.put("/:user_id/password", authenticateIdToken, checkUserOwnership,
 
   const payload = { username: updatedUser.username, id: updatedUser._id };
   const idToken = generateIdToken(payload);
-  const refreshToken = generateRefreshToken(payload, updatedUser._id);
+  const refreshToken = await generateRefreshToken(payload, updatedUser._id);
 
   res.status(200).json({success: "You succesfully updated your password!", idToken, refreshToken});
 }));

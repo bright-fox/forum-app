@@ -22,7 +22,7 @@ router.post("/register", validateRegister(), asyncHandler(async (req, res) => {
     const payload = {id: savedUser._id, username: user.username};
     const idToken = generateIdToken(payload);
     const refreshToken = await generateRefreshToken(payload, savedUser._id);
-    res.status(200).json({user: _.omit(savedUser.toJSON(), "password", "email"), idToken, refreshToken: refreshToken});
+    res.status(200).json({user: _.omit(savedUser.toJSON(), "password", "email"), idToken, refreshToken});
   }));
 
 //prettier-ignore
@@ -30,7 +30,7 @@ router.post("/login", validateLogin(), asyncHandler(async (req, res) => {
     if (checkValidationErrors(req)) throw new CustomError(400);
     const { username, password } = req.body;
   
-    const user = await User.findOne({username}).exec();
+    const user = await User.findOne({username}).select("+password").exec();
     if(!user) throw new CustomError(403);
   
     const passwordValid = await bcrypt.compare(password, user.password);
