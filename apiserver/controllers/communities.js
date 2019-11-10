@@ -18,10 +18,10 @@ router.get("/", asyncHandler(async (req, res) => {
 
 //prettier-ignore
 router.post("/", authenticateIdToken, validateCreateCommunity(), asyncHandler(async (req, res) => {
-  const { name, creator, description } = req.body;
   if (checkValidationErrors(req)) throw new CustomError(400);
-
-  const community = new Community({ name, creator, description });
+  const { name, description } = req.body;
+  const { id } = req.user;
+  const community = new Community({ name, creator: id, description });
   const createdCommunity = await community.save();
   res.status(200).json(createdCommunity);
 }));

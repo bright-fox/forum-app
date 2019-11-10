@@ -23,3 +23,7 @@ Questions:
 - after a user change the username, remove all the refresh tokens
 - ENABLE HTTPS FOR COMMUNICATION!!
 - REMOVE PASSWORDS FROM THE ROUTE RESPONSES
+
+# GREAT CHANGES TO INCREASE PERFORMANCE
+
+- the function "checkDocOwnership already makes a DB CALL, so maybe pass it to the req object and do operation on that to avoid multiple unessacery DB CALLS

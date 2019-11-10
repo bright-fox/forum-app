@@ -3,6 +3,12 @@ import Post from "../models/Post";
 import PostVote from "../models/postVote";
 
 import { validateCreatePost, validateUpdatePost } from "../middlewares/validation";
+import {
+  checkCommunityMembership,
+  authenticateIdToken,
+  checkPostOwnership,
+  checkPostVoteOwnership
+} from "../middlewares/auth";
 import { checkValidationErrors, asyncHandler } from "../util";
 import CustomError from "../util/CustomError";
 
@@ -15,11 +21,11 @@ router.get("/", asyncHandler(async(req, res) => {
 }));
 
 //prettier-ignore
-router.post("/", validateCreatePost(), asyncHandler(async (req, res) => {
+router.post("/", authenticateIdToken, checkCommunityMembership, validateCreatePost(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
-  const { title, content, author, community } = req.body;
-  const post = new Post({ title, content, author, community });
-
+  const { title, content, community } = req.body;
+  const { id } = req.user;
+  const post = new Post({ title, content, community, author: id});
   const createdPost = await post.save();
   res.status(200).json(createdPost);
 }));
@@ -32,7 +38,7 @@ router.get("/:post_id", asyncHandler(async (req, res) => {
 }));
 
 //prettier-ignore
-router.put("/:post_id", validateUpdatePost(), asyncHandler(async (req, res) => {
+router.put("/:post_id", authenticateIdToken, checkPostOwnership, validateUpdatePost(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
 
   const post = await Post.findById(req.params.post_id).exec();
@@ -47,7 +53,7 @@ router.put("/:post_id", validateUpdatePost(), asyncHandler(async (req, res) => {
 }));
 
 //prettier-ignore
-router.delete("/:post_id", asyncHandler(async (req, res) => {
+router.delete("/:post_id", authenticateIdToken, checkPostOwnership, asyncHandler(async (req, res) => {
   const post = await Post.findById(req.params.post_id).exec();
   if (!post) throw new CustomError(404, "No post found to be deleted");
 
@@ -56,7 +62,7 @@ router.delete("/:post_id", asyncHandler(async (req, res) => {
 }));
 
 //prettier-ignore
-router.post("/:post_id/postvotes", asyncHandler(async (req, res) => {
+router.post("/:post_id/postvotes", authenticateIdToken, asyncHandler(async (req, res) => {
   const { vote, user } = req.body;
   const postVote = new PostVote({ vote, user, post: req.params.post_id });
 
@@ -67,7 +73,7 @@ router.post("/:post_id/postvotes", asyncHandler(async (req, res) => {
 }));
 
 //prettier-ignore
-router.delete("/:post_id/postvotes/:postVote_id", asyncHandler(async (req, res) => {
+router.delete("/:post_id/postvotes/:postVote_id", authenticateIdToken, checkPostVoteOwnership, asyncHandler(async (req, res) => {
   const postVote = await PostVote.findById(req.params.postVote_id).exec();
   if (!postVote) throw new CustomError(404, "No vote found to be deleted");
   await postVote.remove();
