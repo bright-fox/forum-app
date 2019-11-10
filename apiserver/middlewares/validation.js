@@ -28,7 +28,16 @@ export const validateRegister = () => {
   ];
 };
 
-export const validateUser = () => {
+export const validateLogin = () => {
+  return [
+    body("username")
+      .exists()
+      .isAlphanumeric(),
+    body("password").exists()
+  ];
+};
+
+export const validateUsername = () => {
   return [
     body("username")
       .exists()
@@ -36,6 +45,15 @@ export const validateUser = () => {
       .isEmpty()
       .trim()
       .isAlphanumeric(),
+    body("biography")
+      .exists()
+      .escape()
+      .trim()
+  ];
+};
+
+export const validateUser = () => {
+  return [
     body("biography")
       .exists()
       .escape()
@@ -58,25 +76,18 @@ export const validatePassword = () => {
 
 // Post validation
 
-export const validateCreatePost = () => {
+export const validatePost = () => {
   return [
     body("title")
+      .exists()
+      .not()
+      .isEmpty()
       .trim()
       .escape(),
     body("content")
-      .trim()
-      .escape()
-  ];
-};
-
-export const validateUpdatePost = () => {
-  return [
-    body("title")
-      .optional()
-      .trim()
-      .escape(),
-    body("content")
-      .optional()
+      .exists()
+      .not()
+      .isEmpty()
       .trim()
       .escape()
   ];
@@ -84,25 +95,16 @@ export const validateUpdatePost = () => {
 
 // Community validation
 
-export const validateCreateCommunity = () => {
+export const validateCommunity = () => {
   return [
     body("name")
-      .trim()
-      .isAlphanumeric(),
+      .exists()
+      .not()
+      .isEmpty()
+      .isAlphanumeric()
+      .trim(),
     body("description")
-      .trim()
-      .escape()
-  ];
-};
-
-export const validateUpdateCommunity = () => {
-  return [
-    body("name")
-      .optional()
-      .trim()
-      .isAlphanumeric(),
-    body("description")
-      .optional()
+      .exists()
       .trim()
       .escape()
   ];
@@ -110,29 +112,13 @@ export const validateUpdateCommunity = () => {
 
 // Comment validation
 
-export const validateCreateComment = () => {
+export const validateComment = () => {
   return [
     body("content")
-      .trim()
-      .escape()
-  ];
-};
-
-export const validateUpdateComment = () => {
-  return [
-    body("content")
-      .optional()
-      .trim()
-      .escape()
-  ];
-};
-
-// Login validation
-export const validateLogin = () => {
-  return [
-    body("username")
       .exists()
-      .isAlphanumeric(),
-    body("password").exists()
+      .not()
+      .isEmpty()
+      .trim()
+      .escape()
   ];
 };

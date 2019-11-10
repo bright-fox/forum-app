@@ -42,8 +42,9 @@ export const generateRefreshToken = async (payload, userId) => {
 
 // auth middleware utility
 
-export const checkDocOwnership = async (model, docId, userId, fieldName) => {
+export const checkDocOwnership = async (req, model, docId, userId, fieldName) => {
   const doc = await model.findById(docId).exec();
   if (!doc) throw new CustomError(404);
   if (!doc[fieldName].equals(userId)) throw new CustomError(403);
+  req.doc = doc;
 };

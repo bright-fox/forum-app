@@ -2,7 +2,7 @@ import express from "express";
 import Post from "../models/Post";
 import PostVote from "../models/postVote";
 
-import { validateCreatePost, validateUpdatePost } from "../middlewares/validation";
+import { validatePost } from "../middlewares/validation";
 import {
   checkCommunityMembership,
   authenticateIdToken,
@@ -17,11 +17,12 @@ const router = express.Router();
 //prettier-ignore
 router.get("/", asyncHandler(async(req, res) => {
   const posts = await Post.find({}).sort({ createdAt: -1 }).lean().exec();
+  if(posts.length <= 0) throw new CustomError(404, "There are no posts yet!");
   res.status(200).json(posts);
 }));
 
 //prettier-ignore
-router.post("/", authenticateIdToken, checkCommunityMembership, validateCreatePost(), asyncHandler(async (req, res) => {
+router.post("/", authenticateIdToken, checkCommunityMembership, validatePost(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
   const { title, content, community } = req.body;
   const { id } = req.user;
@@ -38,15 +39,15 @@ router.get("/:post_id", asyncHandler(async (req, res) => {
 }));
 
 //prettier-ignore
-router.put("/:post_id", authenticateIdToken, checkPostOwnership, validateUpdatePost(), asyncHandler(async (req, res) => {
+router.put("/:post_id", authenticateIdToken, checkPostOwnership, validatePost(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
 
   const post = await Post.findById(req.params.post_id).exec();
   if (!post) throw new CustomError(404, "No post found to be updated");
   const { title, content } = req.body;
   
-  post.title = title || post.title;
-  post.content = content || post.content;
+  post.title = title;
+  post.content = content;
 
   const updatedPost = await post.save();
   res.status(200).json(updatedPost);

@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
     index: true,
     unique: true,
     trim: true,
+    select: false,
     required: [true, "You need to enter an email"]
   },
   biography: {
@@ -44,7 +45,8 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    select: false
   }
 });
 

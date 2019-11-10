@@ -22,12 +22,12 @@ export const authenticateIdToken = (req, res, next) => {
 };
 
 export const checkCommunityOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(Community, req.params.community_id, req.user.id, "creator");
+  await checkDocOwnership(req, Community, req.params.community_id, req.user.id, "creator");
   next();
 });
 
 export const checkCommunityMemberOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(CommunityMember, req.params.communitymember_id, req.user.id, "member");
+  await checkDocOwnership(req, CommunityMember, req.params.communitymember_id, req.user.id, "member");
   next();
 });
 
@@ -38,26 +38,26 @@ export const checkCommunityMembership = asyncHandler(async (req, res, next) => {
 });
 
 export const checkPostOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(Post, req.params.post_id, req.user.id, "author");
+  await checkDocOwnership(req, Post, req.params.post_id, req.user.id, "author");
   next();
 });
 
 export const checkPostVoteOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(PostVote, req.params.postVote_id, req.user.id, "user");
+  await checkDocOwnership(req, PostVote, req.params.postVote_id, req.user.id, "user");
   next();
 });
 
 export const checkCommentOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(Comment, req.params.comment_id, req.user.id, "author");
+  await checkDocOwnership(req, Comment, req.params.comment_id, req.user.id, "author");
   next();
 });
 
 export const checkCommentVoteOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(CommentVote, req.params.commentVote_id, req.user.id, "user");
+  await checkDocOwnership(req, CommentVote, req.params.commentVote_id, req.user.id, "user");
   next();
 });
 
 export const checkUserOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(User, req.params.user_id, req.user.id, "_id");
+  await checkDocOwnership(req, User, req.params.user_id, req.user.id, "_id");
   next();
 });

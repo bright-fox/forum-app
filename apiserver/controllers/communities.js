@@ -3,7 +3,7 @@ import Community from "../models/community";
 import CommunityMember from "../models/communityMember";
 import Post from "../models/post";
 
-import { validateCreateCommunity, validateUpdateCommunity } from "../middlewares/validation";
+import { validateCommunity } from "../middlewares/validation";
 import { authenticateIdToken, checkCommunityOwnership, checkCommunityMemberOwnership } from "../middlewares/auth";
 import { checkValidationErrors, asyncHandler } from "../util";
 import CustomError from "../util/CustomError";
@@ -12,12 +12,13 @@ const router = express.Router();
 
 //prettier-ignore
 router.get("/", asyncHandler(async (req, res) => {
-  const communities = await Community.find({}).lean().exec();
+  const communities = await Community.find({}).select("-__v").lean().exec();
+  if(communities.length <= 0) throw new CustomError(404, "There are no communities yet!");
   res.status(200).json(communities);
 }));
 
 //prettier-ignore
-router.post("/", authenticateIdToken, validateCreateCommunity(), asyncHandler(async (req, res) => {
+router.post("/", authenticateIdToken, validateCommunity(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
   const { name, description } = req.body;
   const { id } = req.user;
@@ -34,7 +35,7 @@ router.get("/:community_id", asyncHandler(async (req, res) => {
 }));
 
 //prettier-ignore
-router.put("/:community_id", authenticateIdToken, checkCommunityOwnership, validateUpdateCommunity(), asyncHandler(async (req, res) => {
+router.put("/:community_id", authenticateIdToken, checkCommunityOwnership, validateCommunity(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
 
   const community = await Community.findById(req.params.community_id).exec();
@@ -44,8 +45,8 @@ router.put("/:community_id", authenticateIdToken, checkCommunityOwnership, valid
   community.name = name || community.name;
   community.description = description || community.description;
 
-  const updatedCommunity = await community.save();
-  res.status(200).json(updatedCommunity);
+  await community.save();
+  res.status(200).json({success: "You successfully updated your community"});
 }));
 
 //prettier-ignore

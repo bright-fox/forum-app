@@ -2,7 +2,7 @@ import express from "express";
 
 import Comment from "../models/comment";
 import CommentVote from "../models/commentVote";
-import { validateCreateComment, validateUpdateComment } from "../middlewares/validation";
+import { validateComment } from "../middlewares/validation";
 import { checkValidationErrors, asyncHandler } from "../util";
 import { authenticateIdToken, checkCommentOwnership, checkCommentVoteOwnership } from "../middlewares/auth";
 import CustomError from "../util/CustomError";
@@ -17,7 +17,7 @@ router.get("/", asyncHandler(async (req, res) => {
 }));
 
 //prettier-ignore
-router.post("/", authenticateIdToken, validateCreateComment(), asyncHandler(async (req, res) => {
+router.post("/", authenticateIdToken, validateComment(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw newCustomError(400);
   const { id } = req.user;
   const { content } = req.body;
@@ -29,7 +29,7 @@ router.post("/", authenticateIdToken, validateCreateComment(), asyncHandler(asyn
 
 // TODO: findOneAndUpdate is better so it does not trigger save
 //prettier-ignore
-router.put("/:comment_id", authenticateIdToken, checkCommentOwnership, validateUpdateComment(), asyncHandler(async (req, res) => {
+router.put("/:comment_id", authenticateIdToken, checkCommentOwnership, validateComment(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw newCustomError(400);
 
   const updatedComment = await Comment.findOneAndUpdate({ _id: req.params.comment_id},
