@@ -5,26 +5,54 @@ import { body } from "express-validator";
 export const validateRegister = () => {
   return [
     body("username")
+      .exists()
+      .not()
+      .isEmpty()
       .trim()
       .isAlphanumeric(),
     body("email")
-      .trim()
+      .exists()
+      .not()
+      .isEmpty()
       .isEmail()
-      .normalizeEmail()
+      .trim()
+      .normalizeEmail(),
+    body("password")
+      .exists()
+      .not()
+      .isEmpty(),
+    body("biography")
+      .exists()
+      .escape()
+      .trim()
   ];
 };
 
-export const validateUpdateUser = () => {
+export const validateUser = () => {
   return [
     body("username")
-      .optional()
+      .exists()
+      .not()
+      .isEmpty()
       .trim()
       .isAlphanumeric(),
-    body("email")
-      .optional()
+    body("biography")
+      .exists()
+      .escape()
       .trim()
-      .isEmail()
-      .normalizeEmail()
+  ];
+};
+
+export const validatePassword = () => {
+  return [
+    body("oldPassword")
+      .exists()
+      .not()
+      .isEmpty(),
+    body("newPassword")
+      .exists()
+      .not()
+      .isEmpty()
   ];
 };
 
@@ -101,5 +129,10 @@ export const validateUpdateComment = () => {
 
 // Login validation
 export const validateLogin = () => {
-  return [body("username").exists(), body("password").exists()];
+  return [
+    body("username")
+      .exists()
+      .isAlphanumeric(),
+    body("password").exists()
+  ];
 };

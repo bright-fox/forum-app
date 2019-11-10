@@ -14,8 +14,8 @@ const router = express.Router();
 //prettier-ignore
 router.post("/register", validateRegister(), asyncHandler(async (req, res) => {
     if (checkValidationErrors(req)) throw new CustomError(400);
-    const { username, email, password } = req.body;
-    const user = new User({ username, email, password });
+    const { username, email, password, biography } = req.body;
+    const user = new User({ username, email, password, biography });
     const savedUser = await user.save();
 
     const payload = {id: savedUser._id, username: user.username};

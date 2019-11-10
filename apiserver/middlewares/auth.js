@@ -7,6 +7,7 @@ import CommunityMember from "../models/communityMember";
 import PostVote from "../models/postVote";
 import Comment from "../models/comment";
 import CommentVote from "../models/commentVote";
+import User from "../models/user";
 
 export const authenticateIdToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -53,5 +54,10 @@ export const checkCommentOwnership = asyncHandler(async (req, res, next) => {
 
 export const checkCommentVoteOwnership = asyncHandler(async (req, res, next) => {
   await checkDocOwnership(CommentVote, req.params.commentVote_id, req.user.id, "user");
+  next();
+});
+
+export const checkUserOwnership = asyncHandler(async (req, res, next) => {
+  await checkDocOwnership(User, req.params.user_id, req.user.id, "_id");
   next();
 });

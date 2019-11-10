@@ -8,7 +8,8 @@ import Post from "../models/post";
 import Comment from "../models/comment";
 import CommunityMember from "../models/communityMember";
 
-import { validateUpdateUser } from "../middlewares/validation";
+import { validateUser, validatePassword } from "../middlewares/validation";
+import { authenticateIdToken, checkUserOwnership } from "../middlewares/auth";
 import { checkValidationErrors, asyncHandler } from "../util";
 import CustomError from "../util/CustomError";
 
@@ -17,36 +18,53 @@ const router = express.Router();
 // TODO: REMOVE PASSWORDS FROM RESPONSE with .select("-password")
 
 //prettier-ignore
-router.get("/", asyncHandler(async (req, res) => {
-  const users = await User.find({}).lean().exec();
+router.get("/", asyncHandler(async (req, res) => { // remove that route for production
+  const users = await User.find({}).select("-_id -__v -email -password").lean().exec();
   res.status(200).json(users);
   })
 );
 
 //prettier-ignore
 router.get("/:user_id", asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.user_id).lean().exec();
+  const user = await User.findById(req.params.user_id).select("-_id -__v -email -password").lean().exec();
   if (!user) throw new CustomError(404, "No user found");
   res.status(200).json(user);
 }));
 
 //prettier-ignore
-router.put("/:user_id", validateUpdateUser(), asyncHandler(async (req, res) => {
+router.put("/:user_id", authenticateIdToken, checkUserOwnership, 
+  validateUser(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
 
-  const user = await User.findById(req.params.user_id).exec();
-  const { username, email } = req.body;
+  const user = await User.findById(req.user.id).exec();
+  const { username, biography } = req.body;
   if (!user) throw new CustomError(404, "No user found to be updated");
 
-  user.username = username || user.username;
-  user.email = email || user.email;
-
-  const updatedUser = await user.save();
-  res.status(200).json(updatedUser);
+  user.username = username;
+  user.biography = biography;
+  await user.save();
+  res.status(200).json({success: "You succesfully updated your profile!"});
 }));
 
 //prettier-ignore
-router.delete("/:user_id", asyncHandler(async (req, res) => {
+router.put("/:user_id/password", authenticateIdToken, checkUserOwnership, 
+  validatePassword(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
+
+  const user = await User.findById(req.user.id).exec();
+  if (!user) throw new CustomError(404, "No user found to be updated");
+
+  const { oldPassword, newPassword } = req.body;
+  const passwordValid = await bcrypt.compare(oldPassword, user.password);
+  if(!passwordValid) throw new CustomError(400, "Wrong password");
+
+  user.password = newPassword;
+  await user.save();
+  res.status(200).json({success: "You succesfully updated your password!"});
+}));
+
+//prettier-ignore
+router.delete("/:user_id", authenticateIdToken, checkUserOwnership, asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.user_id).exec();
   if (!user) throw new CustomError(404, "No user found to be deleted");
 
@@ -55,7 +73,14 @@ router.delete("/:user_id", asyncHandler(async (req, res) => {
 }));
 
 //prettier-ignore
-router.get("/:user_id/home", asyncHandler(async (req, res) => {
+router.get("/:user_id/private", authenticateIdToken, checkUserOwnership, asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.user_id).select("-password").lean().exec();
+  if (!user) throw new CustomError(404, "No user found");
+  res.status(200).json(user);
+}));
+
+//prettier-ignore
+router.get("/:user_id/home", authenticateIdToken, checkUserOwnership, asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.user_id).exec();
   if (!user) throw new CustomError(404, "No user found");
 

@@ -6,6 +6,7 @@ import Comment from "./comment";
 import Community from "./community";
 import PostVote from "./postVote";
 import CommentVote from "./commentVote";
+import Refreshtoken from "./refreshtoken";
 import CommunityMember from "./CommunityMember";
 
 import { checkExistenceInDatabase, removeDependentDocs } from "../util";
@@ -29,6 +30,10 @@ const userSchema = new mongoose.Schema({
     trim: true,
     required: [true, "You need to enter an email"]
   },
+  biography: {
+    type: String,
+    trim: true
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -44,14 +49,17 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre("save", async function() {
-  console.log("INSIDE SAVE USER MIDDLEWARE");
   if (this.isModified("password")) {
-    console.log("PASSWORD HAS CHANGED OR CREATED");
     this.password = await bcrypt.hash(this.password, 10);
+    await removeDependentDocs(Refreshtoken, { user: this._id });
+  }
+  if (this.isModified("username")) {
+    await removeDependentDocs(Refreshtoken, { user: this._id });
   }
 });
 
 userSchema.post("remove", async function() {
+  await removeDependentDocs(Refreshtoken, { user: this._id });
   await removeDependentDocs(CommentVote, { user: this._id });
   await removeDependentDocs(PostVote, { user: this._id });
   await removeDependentDocs(Comment, { author: this._id });
