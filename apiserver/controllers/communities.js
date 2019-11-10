@@ -37,24 +37,19 @@ router.get("/:community_id", asyncHandler(async (req, res) => {
 //prettier-ignore
 router.put("/:community_id", authenticateIdToken, checkCommunityOwnership, validateCommunity(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
-
-  const community = await Community.findById(req.params.community_id).exec();
-  if (!community) throw new CustomError(404, "No community found to be updated");
+  const { doc } = req;
   const { name, description } = req.body;
 
-  community.name = name || community.name;
-  community.description = description || community.description;
+  doc.name = name;
+  doc.description = description;
 
-  await community.save();
+  await doc.save();
   res.status(200).json({success: "You successfully updated your community"});
 }));
 
 //prettier-ignore
 router.delete("/:community_id", authenticateIdToken, checkCommunityOwnership, asyncHandler(async (req, res) => {
-  const community = await Community.findById(req.params.community_id).exec();
-  if (!community) throw new CustomError(404, "No community found to be deleted");
-
-  await community.remove();
+  await req.doc.remove();
   res.status(200).json(req.params.community_id);
 }));
 
@@ -77,10 +72,7 @@ router.post("/:community_id/communitymember", authenticateIdToken, asyncHandler(
 //prettier-ignore
 router.delete("/:community_id/communitymember/:communitymember_id", authenticateIdToken, 
   checkCommunityMemberOwnership, asyncHandler(async (req, res) => {
-  const communityMember = await CommunityMember.findById(req.params.communitymember_id).exec();
-  if (!communityMember) throw new CustomError(404, "No Communitymember found to be deleted");
-
-  await communityMember.remove();
+  await req.doc.remove();
   res.status(200).json(req.params.communitymember_id);
 }));
 
