@@ -42,6 +42,7 @@ commentSchema.index({ author: 1, createdAt: -1 });
 
 commentSchema.pre("save", async function() {
   if (this.isNew) updateParentField(Post, this.post, "comments", 1);
+  if (this.upvotes < 0) this.upvotes = 0;
 });
 
 commentSchema.post("deleteOne", async function() {

@@ -53,6 +53,10 @@ const postSchema = new Schema({
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ community: 1, createdAt: -1 });
 
+postSchema.pre("save", async function() {
+  if (this.upvotes < 0) this.upvotes = 0;
+});
+
 postSchema.post("remove", async function() {
   console.log("Inside Post remove middleware");
   await removeDependentDocs(Comment, { post: this._id });
