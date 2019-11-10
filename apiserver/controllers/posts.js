@@ -41,44 +41,38 @@ router.get("/:post_id", asyncHandler(async (req, res) => {
 //prettier-ignore
 router.put("/:post_id", authenticateIdToken, checkPostOwnership, validatePost(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
-
-  const post = await Post.findById(req.params.post_id).exec();
-  if (!post) throw new CustomError(404, "No post found to be updated");
+  const { doc } = req;
   const { title, content } = req.body;
   
-  post.title = title;
-  post.content = content;
+  doc.title = title;
+  doc.content = content;
 
-  const updatedPost = await post.save();
-  res.status(200).json(updatedPost);
+  await doc.save();
+  res.status(200).json({ success: "You successfully updated your post" });
 }));
 
 //prettier-ignore
 router.delete("/:post_id", authenticateIdToken, checkPostOwnership, asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.post_id).exec();
-  if (!post) throw new CustomError(404, "No post found to be deleted");
-
-  await post.remove();
+  await req.doc.remove();
   res.status(200).json(req.params.post_id);
 }));
 
 //prettier-ignore
 router.post("/:post_id/postvotes", authenticateIdToken, asyncHandler(async (req, res) => {
-  const { id } = req.user;  
   const { vote } = req.body;
-  const postVote = new PostVote({ vote, user: id, post: req.params.post_id });
+  const postVote = new PostVote({ vote, user: req.user.id, post: req.params.post_id });
 
-  const foundPostVote = await PostVote.findOne({ post: req.params.post_id, user: id }).exec();
+  // check for existing vote of user and remove it
+  const foundPostVote = await PostVote.findOne({ post: req.params.post_id, user: req.user.id }).exec();
   if (foundPostVote) await foundPostVote.remove();
-  const createdPostVote = await postVote.save();
-  res.status(200).json(createdPostVote);
+
+  await postVote.save();
+  res.status(200).json({success: "You successfully voted for post"});
 }));
 
 //prettier-ignore
 router.delete("/:post_id/postvotes/:postVote_id", authenticateIdToken, checkPostVoteOwnership, asyncHandler(async (req, res) => {
-  const postVote = await PostVote.findById(req.params.postVote_id).exec();
-  if (!postVote) throw new CustomError(404, "No vote found to be deleted");
-  await postVote.remove();
+  await req.doc.remove();
   res.status(200).json(req.params.postVote_id);
 }));
 
