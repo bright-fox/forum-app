@@ -67,7 +67,7 @@ router.post("/:post_id/postvotes", authenticateIdToken, asyncHandler(async (req,
   if (foundPostVote) await foundPostVote.remove();
 
   await postVote.save();
-  res.status(200).json({success: "You successfully voted for post"});
+  res.status(200).json({success: "You successfully voted for this post"});
 }));
 
 //prettier-ignore
