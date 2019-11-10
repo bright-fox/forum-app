@@ -41,14 +41,14 @@ commentSchema.index({ post: 1, createdAt: -1 });
 commentSchema.index({ author: 1, createdAt: -1 });
 
 commentSchema.pre("save", async function() {
-  updateParentField(Post, this.post, { comments: 1 });
+  if (this.isNew) updateParentField(Post, this.post, "comments", 1);
 });
 
 commentSchema.post("deleteOne", async function() {
   console.log("DeleteOne Post Middleware");
   const { _id, post } = this.getQuery();
 
-  await updateParentField(Post, this.post, { comments: -1 });
+  await updateParentField(Post, this.post, "comments", -1);
   await CommentVote.deleteMany({ comment: this._id }).exec();
 });
 

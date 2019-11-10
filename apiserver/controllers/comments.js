@@ -18,7 +18,7 @@ router.get("/", asyncHandler(async (req, res) => {
 
 //prettier-ignore
 router.post("/", authenticateIdToken, validateComment(), asyncHandler(async (req, res) => {
-  if (checkValidationErrors(req)) throw newCustomError(400);
+  if (checkValidationErrors(req)) throw new CustomError(400);
   const { id } = req.user;
   const { content } = req.body;
   const comment = new Comment({ content, author: id, post: req.params.post_id });

@@ -25,8 +25,11 @@ export const removeDependentDocs = async (model, selector) => {
   docs.forEach(async doc => await doc.remove());
 };
 
-export const updateParentField = async (model, id, incOption) => {
-  await model.findOneAndUpdate({ _id: id }, { $inc: incOption });
+export const updateParentField = async (model, id, incField, incValue) => {
+  const doc = await model.findById(id).exec();
+  if (!doc) throw new CustomError(404);
+  doc[incField] += incValue;
+  await doc.save();
 };
 
 export const generateIdToken = payload => {

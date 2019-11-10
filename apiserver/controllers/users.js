@@ -104,7 +104,6 @@ router.get("/:user_id/home", authenticateIdToken, checkUserOwnership, asyncHandl
 //prettier-ignore
 router.get("/:user_id/posts", asyncHandler(async (req, res) => {
   const posts = await Post.find({ author: req.params.user_id }).lean().exec();
-  console.log(posts);
   if (posts.length <= 0) throw new CustomError(404, "You did not post any posts!");
   res.status(200).json(posts);
 }));

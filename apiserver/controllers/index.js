@@ -31,7 +31,7 @@ router.post("/login", validateLogin(), asyncHandler(async (req, res) => {
     const { username, password } = req.body;
   
     const user = await User.findOne({username}).select("+password").exec();
-    if(!user) throw new CustomError(403);
+    if(!user) throw new CustomError(404);
   
     const passwordValid = await bcrypt.compare(password, user.password);
     if(!passwordValid) throw new CustomError(403);
