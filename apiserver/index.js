@@ -22,6 +22,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(expressValidator());
 
+// Log the incoming requests
+app.use((req, res, next) => {
+  console.log(`HTTP ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 // ROUTES
 app.use("/", indexRoutes);
 app.use("/users", userRoutes);
