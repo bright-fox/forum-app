@@ -2,23 +2,28 @@ import express from "express";
 import Post from "../models/Post";
 import PostVote from "../models/postVote";
 
-import { validatePost } from "../middlewares/validation";
+import { validatePost, validatePage } from "../middlewares/validation";
 import {
   checkCommunityMembership,
   authenticateIdToken,
   checkPostOwnership,
   checkPostVoteOwnership
 } from "../middlewares/auth";
-import { checkValidationErrors, asyncHandler } from "../util";
+import { checkValidationErrors, asyncHandler, checkPageUnderMax } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
 
 //prettier-ignore
-router.get("/", asyncHandler(async(req, res) => {
-  const posts = await Post.find({}).sort({ createdAt: -1 }).lean().exec();
-  if(posts.length <= 0) throw new CustomError(404, "There are no posts yet!");
-  res.status(200).json(posts);
+router.get("/page/:p", validatePage(), asyncHandler(async(req, res, next) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
+  const limit = 30;
+  const maxPage = await checkPageUnderMax(Post, {}, limit, req.params.p);
+
+  const posts = await Post.find({}).sort({ createdAt: -1 }).skip((req.params.p * limit) - limit)
+    .limit(limit).lean().exec();
+  if (posts.length <= 0) throw new CustomError(404, "There are no posts!");
+  res.status(200).json({posts, currentPage: req.params.p, maxPage});
 }));
 
 //prettier-ignore
@@ -33,6 +38,7 @@ router.post("/", authenticateIdToken, checkCommunityMembership, validatePost(), 
 
 //prettier-ignore
 router.get("/:post_id", asyncHandler(async (req, res) => {
+  console.log("this is the specific post");
   const post = await Post.findById(req.params.post_id).lean().exec();
   if (!post) throw new CustomError(404, "No posts found");
   res.status(200).json(post);

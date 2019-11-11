@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
 // User validation
 
@@ -116,5 +116,17 @@ export const validateComment = () => {
       .isEmpty()
       .trim()
       .escape()
+  ];
+};
+
+// validate page
+export const validatePage = () => {
+  return [
+    param("p")
+      .isNumeric()
+      .customSanitizer(v => {
+        if (v <= 0) return 1;
+        return v;
+      })
   ];
 };

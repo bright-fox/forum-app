@@ -9,19 +9,12 @@ import Comment from "../models/comment";
 import CommunityMember from "../models/communityMember";
 
 import { generateIdToken, generateRefreshToken } from "../util";
-import { validateUser, validateUsername, validatePassword } from "../middlewares/validation";
+import { validateUser, validateUsername, validatePassword, validatePage } from "../middlewares/validation";
 import { authenticateIdToken, checkUserOwnership } from "../middlewares/auth";
-import { checkValidationErrors, asyncHandler } from "../util";
+import { checkValidationErrors, asyncHandler, checkPageUnderMax } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
-
-//prettier-ignore
-router.get("/", asyncHandler(async (req, res) => { // remove that route for production
-  const users = await User.find({}).lean().exec();
-  res.status(200).json(users);
-  })
-);
 
 //prettier-ignore
 router.get("/:user_id", asyncHandler(async (req, res) => {
@@ -95,33 +88,49 @@ router.get("/:user_id/private", authenticateIdToken, checkUserOwnership, asyncHa
 }));
 
 //prettier-ignore
-router.get("/:user_id/home", authenticateIdToken, checkUserOwnership, asyncHandler(async (req, res) => {
-  const posts = await Post.find({ community: { $in: req.doc.communities }}).lean().exec();
-  if (posts.length <= 0) throw new CustomError(404, "You did not join any communities!");
-  res.status(200).json(posts);
+router.get("/:user_id/home/page/:p", authenticateIdToken, checkUserOwnership,
+  validatePage(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
+  const limit = 30;
+  const maxPage = await checkPageUnderMax(Post, { community: { $in: req.doc.communities }}, limit, req.params.p);
+  const posts = await Post.find({ community: { $in: req.doc.communities }}).skip((req.params.p * limit) - limit)
+    .limit(limit).lean().exec();
+  if (posts.length <= 0) throw new CustomError(404, "You did not join any communities to see their posts!");
+  res.status(200).json({posts, maxPage, currentPage: req.params.p});
 }));
 
 //prettier-ignore
-router.get("/:user_id/posts", asyncHandler(async (req, res) => {
-  const posts = await Post.find({ author: req.params.user_id }).lean().exec();
-  if (posts.length <= 0) throw new CustomError(404, "You did not post any posts!");
-  res.status(200).json(posts);
+router.get("/:user_id/posts/page/:p", validatePage(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
+  const limit = 10;
+  const maxPage = await checkPageUnderMax(Post, { author: req.params.user_id }, limit, req.params.p);
+  const posts = await Post.find({ author: req.params.user_id }).skip((req.params.p * limit) - limit)
+  .limit(limit).lean().exec();
+  if (posts.length <= 0) throw new CustomError(404, "You did not write any posts!");
+  res.status(200).json({posts, maxPage, currentPage: req.params.p});
 }));
 
 //prettier-ignore
-router.get("/:user_id/comments", asyncHandler(async(req, res) => {
-  const comments = await Comment.find({ author: req.params.user_id }).lean().exec();
+router.get("/:user_id/comments/page/:p", validatePage(), asyncHandler(async(req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
+  const limit = 10;
+  const maxPage = await checkPageUnderMax(Comment, { author: req.params.user_id }, limit, req.params.p);
+  const comments = await Comment.find({ author: req.params.user_id }).skip((req.params.p * limit) - limit)
+  .limit(limit).lean().exec();
   if (comments.length <= 0) throw new CustomError(404, "You did not write any comments!");
-  res.status(200).json(comments);
+  res.status(200).json({comments, maxPage, currentPage: req.params.p});
 }));
 
 //prettier-ignore
-router.get("/:user_id/communities", asyncHandler(async (req, res) => {
+router.get("/:user_id/communities/page/:p", validatePage(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
+  const limit = 10;
+  const maxPage = await checkPageUnderMax(CommunityMember, { member: req.params.user_id }, limit, req.params.p);
   const communityMembers = await CommunityMember.find({ member: req.params.user_id }).populate("community")
-    .lean().exec();
-  if (communityMembers.length <= 0) throw new CustomError(404, "You did not join any communitites");
+  .skip((req.params.p * limit) - limit).limit(limit).lean().exec();
+  if (communityMembers.length <= 0) throw new CustomError(404, "You did not join any communitites!");
   const communities = communityMembers.map(communityMember => communityMember.community);
-  res.status(200).json(communities);
+  res.status(200).json({communities, currentPage: req.params.p, maxPage});
 }));
 
 export default router;

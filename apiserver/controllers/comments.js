@@ -2,7 +2,7 @@ import express from "express";
 
 import Comment from "../models/comment";
 import CommentVote from "../models/commentVote";
-import { validateComment } from "../middlewares/validation";
+import { validateComment, validatePage } from "../middlewares/validation";
 import { checkValidationErrors, asyncHandler } from "../util";
 import { authenticateIdToken, checkCommentOwnership, checkCommentVoteOwnership } from "../middlewares/auth";
 import CustomError from "../util/CustomError";
@@ -10,10 +10,14 @@ import CustomError from "../util/CustomError";
 const router = express.Router({ mergeParams: true });
 
 //prettier-ignore
-router.get("/", asyncHandler(async (req, res) => {
-  const comments = await Comment.find({ post: req.params.post_id }).lean().exec();
+router.get("/page/:p", validatePage(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
+  const limit = 30;
+  const maxPage = await checkPageUnderMax(Comment, { post: req.params.post_id }, limit, req.params.p);
+  const comments = await Comment.find({ post: req.params.post_id }).skip((req.params.p * limit) - limit).limit(limit)
+    .lean().exec();
   if (comments.length <= 0) throw newCustomError(404, "No comments found");
-  res.status(200).json(comments);
+  res.status(200).json({comments, currentPage: req.params.p, maxPage});
 }));
 
 //prettier-ignore

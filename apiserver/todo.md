@@ -12,12 +12,10 @@
 
 - unescape fields after they were found --> GET community
 
-- limit the response size to a certain amount
-- allow paging with the limit of size and skipping
-
 # POSSIBLE CHANGES
 
 - add success property to each response for integrity of the responses
+- clean up error handling and status codes
 
 # Questions:
 

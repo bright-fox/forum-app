@@ -3,7 +3,7 @@ import Community from "../models/community";
 import CommunityMember from "../models/communityMember";
 import Post from "../models/post";
 
-import { validateCommunity } from "../middlewares/validation";
+import { validateCommunity, validatePage } from "../middlewares/validation";
 import { authenticateIdToken, checkCommunityOwnership, checkCommunityMemberOwnership } from "../middlewares/auth";
 import { checkValidationErrors, asyncHandler } from "../util";
 import CustomError from "../util/CustomError";
@@ -11,18 +11,22 @@ import CustomError from "../util/CustomError";
 const router = express.Router();
 
 //prettier-ignore
-router.get("/", asyncHandler(async (req, res) => {
-  const communities = await Community.find({}).select("-__v").lean().exec();
+router.get("/page/:p", validatePage(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
+  const limit = 20;
+  const maxPage = await checkPageUnderMax(Community, {}, limit, req.params.p);
+
+  const communities = await Community.find({}).skip((req.params.p * limit) - limit)
+  .limit(limit).lean().exec();
   if(communities.length <= 0) throw new CustomError(404, "There are no communities yet!");
-  res.status(200).json(communities);
+  res.status(200).json({communities, currentPage: req.params.p, maxPage});
 }));
 
 //prettier-ignore
 router.post("/", authenticateIdToken, validateCommunity(), asyncHandler(async (req, res) => {
   if (checkValidationErrors(req)) throw new CustomError(400);
   const { name, description } = req.body;
-  const { id } = req.user;
-  const community = new Community({ name, creator: id, description });
+  const community = new Community({ name, creator: req.user.id, description });
   const createdCommunity = await community.save();
   res.status(200).json(createdCommunity);
 }));
@@ -54,10 +58,15 @@ router.delete("/:community_id", authenticateIdToken, checkCommunityOwnership, as
 }));
 
 //prettier-ignore
-router.get("/:community_id/posts", asyncHandler(async (req, res) => {
-  const posts = await Post.find({ community: req.params.community_id }).lean().exec();
+router.get("/:community_id/posts/page/:p", validatePage(), asyncHandler(async (req, res) => {
+  if (checkValidationErrors(req)) throw new CustomError(400);
+  const limit = 30;
+  const maxPage = await checkPageUnderMax(Post, { community: req.params.community_id }, limit, req.params.p);
+
+  const posts = await Post.find({ community: req.params.community_id }).skip((req.params.p * limit) - limit)
+  .limit(limit).lean().exec();
   if (posts.length <= 0) throw new CustomError(404, "No posts for this community found");
-  res.status(200).json(posts);
+  res.status(200).json({posts, currentPage: req.params.p, maxPage});
 }));
 
 //prettier-ignore
