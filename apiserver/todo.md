@@ -15,8 +15,6 @@
 - limit the response size to a certain amount
 - allow paging with the limit of size and skipping
 
-- ADD UPVOTE SAVE PRE MIDDLEWARE TO CHECK IF UPVOTE IS OVER 0
-
 # POSSIBLE CHANGES
 
 - add success property to each response for integrity of the responses
@@ -28,3 +26,7 @@
 - app.use(express.static('uploads'));
 - app.use(express.static('files'));
   --> for uploaded images to the server?
+
+  # BUGS
+
+  - When a post has 1 postvote and you try to downvote it again, it will delete the upvote and result in an error

@@ -29,6 +29,7 @@ export const updateParentField = async (model, id, incField, incValue) => {
   const doc = await model.findById(id).exec();
   if (!doc) throw new CustomError(404);
   doc[incField] += incValue;
+  if (doc[incField] < 0) throw new CustomError(400, "IT IS UNDER 0");
   await doc.save();
 };
 
