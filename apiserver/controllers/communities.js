@@ -28,7 +28,7 @@ router.post("/", authenticateIdToken, validateCommunity(), asyncHandler(async (r
   const { name, description } = req.body;
   const community = new Community({ name, creator: req.user.id, description });
   const createdCommunity = await community.save();
-  res.status(200).json(createdCommunity);
+  res.status(200).json({success: "You successfully created a community!", createdCommunity});
 }));
 
 //prettier-ignore
@@ -54,7 +54,7 @@ router.put("/:community_id", authenticateIdToken, checkCommunityOwnership, valid
 //prettier-ignore
 router.delete("/:community_id", authenticateIdToken, checkCommunityOwnership, asyncHandler(async (req, res) => {
   await req.doc.remove();
-  res.status(200).json(req.params.community_id);
+  res.status(200).json({success: "You successfully deleted the community!", docId: req.params.community_id});
 }));
 
 //prettier-ignore
@@ -75,14 +75,14 @@ router.post("/:community_id/communitymember", authenticateIdToken, asyncHandler(
   const communityMember = new CommunityMember({member: id, community: req.params.community_id});
 
   const createdCommunityMember = await communityMember.save();
-  res.status(200).json(createdCommunityMember);
+  res.status(200).json({success: "You successfully joined the community!"});
 }));
 
 //prettier-ignore
 router.delete("/:community_id/communitymember/:communitymember_id", authenticateIdToken, 
   checkCommunityMemberOwnership, asyncHandler(async (req, res) => {
   await req.doc.remove();
-  res.status(200).json(req.params.communitymember_id);
+  res.status(200).json({docId: req.params.communitymember_id});
 }));
 
 export default router;

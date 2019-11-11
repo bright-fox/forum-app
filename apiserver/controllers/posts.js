@@ -33,7 +33,7 @@ router.post("/", authenticateIdToken, checkCommunityMembership, validatePost(), 
   const { id } = req.user;
   const post = new Post({ title, content, community, author: id});
   const createdPost = await post.save();
-  res.status(200).json(createdPost);
+  res.status(200).json({success: "You successfully wrote a post!", createdPost});
 }));
 
 //prettier-ignore
@@ -60,7 +60,7 @@ router.put("/:post_id", authenticateIdToken, checkPostOwnership, validatePost(),
 //prettier-ignore
 router.delete("/:post_id", authenticateIdToken, checkPostOwnership, asyncHandler(async (req, res) => {
   await req.doc.remove();
-  res.status(200).json(req.params.post_id);
+  res.status(200).json({success: "You successfully deleted your post!", docId: req.params.post_id});
 }));
 
 //prettier-ignore
@@ -79,7 +79,7 @@ router.post("/:post_id/postvotes", authenticateIdToken, asyncHandler(async (req,
 //prettier-ignore
 router.delete("/:post_id/postvotes/:postVote_id", authenticateIdToken, checkPostVoteOwnership, asyncHandler(async (req, res) => {
   await req.doc.remove();
-  res.status(200).json(req.params.postVote_id);
+  res.status(200).json({ docId: req.params.postVote_id});
 }));
 
 export default router;

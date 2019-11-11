@@ -28,7 +28,7 @@ router.post("/", authenticateIdToken, validateComment(), asyncHandler(async (req
   const comment = new Comment({ content, author: id, post: req.params.post_id });
 
   const createdComment = await comment.save();
-  res.status(200).json(createdComment);
+  res.status(200).json({success: "You successfully wrote a comment!", createdComment});
 }));
 
 //prettier-ignore
@@ -37,13 +37,13 @@ router.put("/:comment_id", authenticateIdToken, checkCommentOwnership, validateC
 
   const updatedComment = await Comment.findOneAndUpdate({ _id: req.params.comment_id},
     { $set: { content: req.body.content}}, { new: true, runValidators: true }).exec();
-  res.status(200).json(updatedComment);
+  res.status(200).json({success: "You successfully update your comment!", updatedComment});
 }));
 
 //prettier-ignore
 router.delete("/:comment_id", authenticateIdToken, checkCommentOwnership, asyncHandler(async (req, res) => {
   await Comment.deleteOne({ _id: req.params.comment_id, post: req.params.post_id }).exec();
-  res.status(200).json(req.params.comment_id);
+  res.status(200).json({success: "You successfully deleted your comment!", docId: req.params.comment_id});
 }));
 
 //prettier-ignore
@@ -63,7 +63,7 @@ router.post("/:comment_id/commentvotes", authenticateIdToken, asyncHandler(async
 //prettier-ignore
 router.delete("/:comment_id/commentvotes/:commentVote_id", authenticateIdToken, checkCommentVoteOwnership, asyncHandler(async (req, res) => {
   await req.doc.remove();
-  res.status(200).json(req.params.commentVote_id);
+  res.status(200).json({docId: req.params.commentVote_id});
 }));
 
 export default router;

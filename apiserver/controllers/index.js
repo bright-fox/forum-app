@@ -22,7 +22,7 @@ router.post("/register", validateRegister(), asyncHandler(async (req, res) => {
     const payload = {id: savedUser._id, username: user.username};
     const idToken = generateIdToken(payload);
     const refreshToken = await generateRefreshToken(payload, savedUser._id);
-    res.status(200).json({user: _.omit(savedUser.toJSON(), "password", "email"), idToken, refreshToken});
+    res.status(200).json({success: "You successfully created an account!", user: _.omit(savedUser.toJSON(), "password", "email"), idToken, refreshToken});
   }));
 
 //prettier-ignore
@@ -39,7 +39,7 @@ router.post("/login", validateLogin(), asyncHandler(async (req, res) => {
     const payload = { id: user._id, username: user.username};
     const idToken = generateIdToken(payload);
     const refreshToken = await generateRefreshToken(payload, user._id);
-    res.status(200).json({ idToken, refreshToken });
+    res.status(200).json({success: "You successfully logged in!", idToken, refreshToken });
   }));
 
 // prettier-ignore

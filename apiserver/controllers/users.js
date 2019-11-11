@@ -1,7 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { validationResult } from "express-validator";
+import _ from "lodash";
 
 import User from "../models/user";
 import Post from "../models/post";
@@ -31,9 +30,10 @@ router.put("/:user_id", authenticateIdToken, checkUserOwnership,
   const { doc } = req;
 
   doc.biography = req.body.biography;
-  await doc.save();
+  const updatedUser = await doc.save();
 
-  res.status(200).json({success: "You succesfully updated your profile!"});
+  res.status(200).json({success: "You succesfully updated your profile!",
+    user: _.omit(updatedUser.toJSON(), "password", "email")});
 }));
 
 //prettier-ignore
@@ -49,7 +49,8 @@ router.put("/:user_id/username", authenticateIdToken, checkUserOwnership,
   const idToken = generateIdToken(payload);
   const refreshToken = await generateRefreshToken(payload, updatedUser._id);
 
-  res.status(200).json({success: "You succesfully updated your username!", idToken, refreshToken});
+  res.status(200).json({success: "You succesfully updated your username!",
+  user: _.omit(updatedUser.toJSON(), "password", "email"), idToken, refreshToken});
 }));
 
 //prettier-ignore
@@ -77,7 +78,7 @@ router.put("/:user_id/password", authenticateIdToken, checkUserOwnership,
 //prettier-ignore
 router.delete("/:user_id", authenticateIdToken, checkUserOwnership, asyncHandler(async (req, res) => {
   await req.doc.remove();
-  res.status(200).json(req.params.user_id);
+  res.status(200).json({success: "You successfully deleted your account!", docId: req.params.user_id});
 }));
 
 //prettier-ignore

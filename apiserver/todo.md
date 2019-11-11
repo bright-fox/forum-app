@@ -14,7 +14,7 @@
 
 # POSSIBLE CHANGES
 
-- add success property to each response for integrity of the responses
+- make response docs consistent and call it "docs"?
 - clean up error handling and status codes
 
 # Questions:
