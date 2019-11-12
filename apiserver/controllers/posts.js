@@ -14,71 +14,104 @@ import CustomError from "../util/CustomError";
 
 const router = express.Router();
 
-//prettier-ignore
-router.get("/page/:p", validatePage(), asyncHandler(async(req, res, next) => {
-  if (checkValidationErrors(req)) throw new CustomError(400);
-  const limit = 30;
-  const maxPage = await checkPageUnderMax(Post, {}, limit, req.params.p);
+router.get(
+  "/page/:p",
+  validatePage(),
+  asyncHandler(async (req, res, next) => {
+    if (checkValidationErrors(req)) throw new CustomError(400);
+    const limit = 30;
+    const maxPage = await checkPageUnderMax(Post, {}, limit, req.params.p);
 
-  const posts = await Post.find({}).sort({ createdAt: -1 }).skip((req.params.p * limit) - limit)
-    .limit(limit).lean().exec();
-  if (posts.length <= 0) throw new CustomError(404, "There are no posts!");
-  res.status(200).json({posts: unescapeDocs(posts, "title", "content"), currentPage: req.params.p, maxPage});
-}));
+    const posts = await Post.find({})
+      .sort({ createdAt: -1 })
+      .skip(req.params.p * limit - limit)
+      .limit(limit)
+      .lean()
+      .exec();
+    if (posts.length <= 0) throw new CustomError(404, "There are no posts!");
+    res.status(200).json({ posts: unescapeDocs(posts, "title", "content"), currentPage: req.params.p, maxPage });
+  })
+);
 
-//prettier-ignore
-router.post("/", authenticateIdToken, checkCommunityMembership, validatePost(), asyncHandler(async (req, res) => {
-  if (checkValidationErrors(req)) throw new CustomError(400);
-  const { title, content, community } = req.body;
-  const { id } = req.user;
-  const post = new Post({ title, content, community, author: id});
-  const createdPost = await post.save();
-  res.status(200).json({success: "You successfully wrote a post!", post: unescapeDocs(createdPost, "title", "content")});
-}));
+router.post(
+  "/",
+  authenticateIdToken,
+  checkCommunityMembership,
+  validatePost(),
+  asyncHandler(async (req, res) => {
+    if (checkValidationErrors(req)) throw new CustomError(400);
+    const { title, content, community } = req.body;
+    const { id } = req.user;
+    const post = new Post({ title, content, community, author: id });
+    const createdPost = await post.save();
+    res
+      .status(200)
+      .json({ success: "You successfully wrote a post!", post: unescapeDocs(createdPost, "title", "content") });
+  })
+);
 
-//prettier-ignore
-router.get("/:post_id", asyncHandler(async (req, res) => {
-  const post = await Post.findById(req.params.post_id).lean().exec();
-  if (!post) throw new CustomError(404, "No posts found");
-  res.status(200).json(unescapeDocs(post, "title", "content"));
-}));
+router.get(
+  "/:post_id",
+  asyncHandler(async (req, res) => {
+    const post = await Post.findById(req.params.post_id)
+      .lean()
+      .exec();
+    if (!post) throw new CustomError(404, "No posts found");
+    res.status(200).json(unescapeDocs(post, "title", "content"));
+  })
+);
 
-//prettier-ignore
-router.put("/:post_id", authenticateIdToken, checkPostOwnership, validatePost(), asyncHandler(async (req, res) => {
-  if (checkValidationErrors(req)) throw new CustomError(400);
-  const { doc } = req;
-  const { title, content } = req.body;
-  
-  doc.title = title;
-  doc.content = content;
+router.put(
+  "/:post_id",
+  authenticateIdToken,
+  checkPostOwnership,
+  validatePost(),
+  asyncHandler(async (req, res) => {
+    if (checkValidationErrors(req)) throw new CustomError(400);
+    const { doc } = req;
 
-  await doc.save();
-  res.status(200).json({ success: "You successfully updated your post" });
-}));
+    doc.title = req.body.title;
+    doc.content = req.body.content;
 
-//prettier-ignore
-router.delete("/:post_id", authenticateIdToken, checkPostOwnership, asyncHandler(async (req, res) => {
-  await req.doc.remove();
-  res.status(200).json({success: "You successfully deleted your post!", docId: req.params.post_id});
-}));
+    await doc.save();
+    res.status(200).json({ success: "You successfully updated your post" });
+  })
+);
 
-//prettier-ignore
-router.post("/:post_id/postvotes", authenticateIdToken, asyncHandler(async (req, res) => {
-  const { vote } = req.body;
-  const postVote = new PostVote({ vote, user: req.user.id, post: req.params.post_id });
+router.delete(
+  "/:post_id",
+  authenticateIdToken,
+  checkPostOwnership,
+  asyncHandler(async (req, res) => {
+    await req.doc.remove();
+    res.status(200).json({ success: "You successfully deleted your post!", docId: req.params.post_id });
+  })
+);
 
-  // check for existing vote of user and remove it
-  const foundPostVote = await PostVote.findOne({ post: req.params.post_id, user: req.user.id }).exec();
-  if (foundPostVote) await foundPostVote.remove();
+router.post(
+  "/:post_id/postvotes",
+  authenticateIdToken,
+  asyncHandler(async (req, res) => {
+    const { vote } = req.body;
+    const postVote = new PostVote({ vote, user: req.user.id, post: req.params.post_id });
 
-  await postVote.save();
-  res.status(200).json({success: "You successfully voted for this post"});
-}));
+    // check for existing vote of user and remove it
+    const foundPostVote = await PostVote.findOne({ post: req.params.post_id, user: req.user.id }).exec();
+    if (foundPostVote) await foundPostVote.remove();
 
-//prettier-ignore
-router.delete("/:post_id/postvotes/:postVote_id", authenticateIdToken, checkPostVoteOwnership, asyncHandler(async (req, res) => {
-  await req.doc.remove();
-  res.status(200).json({ docId: req.params.postVote_id});
-}));
+    await postVote.save();
+    res.status(200).json({ success: "You successfully voted for this post" });
+  })
+);
+
+router.delete(
+  "/:post_id/postvotes/:postVote_id",
+  authenticateIdToken,
+  checkPostVoteOwnership,
+  asyncHandler(async (req, res) => {
+    await req.doc.remove();
+    res.status(200).json({ docId: req.params.postVote_id });
+  })
+);
 
 export default router;

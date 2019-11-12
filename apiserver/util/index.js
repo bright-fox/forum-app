@@ -11,7 +11,7 @@ export const asyncHandler = fn => (req, res, next) => fn(req, res, next).catch(n
 export const checkExistenceInDatabase = async (model, id) => {
   const doc = await model.findOne({ _id: id }).exec();
   if (doc) return true;
-  throw new Error(`FK Constraint 'checkObjectsExists' for '${id.toString()}' failed`);
+  throw new CustomError(400, "The field is not valid");
 };
 
 export const checkValidationErrors = req => {
@@ -19,8 +19,7 @@ export const checkValidationErrors = req => {
   return !errors.isEmpty();
 };
 
-// removes dependent documents which also triggers the remove hooks (mongoose)
-// DOES THIS WORK???
+// removes dependent documents which also triggers the remove hooks (mongoose) ?
 export const removeDependentDocs = async (model, selector) => {
   const docs = await model.find(selector).exec();
   docs.forEach(async doc => await doc.remove());
@@ -30,7 +29,7 @@ export const updateParentField = async (model, id, incField, incValue) => {
   const doc = await model.findById(id).exec();
   if (!doc) throw new CustomError(404);
   doc[incField] += incValue;
-  if (doc[incField] < 0) throw new CustomError(400, "IT IS UNDER 0");
+  if (doc[incField] < 0) throw new CustomError(400);
   await doc.save();
 };
 
@@ -58,7 +57,7 @@ export const checkPageUnderMax = async (model, selection, limit, p) => {
   const count = await model.estimatedDocumentCount(selection).exec();
   const maxPage = Math.ceil(count / limit);
   const isValid = p <= maxPage;
-  if (!isValid) throw new CustomError(400);
+  if (!isValid) throw new CustomError(404);
   return maxPage.toString();
 };
 
