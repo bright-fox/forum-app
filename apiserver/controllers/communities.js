@@ -5,7 +5,7 @@ import Post from "../models/post";
 
 import { validateCommunity, validatePage } from "../middlewares/validation";
 import { authenticateIdToken, checkCommunityOwnership, checkCommunityMemberOwnership } from "../middlewares/auth";
-import { checkValidationErrors, asyncHandler } from "../util";
+import { checkValidationErrors, asyncHandler, unescapeDocs } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
@@ -19,7 +19,7 @@ router.get("/page/:p", validatePage(), asyncHandler(async (req, res) => {
   const communities = await Community.find({}).skip((req.params.p * limit) - limit)
   .limit(limit).lean().exec();
   if(communities.length <= 0) throw new CustomError(404, "There are no communities yet!");
-  res.status(200).json({communities, currentPage: req.params.p, maxPage});
+  res.status(200).json({communities: unescapeDocs(communities, "description"), currentPage: req.params.p, maxPage});
 }));
 
 //prettier-ignore
@@ -28,14 +28,14 @@ router.post("/", authenticateIdToken, validateCommunity(), asyncHandler(async (r
   const { name, description } = req.body;
   const community = new Community({ name, creator: req.user.id, description });
   const createdCommunity = await community.save();
-  res.status(200).json({success: "You successfully created a community!", createdCommunity});
+  res.status(200).json({success: "You successfully created a community!", community: unescapeDocs(createdCommunity, "description")});
 }));
 
 //prettier-ignore
 router.get("/:community_id", asyncHandler(async (req, res) => {
   const community = await Community.findById(req.params.community_id).lean().exec();
   if (!community) throw new CustomError(404, "No community found");
-  res.status(200).json(community);
+  res.status(200).json({community: unescapeDocs(community, "description")});
 }));
 
 //prettier-ignore
@@ -66,7 +66,7 @@ router.get("/:community_id/posts/page/:p", validatePage(), asyncHandler(async (r
   const posts = await Post.find({ community: req.params.community_id }).skip((req.params.p * limit) - limit)
   .limit(limit).lean().exec();
   if (posts.length <= 0) throw new CustomError(404, "No posts for this community found");
-  res.status(200).json({posts, currentPage: req.params.p, maxPage});
+  res.status(200).json({posts: unescapeDocs(posts, "title", "content"), currentPage: req.params.p, maxPage});
 }));
 
 //prettier-ignore

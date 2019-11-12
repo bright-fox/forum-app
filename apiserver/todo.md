@@ -10,8 +10,6 @@
 
 # DEFINITE CHANGES TO MAKE
 
-- unescape fields after they were found --> GET community
-
 # POSSIBLE CHANGES
 
 - make response docs consistent and call it "docs"?

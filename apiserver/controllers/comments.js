@@ -3,7 +3,7 @@ import express from "express";
 import Comment from "../models/comment";
 import CommentVote from "../models/commentVote";
 import { validateComment, validatePage } from "../middlewares/validation";
-import { checkValidationErrors, asyncHandler } from "../util";
+import { checkValidationErrors, asyncHandler, unescapeDocs } from "../util";
 import { authenticateIdToken, checkCommentOwnership, checkCommentVoteOwnership } from "../middlewares/auth";
 import CustomError from "../util/CustomError";
 
@@ -17,7 +17,7 @@ router.get("/page/:p", validatePage(), asyncHandler(async (req, res) => {
   const comments = await Comment.find({ post: req.params.post_id }).skip((req.params.p * limit) - limit).limit(limit)
     .lean().exec();
   if (comments.length <= 0) throw newCustomError(404, "No comments found");
-  res.status(200).json({comments, currentPage: req.params.p, maxPage});
+  res.status(200).json({comments: unescapeDocs(comments, "content"), currentPage: req.params.p, maxPage});
 }));
 
 //prettier-ignore
@@ -28,7 +28,7 @@ router.post("/", authenticateIdToken, validateComment(), asyncHandler(async (req
   const comment = new Comment({ content, author: id, post: req.params.post_id });
 
   const createdComment = await comment.save();
-  res.status(200).json({success: "You successfully wrote a comment!", createdComment});
+  res.status(200).json({success: "You successfully wrote a comment!", comment: unescapeDocs(comment, "content")});
 }));
 
 //prettier-ignore
@@ -37,7 +37,7 @@ router.put("/:comment_id", authenticateIdToken, checkCommentOwnership, validateC
 
   const updatedComment = await Comment.findOneAndUpdate({ _id: req.params.comment_id},
     { $set: { content: req.body.content}}, { new: true, runValidators: true }).exec();
-  res.status(200).json({success: "You successfully update your comment!", updatedComment});
+  res.status(200).json({success: "You successfully update your comment!", comment: unescapeDocs(updatedComment, "content")});
 }));
 
 //prettier-ignore

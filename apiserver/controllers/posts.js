@@ -9,7 +9,7 @@ import {
   checkPostOwnership,
   checkPostVoteOwnership
 } from "../middlewares/auth";
-import { checkValidationErrors, asyncHandler, checkPageUnderMax } from "../util";
+import { checkValidationErrors, asyncHandler, checkPageUnderMax, unescapeDocs } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
@@ -23,7 +23,7 @@ router.get("/page/:p", validatePage(), asyncHandler(async(req, res, next) => {
   const posts = await Post.find({}).sort({ createdAt: -1 }).skip((req.params.p * limit) - limit)
     .limit(limit).lean().exec();
   if (posts.length <= 0) throw new CustomError(404, "There are no posts!");
-  res.status(200).json({posts, currentPage: req.params.p, maxPage});
+  res.status(200).json({posts: unescapeDocs(posts, "title", "content"), currentPage: req.params.p, maxPage});
 }));
 
 //prettier-ignore
@@ -33,15 +33,14 @@ router.post("/", authenticateIdToken, checkCommunityMembership, validatePost(), 
   const { id } = req.user;
   const post = new Post({ title, content, community, author: id});
   const createdPost = await post.save();
-  res.status(200).json({success: "You successfully wrote a post!", createdPost});
+  res.status(200).json({success: "You successfully wrote a post!", post: unescapeDocs(createdPost, "title", "content")});
 }));
 
 //prettier-ignore
 router.get("/:post_id", asyncHandler(async (req, res) => {
-  console.log("this is the specific post");
   const post = await Post.findById(req.params.post_id).lean().exec();
   if (!post) throw new CustomError(404, "No posts found");
-  res.status(200).json(post);
+  res.status(200).json(unescapeDocs(post, "title", "content"));
 }));
 
 //prettier-ignore

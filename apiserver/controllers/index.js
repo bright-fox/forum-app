@@ -6,7 +6,7 @@ import _ from "lodash";
 import User from "../models/user";
 import RefreshToken from "../models/refreshtoken";
 import CustomError from "../util/CustomError";
-import { checkValidationErrors, asyncHandler, generateIdToken, generateRefreshToken } from "../util";
+import { checkValidationErrors, asyncHandler, generateIdToken, generateRefreshToken, unescapeDocs } from "../util";
 import { validateRegister, validateLogin } from "../middlewares/validation";
 import { authenticateIdToken } from "../middlewares/auth";
 
@@ -22,7 +22,7 @@ router.post("/register", validateRegister(), asyncHandler(async (req, res) => {
     const payload = {id: savedUser._id, username: user.username};
     const idToken = generateIdToken(payload);
     const refreshToken = await generateRefreshToken(payload, savedUser._id);
-    res.status(200).json({success: "You successfully created an account!", user: _.omit(savedUser.toJSON(), "password", "email"), idToken, refreshToken});
+    res.status(200).json({success: "You successfully created an account!", user: _.omit(unescapeDocs(savedUser, "biography").toJSON(), "password", "email"), idToken, refreshToken});
   }));
 
 //prettier-ignore

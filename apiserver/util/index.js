@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import validator from "validator";
 import { validationResult } from "express-validator";
 
 import Refreshtoken from "../models/refreshtoken";
@@ -59,4 +60,21 @@ export const checkPageUnderMax = async (model, selection, limit, p) => {
   const isValid = p <= maxPage;
   if (!isValid) throw new CustomError(400);
   return maxPage.toString();
+};
+
+export const unescapeDocs = (docs, ...fields) => {
+  //console.log(docs, typeof docs);
+  if (docs instanceof Array) {
+    const unescapedDocs = docs.map(doc => {
+      fields.forEach(field => {
+        doc[field] = validator.unescape(doc[field]);
+      });
+      return doc;
+    });
+    return unescapedDocs;
+  }
+  fields.forEach(field => {
+    docs[field] = validator.unescape(docs[field]);
+  });
+  return docs;
 };
