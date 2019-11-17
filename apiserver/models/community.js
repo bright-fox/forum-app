@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import User from "./user";
 import Post from "./post";
 import CommunityMember from "./communityMember";
-import { checkExistenceInDatabase, removeDependentDocs } from "../util";
+import { removeDependentDocs } from "../util";
 
 const communitySchema = new Schema({
   name: {
@@ -25,7 +25,7 @@ const communitySchema = new Schema({
     required: [true, "Creator of community required"],
     index: true,
     validate: {
-      validator: user_id => checkExistenceInDatabase(User, user_id),
+      validator: user_id => User.exists({ _id: user_id }),
       message: "The user does not exist"
     }
   },

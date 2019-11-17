@@ -3,8 +3,7 @@ import User from "./user";
 import Community from "./community";
 import PostVote from "./postVote";
 import Comment from "./comment";
-import { checkExistenceInDatabase, removeDependentDocs } from "../util";
-import { log } from "util";
+import { removeDependentDocs } from "../util";
 
 const postSchema = new Schema({
   title: {
@@ -27,7 +26,7 @@ const postSchema = new Schema({
     ref: "User",
     required: [true, "User for post required"],
     validate: {
-      validator: author_id => checkExistenceInDatabase(User, author_id),
+      validator: author_id => User.exists({ _id: author_id }),
       message: "User does not exist"
     }
   },
@@ -36,7 +35,7 @@ const postSchema = new Schema({
     ref: "Community",
     required: [true, "Community for post required"],
     validate: {
-      validator: community_id => checkExistenceInDatabase(Community, community_id),
+      validator: community_id => Community.exists({ _id: community_id }),
       message: "Community does not exist"
     }
   },

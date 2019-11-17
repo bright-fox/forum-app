@@ -3,7 +3,7 @@ import { Schema, model } from "mongoose";
 import User from "./user";
 import Community from "./community";
 
-import { checkExistenceInDatabase, updateParentField } from "../util";
+import { updateParentField } from "../util";
 
 const communityMemberSchema = new Schema({
   createdAt: {
@@ -14,7 +14,7 @@ const communityMemberSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
     validate: {
-      validator: member_id => checkExistenceInDatabase(User, member_id),
+      validator: member_id => User.exists({ _id: member_id }),
       message: "The user does not exist"
     }
   },
@@ -23,7 +23,7 @@ const communityMemberSchema = new Schema({
     ref: "Community",
     index: true,
     validate: {
-      validator: community_id => checkExistenceInDatabase(Community, community_id),
+      validator: community_id => Community.exists({ _id: community_id }),
       message: "The community does not exist"
     }
   }

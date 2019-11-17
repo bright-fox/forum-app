@@ -8,12 +8,6 @@ import CustomError from "../util/CustomError";
 // async handler
 export const asyncHandler = fn => (req, res, next) => fn(req, res, next).catch(next);
 
-export const checkExistenceInDatabase = async (model, id) => {
-  const doc = await model.findOne({ _id: id }).exec();
-  if (doc) return true;
-  throw new CustomError(400, "The field is not valid");
-};
-
 export const checkValidationErrors = req => {
   const errors = validationResult(req);
   return !errors.isEmpty();

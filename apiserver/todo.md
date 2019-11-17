@@ -10,10 +10,14 @@
 
 # DEFINITE CHANGES TO MAKE
 
+- add hash value on posts and comments to identify spam?
+- add Object.assign() function for cleaner code for PUT routes
+
 # POSSIBLE CHANGES
 
 - make response docs consistent and call it "docs"?
 - clean up error handling and status codes
+- remove hooks with Promise.all? So it resolves or fail together?
 
 # Questions:
 

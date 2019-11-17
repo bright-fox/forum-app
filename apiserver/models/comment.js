@@ -3,7 +3,7 @@ import Post from "./post";
 import User from "./user";
 import CommentVote from "./commentVote";
 
-import { checkExistenceInDatabase, updateParentField } from "../util";
+import { updateParentField } from "../util";
 
 const commentSchema = new Schema({
   createdAt: {
@@ -19,7 +19,7 @@ const commentSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Post",
     validate: {
-      validator: post_id => checkExistenceInDatabase(Post, post_id),
+      validator: post_id => Post.exists({ _id: post_id }),
       message: "Post does not exist"
     }
   },
@@ -27,7 +27,7 @@ const commentSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
     validate: {
-      validator: author_id => checkExistenceInDatabase(User, author_id),
+      validator: author_id => User.exists({ _id: author_id }),
       message: "User does not exist"
     }
   },

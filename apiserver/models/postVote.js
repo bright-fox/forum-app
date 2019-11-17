@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import Post from "./post";
 import User from "./user";
-import { checkExistenceInDatabase, updateParentField } from "../util";
+import { updateParentField } from "../util";
 
 const postVoteSchema = new Schema({
   createdAt: {
@@ -21,7 +21,7 @@ const postVoteSchema = new Schema({
     ref: "Post",
     required: true,
     validate: {
-      validator: post_id => checkExistenceInDatabase(Post, post_id),
+      validator: post_id => Post.exists({ _id: post_id }),
       message: "Post does not exist"
     }
   },
@@ -30,7 +30,7 @@ const postVoteSchema = new Schema({
     ref: "User",
     required: true,
     validate: {
-      validator: user_id => checkExistenceInDatabase(User, user_id),
+      validator: user_id => User.exists({ _id: user_id }),
       message: "User does not exist"
     }
   }

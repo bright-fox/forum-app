@@ -3,7 +3,7 @@ import Comment from "./comment";
 import Post from "./post";
 import User from "./user";
 
-import { checkExistenceInDatabase, updateParentField } from "../util";
+import { updateParentField } from "../util";
 
 const commentVoteSchema = new Schema({
   createdAt: {
@@ -23,7 +23,7 @@ const commentVoteSchema = new Schema({
     ref: "Comment",
     required: true,
     validate: {
-      validator: comment_id => checkExistenceInDatabase(Comment, comment_id),
+      validator: comment_id => Comment.exists({ _id: comment_id }),
       message: "Comment does not exist"
     }
   },
@@ -32,7 +32,7 @@ const commentVoteSchema = new Schema({
     ref: "User",
     required: true,
     validate: {
-      validator: user_id => checkExistenceInDatabase(User, user_id),
+      validator: user_id => User.exists({ _id: user_id }),
       message: "User does not exist"
     }
   },
@@ -41,7 +41,7 @@ const commentVoteSchema = new Schema({
     ref: "Post",
     required: true,
     validate: {
-      validator: post_id => checkExistenceInDatabase(Post, post_id),
+      validator: post_id => Post.exists({ _id: post_id }),
       message: "Post does not exist"
     }
   }

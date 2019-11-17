@@ -9,9 +9,7 @@ import CommentVote from "./commentVote";
 import Refreshtoken from "./refreshtoken";
 import CommunityMember from "./CommunityMember";
 
-import { checkExistenceInDatabase, removeDependentDocs } from "../util";
-import { runInNewContext } from "vm";
-import { log } from "util";
+import { removeDependentDocs } from "../util";
 
 const userSchema = new mongoose.Schema({
   username: {

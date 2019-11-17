@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-dotenv.config();
 
 import express from "express";
 import mongoose from "mongoose";
@@ -13,6 +12,7 @@ import userRoutes from "./controllers/users";
 import commentRoutes from "./controllers/comments";
 import { handleError, handleMongoError, logError } from "./middlewares";
 
+dotenv.config();
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true });
