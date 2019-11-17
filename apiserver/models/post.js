@@ -21,6 +21,7 @@ const postSchema = new Schema({
     default: Date.now,
     index: true
   },
+  editedAt: Date,
   author: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -51,6 +52,13 @@ const postSchema = new Schema({
 
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ community: 1, createdAt: -1 });
+
+postSchema.pre("save", async function() {
+  if (this.isModified("title content")) {
+    console.log("title or content changed");
+    this.editedAt = new Date();
+  }
+});
 
 postSchema.post("remove", async function() {
   console.log("Inside Post remove middleware");

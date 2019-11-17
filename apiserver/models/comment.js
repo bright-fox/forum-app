@@ -10,6 +10,7 @@ const commentSchema = new Schema({
     type: Date,
     default: Date.now
   },
+  editedAt: Date,
   content: {
     type: String,
     trim: true,
@@ -42,6 +43,9 @@ commentSchema.index({ author: 1, createdAt: -1 });
 
 commentSchema.pre("save", async function() {
   if (this.isNew) updateParentField(Post, this.post, "comments", 1);
+  if (this.isModified("content")) {
+    this.editedAt = new Date();
+  }
 });
 
 commentSchema.post("deleteOne", async function() {

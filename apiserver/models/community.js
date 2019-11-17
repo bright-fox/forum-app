@@ -19,6 +19,7 @@ const communitySchema = new Schema({
     default: Date.now,
     index: true
   },
+  editedAt: Date,
   creator: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -38,6 +39,12 @@ const communitySchema = new Schema({
   members: {
     type: Number,
     default: 0
+  }
+});
+
+communitySchema.pre("save", async function() {
+  if (this.isModified("description")) {
+    this.editedAt = new Date();
   }
 });
 

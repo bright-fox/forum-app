@@ -70,10 +70,8 @@ router.put(
     if (checkValidationErrors(req)) throw new CustomError(400);
     const { doc } = req;
 
-    doc.title = req.body.title;
-    doc.content = req.body.content;
-
-    await doc.save();
+    Object.assign(req.doc, { title: req.body.title, content: req.body.content });
+    await req.doc.save();
     res.status(200).json({ success: "You successfully updated your post" });
   })
 );

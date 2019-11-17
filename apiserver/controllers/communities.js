@@ -62,13 +62,8 @@ router.put(
   validateCommunity(),
   asyncHandler(async (req, res) => {
     if (checkValidationErrors(req)) throw new CustomError(400);
-    const { doc } = req;
-    const { name, description } = req.body;
-
-    doc.name = name;
-    doc.description = description;
-
-    await doc.save();
+    Object.assign(req.doc, { name: req.body.name, description: req.body.description });
+    await req.doc.save();
     res.status(200).json({ success: "You successfully updated your community" });
   })
 );
