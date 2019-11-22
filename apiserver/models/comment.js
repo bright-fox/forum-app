@@ -3,7 +3,7 @@ import Post from "./post";
 import User from "./user";
 import CommentVote from "./commentVote";
 
-import { updateParentField } from "../util";
+import { updateParentField, isSpam } from "../util";
 
 const commentSchema = new Schema({
   createdAt: {
@@ -35,6 +35,10 @@ const commentSchema = new Schema({
   upvotes: {
     type: Number,
     default: 0
+  },
+  hash: {
+    type: String,
+    index: true
   }
 });
 
@@ -45,6 +49,10 @@ commentSchema.pre("save", async function() {
   if (this.isNew) updateParentField(Post, this.post, "comments", 1);
   if (this.isModified("content")) {
     this.editedAt = new Date();
+    const obj = { author: this.author, content: this.content, post: this.post };
+    this.hash = makeHash(obj);
+    if (isSpam(this.hash))
+      throw new CustomError(400, "You posted the same comment already. Check out your comments of the past!");
   }
 });
 

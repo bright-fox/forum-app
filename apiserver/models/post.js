@@ -63,7 +63,8 @@ postSchema.pre("save", async function() {
     this.editedAt = new Date();
     const obj = { author: this.author, title: this.title, content: this.content, community: this.community };
     this.hash = makeHash(obj);
-    if (isSpam) throw new CustomError(400, "You posted the same post already. Check out your posts of the past!");
+    if (isSpam(this.hash))
+      throw new CustomError(400, "You posted the same post already. Check out your posts of the past!");
   }
 });
 

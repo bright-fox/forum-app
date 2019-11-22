@@ -32,9 +32,7 @@ router.post(
   validateComment(),
   asyncHandler(async (req, res) => {
     if (checkValidationErrors(req)) throw new CustomError(400);
-    const { id } = req.user;
-    const { content } = req.body;
-    const comment = new Comment({ content, author: id, post: req.params.post_id });
+    const comment = new Comment({ content: req.body.content, author: req.user.id, post: req.params.post_id });
 
     const createdComment = await comment.save();
     res.status(200).json({ success: "You successfully wrote a comment!", comment: unescapeDocs(comment, "content") });
