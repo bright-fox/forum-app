@@ -11,7 +11,6 @@
 # DEFINITE CHANGES TO MAKE
 
 - add hash value on posts and comments to identify spam?
-- add Object.assign() function for cleaner code for PUT routes
 
 # POSSIBLE CHANGES
 

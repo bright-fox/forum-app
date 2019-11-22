@@ -3,7 +3,8 @@ import User from "./user";
 import Community from "./community";
 import PostVote from "./postVote";
 import Comment from "./comment";
-import { removeDependentDocs } from "../util";
+import { removeDependentDocs, makeHash } from "../util";
+import CustomError from "../util/CustomError";
 
 const postSchema = new Schema({
   title: {
@@ -15,6 +16,10 @@ const postSchema = new Schema({
     type: String,
     trim: true,
     required: [true, "Content for post required"]
+  },
+  hash: {
+    type: String,
+    index: true
   },
   createdAt: {
     type: Date,
@@ -55,8 +60,10 @@ postSchema.index({ community: 1, createdAt: -1 });
 
 postSchema.pre("save", async function() {
   if (this.isModified("title content")) {
-    console.log("title or content changed");
     this.editedAt = new Date();
+    const obj = { author: this.author, title: this.title, content: this.content, community: this.community };
+    this.hash = makeHash(obj);
+    if (isSpam) throw new CustomError(400, "You posted the same post already. Check out your posts of the past!");
   }
 });
 

@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import validator from "validator";
+import crypto from "crypto";
 import { validationResult } from "express-validator";
 
 import Refreshtoken from "../models/refreshtoken";
@@ -13,7 +14,7 @@ export const checkValidationErrors = req => {
   return !errors.isEmpty();
 };
 
-// removes dependent documents which also triggers the remove hooks (mongoose) ?
+// removes dependent documents which also triggers the remove hooks (mongoose)
 export const removeDependentDocs = async (model, selector) => {
   const docs = await model.find(selector).exec();
   docs.forEach(async doc => await doc.remove());
@@ -70,4 +71,14 @@ export const unescapeDocs = (docs, ...fields) => {
     docs[field] = validator.unescape(docs[field]);
   });
   return docs;
+};
+
+export const makeHash = obj => {
+  const hash = crypto.createHash("sha256");
+  hash.update(JSON.stringify(obj));
+  return hash.digest("hex");
+};
+
+export const isSpam = async (model, hash) => {
+  return await model.exists({ hash }).exec();
 };
