@@ -10,8 +10,6 @@
 
 # DEFINITE CHANGES TO MAKE
 
-- deny points to votes on the own posts and comments <<--->>
-
 # POSSIBLE CHANGES
 
 - make response docs consistent and call it "docs"?
@@ -28,7 +26,6 @@
 
   # BUGS
 
-- createdAt and editAt for new entity is not the same --> give both in pre save middleware the same date if it is new
 - admin of community cant post because it checks for members --> either automatically make him a member at creation or check if it is admin
 - error while posting results in indexed hash, so you cant post it even though its not in the database?
   - When a post has 1 postvote and you try to downvote it again, it will delete the upvote and result in an error

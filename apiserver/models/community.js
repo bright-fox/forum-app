@@ -16,7 +16,6 @@ const communitySchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
     index: true
   },
   editedAt: Date,
@@ -43,9 +42,9 @@ const communitySchema = new Schema({
 });
 
 communitySchema.pre("save", async function() {
-  if (this.isModified("description")) {
-    this.editedAt = new Date();
-  }
+  const date = new Date();
+  if (this.isNew) this.createdAt = date;
+  if (this.isModified("description")) this.editedAt = date;
 });
 
 communitySchema.post("remove", async function() {

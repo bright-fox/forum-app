@@ -24,7 +24,6 @@ const postSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
     index: true
   },
   editedAt: Date,
@@ -60,8 +59,10 @@ postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ community: 1, createdAt: -1 });
 
 postSchema.pre("save", async function() {
+  const date = new Date();
+  if (this.isNew) this.createdAt = date;
   if (this.isModified("title content")) {
-    this.editedAt = new Date();
+    this.editedAt = date;
     const obj = { author: this.author, title: this.title, content: this.content, community: this.community };
     this.hash = makeHash(obj);
     if (await isSpam(this.constructor, this.hash))

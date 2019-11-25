@@ -6,10 +6,7 @@ import CustomError from "../util/CustomError";
 import { updateParentField, isSpam, makeHash } from "../util";
 
 const commentSchema = new Schema({
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
+  createdAt: Date,
   editedAt: Date,
   content: {
     type: String,
@@ -57,9 +54,13 @@ commentSchema.index({ post: 1, replyTo: 1, createdAt: -1 });
 commentSchema.index({ author: 1, createdAt: -1 });
 
 commentSchema.pre("save", async function() {
-  if (this.isNew) updateParentField(Post, this.post, "comments", 1);
+  const date = new Date();
+  if (this.isNew) {
+    this.createdAt = date;
+    updateParentField(Post, this.post, "comments", 1);
+  }
   if (this.isModified("content")) {
-    this.editedAt = new Date();
+    this.editedAt = date;
     const obj = { author: this.author, content: this.content, post: this.post, replyTo: this.replyTo || "" };
     this.hash = makeHash(obj);
     if (await isSpam(this.constructor, this.hash))

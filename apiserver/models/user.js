@@ -33,10 +33,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
+  createdAt: Date,
   editedAt: Date,
   karma: {
     type: Number,
@@ -50,16 +47,15 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre("save", async function() {
+  const date = new Date();
+
+  if (this.isNew) this.createdAt = date;
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
     await removeDependentDocs(Refreshtoken, { user: this._id });
   }
-  if (this.isModified("username")) {
-    await removeDependentDocs(Refreshtoken, { user: this._id });
-  }
-  if (this.isModified("biography")) {
-    this.editedAt = new Date();
-  }
+  if (this.isModified("username")) await removeDependentDocs(Refreshtoken, { user: this._id });
+  if (this.isModified("biography")) this.editedAt = date;
 });
 
 userSchema.post("remove", async function() {
