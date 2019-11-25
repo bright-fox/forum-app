@@ -5,7 +5,7 @@ import Comment from "../models/comment";
 import { validationResult } from "express-validator";
 
 import Refreshtoken from "../models/refreshtoken";
-import CustomError from "../util/CustomError";
+import CustomError from "./CustomError";
 
 // async handler
 export const asyncHandler = fn => (req, res, next) => fn(req, res, next).catch(next);

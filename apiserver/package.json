@@ -4,8 +4,8 @@
   "description": "api server for the forum app",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -r esm",
-    "test": "mocha"
+    "start": "nodemon -r esm -r ./config.js index.js",
+    "test": "NODE_ENV=test mocha -r esm -r ./config.js"
   },
   "author": "Hung Vu",
   "license": "ISC",
