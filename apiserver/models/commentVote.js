@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import _ from "lodash";
 import Comment from "./comment";
 import Post from "./post";
 import User from "./user";
@@ -51,15 +52,15 @@ commentVoteSchema.index({ user: 1, vote: -1, createdAt: -1 });
 commentVoteSchema.index({ comment: 1, user: 1 });
 
 commentVoteSchema.pre("save", async function() {
-  await updateParentField(Comment, this.comment, "upvotes", this.vote);
-  const comment = await Comment.findById(this.comment);
-  if (this.vote === 1) await updateParentField(User, comment.author, "karma", 2);
+  const comment = await updateParentField(Comment, this.comment, "upvotes", this.vote);
+  if (this.vote === 1 && !_.isEqual(this.user, comment.author))
+    await updateParentField(User, comment.author, "karma", 2);
 });
 
 commentVoteSchema.post("remove", async function() {
-  await updateParentField(Comment, this.comment, "upvotes", this.vote * -1);
-  const comment = await Comment.findById(this.comment);
-  if (this.vote === 1) await updateParentField(User, comment.author, "karma", -2);
+  const comment = await updateParentField(Comment, this.comment, "upvotes", this.vote * -1);
+  if (this.vote === 1 && !_.isEqual(this.user, comment.author))
+    await updateParentField(User, comment.author, "karma", -2);
 });
 
 export default model("CommentVote", commentVoteSchema);

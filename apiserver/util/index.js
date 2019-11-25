@@ -26,7 +26,8 @@ export const updateParentField = async (model, id, incField, incValue) => {
   if (!doc) throw new CustomError(404);
   doc[incField] += incValue;
   if (doc[incField] < 0) throw new CustomError(400);
-  await doc.save();
+  const updatedDoc = await doc.save();
+  return updatedDoc;
 };
 
 export const generateIdToken = payload => {
