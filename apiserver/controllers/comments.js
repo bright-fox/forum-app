@@ -73,7 +73,7 @@ router.delete(
 );
 
 router.post(
-  "/:comment_id/commentvotes",
+  "/:comment_id/votes",
   authenticateIdToken,
   asyncHandler(async (req, res) => {
     const { vote } = req.body;
@@ -90,12 +90,12 @@ router.post(
 );
 
 router.delete(
-  "/:comment_id/commentvotes/:commentVote_id",
+  "/:comment_id/votes/:vote_id",
   authenticateIdToken,
   checkCommentVoteOwnership,
   asyncHandler(async (req, res) => {
     await req.doc.remove();
-    res.status(200).json({ docId: req.params.commentVote_id });
+    res.status(200).json({ docId: req.params.vote_id });
   })
 );
 

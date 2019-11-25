@@ -27,13 +27,13 @@ export const checkCommunityOwnership = asyncHandler(async (req, res, next) => {
 });
 
 export const checkCommunityMemberOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(req, CommunityMember, req.params.communitymember_id, req.user.id, "member");
+  await checkDocOwnership(req, CommunityMember, req.params.member_id, req.user.id, "member");
   next();
 });
 
 export const checkCommunityMembership = asyncHandler(async (req, res, next) => {
-  const communityMember = await CommunityMember.findOne({ member: req.user.id, community: req.body.community }).exec();
-  if (!communityMember) throw new CustomError(404, "You need to be a member of the community to post");
+  const member = await CommunityMember.findOne({ member: req.user.id, community: req.body.community }).exec();
+  if (!member) throw new CustomError(404, "You need to be a member of the community to post");
   next();
 });
 
@@ -43,7 +43,7 @@ export const checkPostOwnership = asyncHandler(async (req, res, next) => {
 });
 
 export const checkPostVoteOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(req, PostVote, req.params.postVote_id, req.user.id, "user");
+  await checkDocOwnership(req, PostVote, req.params.vote_id, req.user.id, "user");
   next();
 });
 
@@ -53,7 +53,7 @@ export const checkCommentOwnership = asyncHandler(async (req, res, next) => {
 });
 
 export const checkCommentVoteOwnership = asyncHandler(async (req, res, next) => {
-  await checkDocOwnership(req, CommentVote, req.params.commentVote_id, req.user.id, "user");
+  await checkDocOwnership(req, CommentVote, req.params.vote_id, req.user.id, "user");
   next();
 });
 

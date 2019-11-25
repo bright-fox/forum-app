@@ -45,12 +45,10 @@ router.post(
     const { id } = req.user;
     const post = new Post({ title, content, community, author: id });
     const createdPost = await post.save();
-    res
-      .status(200)
-      .json({
-        success: "You successfully wrote a post!",
-        post: _.omit(unescapeDocs(createdPost, "title", "content").toJSON(), "hash")
-      });
+    res.status(200).json({
+      success: "You successfully wrote a post!",
+      post: _.omit(unescapeDocs(createdPost, "title", "content").toJSON(), "hash")
+    });
   })
 );
 
@@ -91,7 +89,7 @@ router.delete(
 );
 
 router.post(
-  "/:post_id/postvotes",
+  "/:post_id/votes",
   authenticateIdToken,
   asyncHandler(async (req, res) => {
     const { vote } = req.body;
@@ -107,12 +105,12 @@ router.post(
 );
 
 router.delete(
-  "/:post_id/postvotes/:postVote_id",
+  "/:post_id/votes/:vote_id",
   authenticateIdToken,
   checkPostVoteOwnership,
   asyncHandler(async (req, res) => {
     await req.doc.remove();
-    res.status(200).json({ docId: req.params.postVote_id });
+    res.status(200).json({ docId: req.params.vote_id });
   })
 );
 

@@ -97,24 +97,24 @@ router.get(
 );
 
 router.post(
-  "/:community_id/communitymember",
+  "/:community_id/member",
   authenticateIdToken,
   asyncHandler(async (req, res) => {
     const { id } = req.user;
-    const communityMember = new CommunityMember({ member: id, community: req.params.community_id });
+    const member = new CommunityMember({ member: id, community: req.params.community_id });
 
-    const createdCommunityMember = await communityMember.save();
+    const createdMember = await member.save();
     res.status(200).json({ success: "You successfully joined the community!" });
   })
 );
 
 router.delete(
-  "/:community_id/communitymember/:communitymember_id",
+  "/:community_id/member/:member_id",
   authenticateIdToken,
   checkCommunityMemberOwnership,
   asyncHandler(async (req, res) => {
     await req.doc.remove();
-    res.status(200).json({ docId: req.params.communitymember_id });
+    res.status(200).json({ docId: req.params.member_id });
   })
 );
 
