@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import crypto from "crypto";
+import Comment from "../models/comment";
 import { validationResult } from "express-validator";
 
 import Refreshtoken from "../models/refreshtoken";
@@ -80,5 +81,22 @@ export const makeHash = obj => {
 };
 
 export const isSpam = async (model, hash) => {
-  return await model.exists({ hash }).exec();
+  return await model.exists({ hash });
+};
+
+export const getNestedComments = async comments => {
+  if (comments.length === 0) return comments;
+
+  return comments.reduce(async (prevPromise, comment) => {
+    const collection = await prevPromise;
+
+    comment.replies = await Comment.find({ post: comment.post, replyTo: comment._id })
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    await getNestedComments(comment.replies);
+    if (comment.replyTo === undefined) collection.push(comment);
+    return collection;
+  }, Promise.resolve([]));
 };

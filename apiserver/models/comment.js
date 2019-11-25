@@ -2,8 +2,8 @@ import { Schema, model } from "mongoose";
 import Post from "./post";
 import User from "./user";
 import CommentVote from "./commentVote";
-
-import { updateParentField, isSpam } from "../util";
+import CustomError from "../util/CustomError";
+import { updateParentField, isSpam, makeHash } from "../util";
 
 const commentSchema = new Schema({
   createdAt: {
@@ -32,26 +32,37 @@ const commentSchema = new Schema({
       message: "User does not exist"
     }
   },
+  replyTo: {
+    type: Schema.Types.ObjectId,
+    ref: "Comment",
+    validate: {
+      validator: async function(comment_id) {
+        return await this.constructor.exists({ _id: comment_id });
+      },
+      message: "The comment does not exist"
+    }
+  },
   upvotes: {
     type: Number,
     default: 0
   },
   hash: {
     type: String,
-    index: true
+    index: true,
+    select: false
   }
 });
 
-commentSchema.index({ post: 1, createdAt: -1 });
+commentSchema.index({ post: 1, replyTo: 1, createdAt: -1 });
 commentSchema.index({ author: 1, createdAt: -1 });
 
 commentSchema.pre("save", async function() {
   if (this.isNew) updateParentField(Post, this.post, "comments", 1);
   if (this.isModified("content")) {
     this.editedAt = new Date();
-    const obj = { author: this.author, content: this.content, post: this.post };
+    const obj = { author: this.author, content: this.content, post: this.post, replyTo: this.replyTo || "" };
     this.hash = makeHash(obj);
-    if (isSpam(this.hash))
+    if (await isSpam(this.constructor, this.hash))
       throw new CustomError(400, "You posted the same comment already. Check out your comments of the past!");
   }
 });

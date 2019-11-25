@@ -3,7 +3,7 @@ import User from "./user";
 import Community from "./community";
 import PostVote from "./postVote";
 import Comment from "./comment";
-import { removeDependentDocs, makeHash } from "../util";
+import { removeDependentDocs, makeHash, isSpam } from "../util";
 import CustomError from "../util/CustomError";
 
 const postSchema = new Schema({
@@ -19,7 +19,8 @@ const postSchema = new Schema({
   },
   hash: {
     type: String,
-    index: true
+    index: true,
+    select: false
   },
   createdAt: {
     type: Date,
@@ -63,7 +64,7 @@ postSchema.pre("save", async function() {
     this.editedAt = new Date();
     const obj = { author: this.author, title: this.title, content: this.content, community: this.community };
     this.hash = makeHash(obj);
-    if (isSpam(this.hash))
+    if (await isSpam(this.constructor, this.hash))
       throw new CustomError(400, "You posted the same post already. Check out your posts of the past!");
   }
 });

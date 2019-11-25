@@ -1,4 +1,5 @@
 import express from "express";
+import _ from "lodash";
 import Post from "../models/Post";
 import PostVote from "../models/postVote";
 
@@ -46,7 +47,10 @@ router.post(
     const createdPost = await post.save();
     res
       .status(200)
-      .json({ success: "You successfully wrote a post!", post: unescapeDocs(createdPost, "title", "content") });
+      .json({
+        success: "You successfully wrote a post!",
+        post: _.omit(unescapeDocs(createdPost, "title", "content").toJSON(), "hash")
+      });
   })
 );
 
