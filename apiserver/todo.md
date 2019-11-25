@@ -26,6 +26,5 @@
 
   # BUGS
 
-- admin of community cant post because it checks for members --> either automatically make him a member at creation or check if it is admin
 - error while posting results in indexed hash, so you cant post it even though its not in the database?
   - When a post has 1 postvote and you try to downvote it again, it will delete the upvote and result in an error

@@ -5,7 +5,7 @@ import PostVote from "../models/postVote";
 
 import { validatePost, validatePage } from "../middlewares/validation";
 import {
-  checkCommunityMembership,
+  checkCommunityOwnerOrMember,
   authenticateIdToken,
   checkPostOwnership,
   checkPostVoteOwnership
@@ -37,7 +37,7 @@ router.get(
 router.post(
   "/",
   authenticateIdToken,
-  checkCommunityMembership,
+  checkCommunityOwnerOrMember,
   validatePost(),
   asyncHandler(async (req, res) => {
     if (checkValidationErrors(req)) throw new CustomError(400);

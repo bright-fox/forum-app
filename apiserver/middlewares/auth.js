@@ -31,9 +31,10 @@ export const checkCommunityMemberOwnership = asyncHandler(async (req, res, next)
   next();
 });
 
-export const checkCommunityMembership = asyncHandler(async (req, res, next) => {
-  const member = await CommunityMember.findOne({ member: req.user.id, community: req.body.community }).exec();
-  if (!member) throw new CustomError(404, "You need to be a member of the community to post");
+export const checkCommunityOwnerOrMember = asyncHandler(async (req, res, next) => {
+  const isCreator = await Community.exists({ _id: req.body.community, creator: req.user.id });
+  const isMember = await CommunityMember.exists({ member: req.user.id, community: req.body.community });
+  if (!isCreator && !isMember) throw new CustomError(404, "You need to be a member of the community to post");
   next();
 });
 
