@@ -4,14 +4,34 @@
   "description": "api server for the forum app",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -r esm -r ./config.js index.js",
-    "test": "NODE_ENV=test mocha -r esm -r ./config.js"
+    "start": "nodemon -r esm",
+    "test": "cross-env NODE_ENV=test jest --detectOpenHandles"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "collectCoverage": true,
+    "coverageReporters": [
+      "html"
+    ]
+  },
+  "babel": {
+    "env": {
+      "test": {
+        "plugins": [
+          "@babel/plugin-transform-modules-commonjs"
+        ]
+      }
+    }
   },
   "author": "Hung Vu",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
+    "config": "^3.2.4",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "express": "^4.17.1",
@@ -21,8 +41,9 @@
     "mongoose": "^5.7.1"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-http": "^4.3.0",
-    "mocha": "^6.2.2"
+    "@babel/plugin-transform-modules-commonjs": "^7.7.4",
+    "cross-env": "^6.0.3",
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2"
   }
 }

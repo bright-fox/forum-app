@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 import Post from "./post";
 import User from "./user";
 import CommentVote from "./commentVote";
@@ -82,4 +82,4 @@ commentSchema.post("remove", async function() {
   await CommentVote.deleteMany({ comment: this._id }).exec();
 });
 
-export default model("Comment", commentSchema);
+export default models.Comment || model("Comment", commentSchema);

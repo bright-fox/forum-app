@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const refreshtokenSchema = new Schema({
   token: {
@@ -19,4 +19,4 @@ const refreshtokenSchema = new Schema({
   }
 });
 
-export default model("Refreshtoken", refreshtokenSchema);
+export default models.Refreshtoken || model("Refreshtoken", refreshtokenSchema);

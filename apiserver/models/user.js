@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { models } from "mongoose";
 import bcrypt from "bcrypt";
 
 import Post from "./post";
@@ -68,4 +68,4 @@ userSchema.post("remove", async function() {
   await removeDependentDocs(Community, { creator: this._id });
 });
 
-export default mongoose.model("User", userSchema);
+export default models.User || mongoose.model("User", userSchema);

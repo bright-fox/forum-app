@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 import User from "./user";
 import Community from "./community";
@@ -39,4 +39,4 @@ communityMemberSchema.post("remove", async function() {
   await updateParentField(Community, this.community, "members", -1);
 });
 
-export default model("CommunityMember", communityMemberSchema);
+export default models.CommunityMember || model("CommunityMember", communityMemberSchema);

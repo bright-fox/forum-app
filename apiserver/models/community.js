@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 import User from "./user";
 import Post from "./post";
 import CommunityMember from "./communityMember";
@@ -52,4 +52,4 @@ communitySchema.post("remove", async function() {
   await CommunityMember.deleteMany({ community: this._id }).exec();
 });
 
-export default model("Community", communitySchema);
+export default models.Community || model("Community", communitySchema);

@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 import Post from "./post";
 import User from "./user";
 import { updateParentField } from "../util";
@@ -49,4 +49,4 @@ postVoteSchema.post("remove", async function() {
   if (this.vote === 1 && !_.isEqual(this.user, post.author)) await updateParentField(User, post.author, "karma", -3);
 });
 
-export default model("PostVote", postVoteSchema);
+export default models.PostVote || model("PostVote", postVoteSchema);

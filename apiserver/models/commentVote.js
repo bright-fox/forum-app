@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 import _ from "lodash";
 import Comment from "./comment";
 import Post from "./post";
@@ -63,4 +63,4 @@ commentVoteSchema.post("remove", async function() {
     await updateParentField(User, comment.author, "karma", -2);
 });
 
-export default model("CommentVote", commentVoteSchema);
+export default models.CommentVote || model("CommentVote", commentVoteSchema);
