@@ -5,7 +5,7 @@ import Post from "../models/post";
 
 import { validateCommunity, validatePage } from "../middlewares/validation";
 import { authenticateIdToken, checkCommunityOwnership, checkCommunityMemberOwnership } from "../middlewares/auth";
-import { checkValidationErrors, asyncHandler, unescapeDocs } from "../util";
+import { checkValidationErrors, asyncHandler, unescapeDocs, checkPageUnderMax } from "../util";
 import CustomError from "../util/CustomError";
 
 const router = express.Router();
@@ -23,7 +23,7 @@ router.get(
       .limit(limit)
       .lean()
       .exec();
-    if (communities.length <= 0) throw new CustomError(404, "There are no communities yet!");
+    // if (communities.length <= 0) throw new CustomError(404, "There are no communities yet!"); --> does not get called because of checkPageUnderMax check
     res.status(200).json({ communities: unescapeDocs(communities, "description"), currentPage: req.params.p, maxPage });
   })
 );
@@ -91,7 +91,7 @@ router.get(
       .limit(limit)
       .lean()
       .exec();
-    if (posts.length <= 0) throw new CustomError(404, "No posts for this community found");
+    // if (posts.length <= 0) throw new CustomError(404, "No posts for this community found"); --> wont be check because of checkPageUnderMax
     res.status(200).json({ posts: unescapeDocs(posts, "title", "content"), currentPage: req.params.p, maxPage });
   })
 );

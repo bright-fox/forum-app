@@ -11,7 +11,7 @@ afterAll(async () => {
 });
 
 describe("Index Endpoints", () => {
-  const user = { username: "testperson", email: "test@person.de", password: "password", biography: "" };
+  const user = { username: "testperson", email: "test@person.com", password: "password", biography: "" };
   beforeEach(async () => {
     await User.deleteMany({}).exec();
     await Refreshtoken.deleteMany({}).exec();
@@ -32,7 +32,7 @@ describe("Index Endpoints", () => {
     test("fail to register due to wrong input", async done => {
       const res = await request(app)
         .post("/register")
-        .send({ username: "testperson", email: "testing.de" });
+        .send({ username: "testperson", email: "testing.com" });
       expect(res.statusCode).toEqual(400);
       done();
     });
