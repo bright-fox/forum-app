@@ -197,14 +197,16 @@ describe("Community Routes", () => {
     });
 
     describe("/POST become member of community", () => {
-      test("it should create communitymember", async done => {
+      test("it should create communitymember and increment members field in community", async done => {
         const createdCommunity = await createCommunity();
         const res = await request(app)
           .post(`/communities/${createdCommunity._id}/member`)
           .set("Authorization", "bearer " + idToken);
+        const resTwo = await request(app).get(`/communities/${createdCommunity._id}`);
 
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty("success");
+        expect(resTwo.body.community.members).toEqual(1);
         done();
       });
 
@@ -218,7 +220,7 @@ describe("Community Routes", () => {
     });
 
     describe("/DELETE remove member of community", () => {
-      test("it should delete a community member", async done => {
+      test("it should delete a community member and decrement members field in community", async done => {
         const createdCommunity = await createCommunity();
         await request(app)
           .post(`/communities/${createdCommunity._id}/member`)
@@ -231,8 +233,11 @@ describe("Community Routes", () => {
           .delete(`/communities/${createdCommunity._id}/member/${member._id}`)
           .set("Authorization", "bearer " + idToken);
 
+        const resTwo = await request(app).get(`/communities/${createdCommunity._id}`);
+
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty("docId");
+        expect(resTwo.body.community.members).toEqual(0);
         done();
       });
 
