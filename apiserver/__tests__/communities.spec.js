@@ -8,7 +8,7 @@ import Post from "../models/post";
 import CommunityMember from "../models/communityMember";
 
 let idToken;
-const user = { username: "testperson", password: "password" };
+let refreshToken;
 const community = { name: "testlovers", description: "We love to test REST APIs" };
 
 const createCommunity = async () => {
@@ -24,28 +24,29 @@ beforeAll(async done => {
   await User.deleteMany({}).exec();
   await Refreshtoken.deleteMany({}).exec();
   await Community.deleteMany({}).exec();
-  await request(app)
+  const res = await request(app)
     .post("/register")
-    .send({ ...user, email: "test@person.com", biography: "" });
+    .send({ username: "testperson", password: "password", email: "test@person.com", biography: "" });
+  refreshToken = res.body.refreshToken;
   done();
 });
 
 afterAll(async () => {
   await User.deleteMany({}).exec();
+  await Refreshtoken.deleteMany({}).exec();
   mongoose.disconnect();
 });
 
 describe("Community Routes", () => {
   beforeEach(async done => {
     const res = await request(app)
-      .post("/login")
-      .send(user);
+      .post("/token")
+      .send({ refreshToken });
     idToken = res.body.idToken;
     done();
   });
 
   afterEach(async () => {
-    await Refreshtoken.deleteMany({}).exec();
     await Community.deleteMany({}).exec();
   });
 

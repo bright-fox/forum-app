@@ -29,7 +29,7 @@ router.get(
       .limit(limit)
       .lean()
       .exec();
-    if (posts.length <= 0) throw new CustomError(404, "There are no posts!");
+    // if (posts.length <= 0) throw new CustomError(404, "There are no posts!");
     res.status(200).json({ posts: unescapeDocs(posts, "title", "content"), currentPage: req.params.p, maxPage });
   })
 );
@@ -59,7 +59,7 @@ router.get(
       .lean()
       .exec();
     if (!post) throw new CustomError(404, "No posts found");
-    res.status(200).json(unescapeDocs(post, "title", "content"));
+    res.status(200).json({ post: unescapeDocs(post, "title", "content") });
   })
 );
 
