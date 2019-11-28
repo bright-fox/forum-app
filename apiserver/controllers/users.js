@@ -8,7 +8,7 @@ import Comment from "../models/comment";
 import CommunityMember from "../models/communityMember";
 
 import { generateIdToken, generateRefreshToken } from "../util";
-import { validateUser, validateUsername, validatePassword, validatePage } from "../middlewares/validation";
+import { validateUser, validatePassword, validatePage } from "../middlewares/validation";
 import { authenticateIdToken, checkUserOwnership } from "../middlewares/auth";
 import { checkValidationErrors, asyncHandler, checkPageUnderMax, unescapeDocs } from "../util";
 import CustomError from "../util/CustomError";
@@ -43,31 +43,6 @@ router.put(
     res.status(200).json({
       success: "You succesfully updated your profile!",
       user: _.omit(unescapeDocs(updatedUser, "biography").toJSON(), "password", "email")
-    });
-  })
-);
-
-router.put(
-  "/:user_id/username",
-  authenticateIdToken,
-  checkUserOwnership,
-  validateUsername(),
-  asyncHandler(async (req, res) => {
-    if (checkValidationErrors(req)) throw new CustomError(400);
-    const { doc } = req;
-
-    doc.username = req.body.username;
-    const updatedUser = await doc.save();
-
-    const payload = { username: updatedUser.username, id: updatedUser._id };
-    const idToken = generateIdToken(payload);
-    const refreshToken = await generateRefreshToken(payload, updatedUser._id);
-
-    res.status(200).json({
-      success: "You succesfully updated your username!",
-      user: _.omit(unescapeDocs(updatedUser, "biography").toJSON(), "password", "email"),
-      idToken,
-      refreshToken
     });
   })
 );
@@ -118,7 +93,7 @@ router.get(
       .select("+email")
       .lean()
       .exec();
-    if (!user) throw new CustomError(404, "No user found");
+    // if (!user) throw new CustomError(404, "No user found"); --> checkUserOwnership checks the same
     res.status(200).json({ user: unescapeDocs(user, "biography") });
   })
 );
@@ -130,14 +105,19 @@ router.get(
   validatePage(),
   asyncHandler(async (req, res) => {
     if (checkValidationErrors(req)) throw new CustomError(400);
+    const memberships = await CommunityMember.find({ member: req.doc._id })
+      .lean()
+      .exec();
+    const communities = memberships.map(membership => membership.community);
     const limit = 30;
-    const maxPage = await checkPageUnderMax(Post, { community: { $in: req.doc.communities } }, limit, req.params.p);
-    const posts = await Post.find({ community: { $in: req.doc.communities } })
+    const maxPage = await checkPageUnderMax(Post, { community: { $in: communities } }, limit, req.params.p);
+    const posts = await Post.find({ community: { $in: communities } })
       .skip(req.params.p * limit - limit)
       .limit(limit)
       .lean()
       .exec();
-    if (posts.length <= 0) throw new CustomError(404, "You did not join any communities to see their posts!");
+
+    //if (posts.length <= 0) throw new CustomError(404, "You did not join any communities to see their posts!");
     res.status(200).json({ posts: unescapeDocs(posts, "title", "content"), maxPage, currentPage: req.params.p });
   })
 );
@@ -154,7 +134,7 @@ router.get(
       .limit(limit)
       .lean()
       .exec();
-    if (posts.length <= 0) throw new CustomError(404, "You did not write any posts!");
+    //if (posts.length <= 0) throw new CustomError(404, "You did not write any posts!");
     res.status(200).json({ posts: unescapeDocs(posts, "title", "content"), maxPage, currentPage: req.params.p });
   })
 );
@@ -171,7 +151,7 @@ router.get(
       .limit(limit)
       .lean()
       .exec();
-    if (comments.length <= 0) throw new CustomError(404, "You did not write any comments!");
+    //if (comments.length <= 0) throw new CustomError(404, "You did not write any comments!");
     res.status(200).json({ comments: unescapeDocs(comments, "content"), maxPage, currentPage: req.params.p });
   })
 );
@@ -189,7 +169,7 @@ router.get(
       .limit(limit)
       .lean()
       .exec();
-    if (communityMembers.length <= 0) throw new CustomError(404, "You did not join any communitites!");
+    //if (communityMembers.length <= 0) throw new CustomError(404, "You did not join any communitites!");
     const communities = communityMembers.map(communityMember => communityMember.community);
     res.status(200).json({ communities: unescapeDocs(communities, "description"), currentPage: req.params.p, maxPage });
   })

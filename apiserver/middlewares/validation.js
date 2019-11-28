@@ -37,17 +37,6 @@ export const validateLogin = () => {
   ];
 };
 
-export const validateUsername = () => {
-  return [
-    body("username")
-      .exists()
-      .not()
-      .isEmpty()
-      .trim()
-      .isAlphanumeric()
-  ];
-};
-
 export const validateUser = () => {
   return [
     body("biography")
