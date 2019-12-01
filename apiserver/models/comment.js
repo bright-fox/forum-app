@@ -71,9 +71,8 @@ commentSchema.pre("save", async function() {
 commentSchema.post("deleteOne", async function() {
   console.log("DeleteOne Post Middleware");
   const { _id, post } = this.getQuery();
-
-  await updateParentField(Post, this.post, "comments", -1);
-  await CommentVote.deleteMany({ comment: this._id }).exec();
+  await updateParentField(Post, post, "comments", -1);
+  await CommentVote.deleteMany({ comment: _id }).exec();
 });
 
 // TODO: Check if comment is 0

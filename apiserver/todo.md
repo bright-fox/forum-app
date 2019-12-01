@@ -10,6 +10,8 @@
 
 # DEFINITE CHANGES TO MAKE
 
+- check if comment started a thread.. yes --> soft delete.. no --> hard delete
+
 # POSSIBLE CHANGES
 
 - make response docs consistent and call it "docs"?
@@ -28,3 +30,7 @@
 
 - error while posting results in indexed hash, so you cant post it even though its not in the database?
   - When a post has 1 postvote and you try to downvote it again, it will delete the upvote and result in an error
+
+# POSSIBLE BUGS
+
+- if idToken expiration is set too low --> comment tests will fail because it depends on the one idToken to stay valid until all tests are over

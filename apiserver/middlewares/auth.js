@@ -12,7 +12,7 @@ import User from "../models/user";
 export const authenticateIdToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-  if (!token) return next(new CustomError(401));
+  if (!token) return next(new CustomError(401, "You did not pass an id token"));
 
   jwt.verify(token, process.env.ID_TOKEN_SECRET, (err, user) => {
     if (err) return next(new CustomError(403, "The id token is invalid"));

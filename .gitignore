@@ -1,7 +1,7 @@
 # Do not track node modules
 node_modules/
 
-todo.txt
+todo.md
 .env
 
 coverage/
