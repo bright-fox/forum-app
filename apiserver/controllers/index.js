@@ -7,8 +7,8 @@ import User from "../models/user";
 import RefreshToken from "../models/refreshtoken";
 import CustomError from "../util/CustomError";
 import { checkValidationErrors, asyncHandler, generateIdToken, generateRefreshToken, unescapeDocs } from "../util";
-import { validateRegister, validateLogin } from "../middlewares/validation";
-import { authenticateIdToken } from "../middlewares/auth";
+import { validateRegister, validateLogin, validateRefreshToken } from "../middlewares/validation";
+import { authenticateIdToken, authenticateRefreshToken } from "../middlewares/auth";
 
 const router = express.Router();
 
@@ -56,18 +56,23 @@ router.post(
 );
 
 router.post(
-  "/token",
+  "/logout",
+  validateRefreshToken(),
+  authenticateRefreshToken,
   asyncHandler(async (req, res) => {
-    if (!req.body.refreshToken) throw new CustomError(400, "No refresh token passed");
+    await req.token.remove();
+    res.status(200).json({ success: "You successfully logged out!" });
+  })
+);
 
-    const foundToken = await RefreshToken.findOne({ token: req.body.refreshToken }).exec();
-    if (!foundToken) throw new CustomError(401, "Token is not in the whitelist");
-
-    jwt.verify(req.body.refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-      if (err) throw new CustomError(401, "The token is expired or invalid");
-      const idToken = generateIdToken({ id: user.id, username: user.username });
-      res.status(200).json({ idToken });
-    });
+router.post(
+  "/token",
+  validateRefreshToken(),
+  authenticateRefreshToken,
+  asyncHandler(async (req, res) => {
+    const { id, username } = req.user;
+    const idToken = generateIdToken({ id, username });
+    res.status(200).json({ idToken });
   })
 );
 

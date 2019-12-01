@@ -37,6 +37,14 @@ export const validateLogin = () => {
   ];
 };
 
+export const validateRefreshToken = () => {
+  return [
+    body("refreshToken")
+      .exists()
+      .isJWT()
+  ];
+};
+
 export const validateUser = () => {
   return [
     body("biography")
