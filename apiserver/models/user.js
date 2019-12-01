@@ -59,13 +59,13 @@ userSchema.pre("save", async function() {
 });
 
 userSchema.post("remove", async function() {
-  await removeDependentDocs(Refreshtoken, { user: this._id });
-  await removeDependentDocs(CommentVote, { user: this._id });
-  await removeDependentDocs(PostVote, { user: this._id });
-  await removeDependentDocs(Comment, { author: this._id });
-  await removeDependentDocs(Post, { author: this._id });
-  await removeDependentDocs(CommunityMember, { member: this._id });
+  await Refreshtoken.deleteMany({ user: this._id }).exec();
   await removeDependentDocs(Community, { creator: this._id });
+  await removeDependentDocs(Post, { author: this._id });
+  await removeDependentDocs(Comment, { author: this._id });
+  await removeDependentDocs(PostVote, { user: this._id });
+  await removeDependentDocs(CommentVote, { user: this._id });
+  await removeDependentDocs(CommunityMember, { member: this._id });
 });
 
 export default models.User || mongoose.model("User", userSchema);

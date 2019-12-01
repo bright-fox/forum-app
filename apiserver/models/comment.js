@@ -47,6 +47,10 @@ const commentSchema = new Schema({
     type: String,
     index: true,
     select: false
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -59,7 +63,7 @@ commentSchema.pre("save", async function() {
     this.createdAt = date;
     updateParentField(Post, this.post, "comments", 1);
   }
-  if (this.isModified("content")) {
+  if (this.isModified("content") && this.isDeleted === false) {
     this.editedAt = date;
     const obj = { author: this.author, content: this.content, post: this.post, replyTo: this.replyTo || "" };
     this.hash = makeHash(obj);
@@ -68,16 +72,8 @@ commentSchema.pre("save", async function() {
   }
 });
 
-commentSchema.post("deleteOne", async function() {
-  console.log("DeleteOne Post Middleware");
-  const { _id, post } = this.getQuery();
-  await updateParentField(Post, post, "comments", -1);
-  await CommentVote.deleteMany({ comment: _id }).exec();
-});
-
-// TODO: Check if comment is 0
 commentSchema.post("remove", async function() {
-  console.log("Remove Post Middleware");
+  await updateParentField(Post, this.post, "comments", -1);
   await CommentVote.deleteMany({ comment: this._id }).exec();
 });
 

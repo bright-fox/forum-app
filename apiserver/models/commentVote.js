@@ -41,6 +41,7 @@ const commentVoteSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Post",
     required: true,
+    index: true,
     validate: {
       validator: post_id => Post.exists({ _id: post_id }),
       message: "Post does not exist"

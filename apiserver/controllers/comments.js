@@ -67,8 +67,16 @@ router.delete(
   authenticateIdToken,
   checkCommentOwnership,
   asyncHandler(async (req, res) => {
-    await Comment.deleteOne({ _id: req.params.comment_id, post: req.params.post_id }).exec();
-    res.status(200).json({ success: "You successfully deleted your comment!", docId: req.params.comment_id });
+    const hasReplies = await Comment.exists({ replyTo: req.doc._id });
+    if (hasReplies) {
+      // soft delete
+      Object.assign(req.doc, { content: "xXThis comment got deleted.Xx", isDeleted: true });
+      const res = await req.doc.save();
+    } else {
+      // hard delete
+      await req.doc.remove();
+    }
+    res.status(200).json({ success: "You successfully deleted your comment!", docId: req.doc._id });
   })
 );
 

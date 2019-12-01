@@ -5,6 +5,7 @@ import PostVote from "./postVote";
 import Comment from "./comment";
 import { removeDependentDocs, makeHash, isSpam } from "../util";
 import CustomError from "../util/CustomError";
+import CommentVote from "./commentVote";
 
 const postSchema = new Schema({
   title: {
@@ -72,7 +73,8 @@ postSchema.pre("save", async function() {
 
 postSchema.post("remove", async function() {
   console.log("Inside Post remove middleware");
-  await removeDependentDocs(Comment, { post: this._id });
+  await Comment.deleteMany({ post: this._id }).exec();
+  await CommentVote.deleteMany({ post: this._id }).exec();
   await PostVote.deleteMany({ post: this._id }).exec();
 });
 

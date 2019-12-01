@@ -50,6 +50,7 @@ export const checkPostVoteOwnership = asyncHandler(async (req, res, next) => {
 
 export const checkCommentOwnership = asyncHandler(async (req, res, next) => {
   await checkDocOwnership(req, Comment, req.params.comment_id, req.user.id, "author");
+  if (req.doc.isDeleted) throw new CustomError(404);
   next();
 });
 
