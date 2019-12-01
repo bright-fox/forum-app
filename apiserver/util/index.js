@@ -21,6 +21,16 @@ export const removeDependentDocs = async (model, selector) => {
   docs.forEach(async doc => await doc.remove());
 };
 
+export const deleteComment = async comment => {
+  const hasReplies = Comment.exists({ replyTo: comment._id });
+  if (hasReplies) {
+    Object.assign(comment, { content: "xXThis comment got deleted.Xx", isDeleted: true });
+    await comment.save();
+  } else {
+    await comment.remove();
+  }
+};
+
 export const updateParentField = async (model, id, incField, incValue) => {
   const doc = await model.findById(id).exec();
   if (!doc) throw new CustomError(404);

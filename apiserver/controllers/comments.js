@@ -3,7 +3,14 @@ import _ from "lodash";
 import Comment from "../models/comment";
 import CommentVote from "../models/commentVote";
 import { validateComment, validatePage } from "../middlewares/validation";
-import { checkValidationErrors, asyncHandler, unescapeDocs, checkPageUnderMax, getNestedComments } from "../util";
+import {
+  checkValidationErrors,
+  asyncHandler,
+  unescapeDocs,
+  checkPageUnderMax,
+  getNestedComments,
+  deleteComment
+} from "../util";
 import { authenticateIdToken, checkCommentOwnership, checkCommentVoteOwnership } from "../middlewares/auth";
 import CustomError from "../util/CustomError";
 
@@ -67,15 +74,7 @@ router.delete(
   authenticateIdToken,
   checkCommentOwnership,
   asyncHandler(async (req, res) => {
-    const hasReplies = await Comment.exists({ replyTo: req.doc._id });
-    if (hasReplies) {
-      // soft delete
-      Object.assign(req.doc, { content: "xXThis comment got deleted.Xx", isDeleted: true });
-      const res = await req.doc.save();
-    } else {
-      // hard delete
-      await req.doc.remove();
-    }
+    await deleteComment(req.doc);
     res.status(200).json({ success: "You successfully deleted your comment!", docId: req.doc._id });
   })
 );

@@ -9,7 +9,7 @@ import CommentVote from "./commentVote";
 import Refreshtoken from "./refreshtoken";
 import CommunityMember from "./CommunityMember";
 
-import { removeDependentDocs } from "../util";
+import { removeDependentDocs, deleteComment } from "../util";
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -62,7 +62,10 @@ userSchema.post("remove", async function() {
   await Refreshtoken.deleteMany({ user: this._id }).exec();
   await removeDependentDocs(Community, { creator: this._id });
   await removeDependentDocs(Post, { author: this._id });
-  await removeDependentDocs(Comment, { author: this._id });
+  const comments = await Comment.find({ author: this._id, isDeleted: false }).exec();
+  comments.forEach(async comment => {
+    await deleteComment(comment);
+  });
   await removeDependentDocs(PostVote, { user: this._id });
   await removeDependentDocs(CommentVote, { user: this._id });
   await removeDependentDocs(CommunityMember, { member: this._id });

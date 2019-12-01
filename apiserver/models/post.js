@@ -72,7 +72,6 @@ postSchema.pre("save", async function() {
 });
 
 postSchema.post("remove", async function() {
-  console.log("Inside Post remove middleware");
   await Comment.deleteMany({ post: this._id }).exec();
   await CommentVote.deleteMany({ post: this._id }).exec();
   await PostVote.deleteMany({ post: this._id }).exec();
