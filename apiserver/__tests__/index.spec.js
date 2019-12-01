@@ -12,6 +12,7 @@ afterAll(async () => {
 
 describe("Index Endpoints", () => {
   const user = { username: "testperson", email: "test@person.com", password: "password", biography: "" };
+
   beforeEach(async () => {
     await User.deleteMany({}).exec();
     await Refreshtoken.deleteMany({}).exec();
@@ -103,11 +104,33 @@ describe("Index Endpoints", () => {
       done();
     });
 
-    test("fail to get token due to no input", async done => {
+    test("fail to get token due to wrong input", async done => {
       const res = await request(app)
         .post("/token")
         .send({ refreshToken: "wrongtoken" });
-      expect(res.statusCode).toEqual(401);
+      expect(res.statusCode).toEqual(400);
+      done();
+    });
+  });
+
+  describe("Logout Route", () => {
+    let refreshToken;
+
+    beforeEach(async done => {
+      const res = await request(app)
+        .post("/register")
+        .send(user);
+      refreshToken = res.body.refreshToken;
+      done();
+    });
+
+    test("it should logout the user", async done => {
+      const res = await request(app)
+        .post("/logout")
+        .send({ refreshToken });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty("success");
       done();
     });
   });
