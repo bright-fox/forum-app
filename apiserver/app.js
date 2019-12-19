@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import config from "config";
 import dotenv from "dotenv";
+import cors from "cors";
 
 import communityRoutes from "./controllers/communities";
 import indexRoutes from "./controllers/index.js";
@@ -19,6 +20,11 @@ mongoose.set("useFindAndModify", false);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  cors({
+    origin: "http://localhost:3000"
+  })
+);
 
 // Log the incoming requests
 if (process.env.NODE_ENV !== "test") {
