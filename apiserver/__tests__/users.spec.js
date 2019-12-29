@@ -25,7 +25,7 @@ describe("User Routes", () => {
   beforeEach(async done => {
     const res = await request(app)
       .post("/register")
-      .send({ username: "testperson", password: "password", email: "test@person.com", biography: "" });
+      .send({ username: "testperson", password: "password", email: "test@person.com", biography: "", gender: "male" });
 
     userId = res.body.user._id;
     idToken = res.body.idToken;

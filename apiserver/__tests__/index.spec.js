@@ -11,7 +11,13 @@ afterAll(async () => {
 });
 
 describe("Index Endpoints", () => {
-  const user = { username: "testperson", email: "test@person.com", password: "password", biography: "" };
+  const user = {
+    username: "testperson",
+    email: "test@person.com",
+    password: "password",
+    biography: "",
+    gender: "male"
+  };
 
   beforeEach(async () => {
     await User.deleteMany({}).exec();

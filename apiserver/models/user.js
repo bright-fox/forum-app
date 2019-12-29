@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     select: false,
     required: [true, "You need to enter an email"]
   },
+  gender: {
+    type: String,
+    required: [true, "You need to select a gender"]
+  },
   biography: {
     type: String,
     trim: true

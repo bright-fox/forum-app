@@ -21,7 +21,7 @@ beforeAll(async done => {
 
   const res = await request(app)
     .post("/register")
-    .send({ username: "testperson", password: "password", email: "test@person.com", biography: "" });
+    .send({ username: "testperson", password: "password", email: "test@person.com", biography: "", gender: "male" });
   refreshToken = res.body.refreshToken;
   idToken = res.body.idToken;
   userId = res.body.user._id;

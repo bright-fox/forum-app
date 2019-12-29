@@ -17,8 +17,8 @@ router.post(
   validateRegister(),
   asyncHandler(async (req, res) => {
     if (checkValidationErrors(req)) throw new CustomError(400);
-    const { username, email, password, biography } = req.body;
-    const user = new User({ username, email, password, biography });
+    const { username, email, password, biography, gender } = req.body;
+    const user = new User({ username, email, password, biography, gender });
     const savedUser = await user.save();
 
     const payload = { id: savedUser._id, username: user.username };
@@ -51,7 +51,12 @@ router.post(
     const payload = { id: user._id, username: user.username };
     const idToken = generateIdToken(payload);
     const refreshToken = await generateRefreshToken(payload, user._id);
-    res.status(200).json({ success: "You successfully logged in!", idToken, refreshToken, user: payload });
+    res.status(200).json({
+      success: "You successfully logged in!",
+      idToken,
+      refreshToken,
+      user: { ...payload, gender: user.gender }
+    });
   })
 );
 

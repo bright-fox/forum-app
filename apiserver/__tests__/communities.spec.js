@@ -26,7 +26,7 @@ beforeAll(async done => {
   await Community.deleteMany({}).exec();
   const res = await request(app)
     .post("/register")
-    .send({ username: "testperson", password: "password", email: "test@person.com", biography: "" });
+    .send({ username: "testperson", password: "password", email: "test@person.com", biography: "", gender: "male" });
   refreshToken = res.body.refreshToken;
   done();
 });
