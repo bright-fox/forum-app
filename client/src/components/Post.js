@@ -18,7 +18,7 @@ const Post = ({ upvotes, createdAt, community, author, title, content, comments 
           <img src={`${process.env.PUBLIC_URL}/assets/avatars/kristy.png`} alt="avatar" className="ui avatar image" />
           <Link to={`/communities/${community._id}`}>{community.name}</Link>
           <Link to={`/users/${author._id}`} className="meta">
-            ~ posted by ${author.username}
+            ~ posted by u/{author.username}
           </Link>
           <div className="header mt-3">{title}</div>
           <div className="description">{content}</div>

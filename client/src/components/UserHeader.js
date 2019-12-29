@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 
 import LoginForm from "./LoginForm";
+import SignUpForm from "./SignUpForm";
 import UserContext from "../contexts/UserContext";
 import { request, requestToken } from "../api";
 import { LOGOUT } from "../actions";
@@ -8,11 +9,14 @@ import { LOGOUT } from "../actions";
 const UserHeader = () => {
   const { state, dispatch } = useContext(UserContext);
   const [showLogin, setShowLogin] = useState(false);
-
-  console.log(showLogin);
+  const [showSignUp, setShowSignUp] = useState(false);
 
   const handleLogin = () => {
     setShowLogin(true);
+  };
+
+  const handleSignUp = () => {
+    setShowSignUp(true);
   };
 
   const handleLogout = async () => {
@@ -29,12 +33,14 @@ const UserHeader = () => {
 
     if (res.status !== 200) return;
     localStorage.clear();
-    dispatch({ type: LOGOUT, payload: { isLoggedIn: false, currUser: null } });
+    dispatch({ type: LOGOUT });
   };
 
-  const renderLogin = () => {
+  const renderLoginAndSignUp = () => {
     return (
       <>
+        <button onClick={handleSignUp}>Sign Up</button>
+        <SignUpForm show={showSignUp} onDismiss={() => setShowSignUp(false)} />
         <button onClick={handleLogin}>Login</button>
         <LoginForm show={showLogin} onDismiss={() => setShowLogin(false)} />
       </>
@@ -49,7 +55,7 @@ const UserHeader = () => {
     );
   };
 
-  return <>{state.isLoggedIn ? renderLogout() : renderLogin()}</>;
+  return <>{state.isLoggedIn ? renderLogout() : renderLoginAndSignUp()}</>;
 };
 
 export default UserHeader;

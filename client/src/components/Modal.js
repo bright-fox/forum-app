@@ -9,7 +9,7 @@ const Modal = ({ show, onDismiss, title, content, actions }) => {
       <div onClick={e => e.stopPropagation()} className={`ui modal ${isActive}`}>
         <div className="header">{title}</div>
         <div className="content">{content}</div>
-        <div className="actions">{actions}</div>
+        {actions ? <div className="actions">{actions}</div> : ""}
       </div>
     </div>,
     document.querySelector("#modal")
