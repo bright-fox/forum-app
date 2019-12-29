@@ -51,7 +51,7 @@ router.post(
     const payload = { id: user._id, username: user.username };
     const idToken = generateIdToken(payload);
     const refreshToken = await generateRefreshToken(payload, user._id);
-    res.status(200).json({ success: "You successfully logged in!", idToken, refreshToken });
+    res.status(200).json({ success: "You successfully logged in!", idToken, refreshToken, user: payload });
   })
 );
 

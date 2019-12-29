@@ -27,6 +27,8 @@ router.get(
       .sort({ createdAt: -1 })
       .skip(req.params.p * limit - limit)
       .limit(limit)
+      .populate("author")
+      .populate("community")
       .lean()
       .exec();
     // if (posts.length <= 0) throw new CustomError(404, "There are no posts!");
@@ -56,6 +58,8 @@ router.get(
   "/:post_id",
   asyncHandler(async (req, res) => {
     const post = await Post.findById(req.params.post_id)
+      .populate("author")
+      .populate("community")
       .lean()
       .exec();
     if (!post) throw new CustomError(404, "No posts found");
