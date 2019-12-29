@@ -20,10 +20,17 @@ const Post = ({ upvotes, createdAt, community, author, title, content, comments 
             alt="avatar"
             className="ui avatar image"
           />
-          <Link to={`/communities/${community._id}`}>c/{community.name}</Link>
-          <Link to={`/users/${author._id}`} className="meta">
-            ~ posted by u/{author.username}
+          <Link className="link" to={`/communities/${community._id}`}>
+            c/{community.name}
           </Link>
+          <span className="meta">
+            {" "}
+            ~ posted by{" "}
+            <Link className="link" to={`/users/${author._id}`}>
+              u/{author.username}
+            </Link>
+          </span>
+
           <div className="header mt-3">{title}</div>
           <div className="description">{content}</div>
         </div>
