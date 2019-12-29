@@ -15,8 +15,12 @@ const Post = ({ upvotes, createdAt, community, author, title, content, comments 
       <div className="fifteen wide column wide ui card box-shadow-none p-0">
         <div className="content">
           <div className="right floated meta">{moment(createdAt).fromNow()}</div>
-          <img src={`${process.env.PUBLIC_URL}/assets/avatars/kristy.png`} alt="avatar" className="ui avatar image" />
-          <Link to={`/communities/${community._id}`}>{community.name}</Link>
+          <img
+            src={`${process.env.PUBLIC_URL}/assets/avatars/community.png`} // this is for the community..
+            alt="avatar"
+            className="ui avatar image"
+          />
+          <Link to={`/communities/${community._id}`}>c/{community.name}</Link>
           <Link to={`/users/${author._id}`} className="meta">
             ~ posted by u/{author.username}
           </Link>
