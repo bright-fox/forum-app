@@ -1,24 +1,40 @@
-import React from "react";
+import React, { useReducer, useMemo } from "react";
 import { Router, Route, Switch } from "react-router-dom";
-import Header from "./Header";
-import LoginForm from "./LoginForm";
+
 import history from "../history";
+import "../stylesheets/index.css";
+import userReducer from "../reducers/userReducer";
+import UserContext from "../contexts/UserContext";
+
+import Header from "./Header";
+import HomePage from "./pages/HomePage";
 
 const App = () => {
+  const initialState = {
+    isLoggedIn: localStorage.getItem("isLoggedIn") || false,
+    currUser: JSON.parse(localStorage.getItem("currUser"))
+  };
+  const [state, dispatch] = useReducer(userReducer, initialState);
+
+  const contextValue = useMemo(() => {
+    return { state, dispatch };
+  }, [state, dispatch]);
+
   return (
-    <div className="ui container">
-      <Router history={history}>
-        <Header />
-        <Switch>
-          <Route path="/" exact>
-            <h1>Hello World</h1>
-          </Route>
-          <Route path="/login" exact>
-            <LoginForm />
-          </Route>
-        </Switch>
-      </Router>
-    </div>
+    <UserContext.Provider value={contextValue}>
+      <div className="ui container">
+        <Router history={history}>
+          <Header />
+          <div id="content">
+            <Switch>
+              <Route path="/" exact>
+                <HomePage />
+              </Route>
+            </Switch>
+          </div>
+        </Router>
+      </div>
+    </UserContext.Provider>
   );
 };
 
