@@ -27,6 +27,7 @@ router.get(
     const comments = await Comment.find(selection)
       .skip(req.params.p * limit - limit)
       .limit(limit)
+      .populate("author")
       .lean()
       .exec();
     // if (comments.length <= 0) throw new CustomError(404, "No comments yet");
