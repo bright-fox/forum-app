@@ -22,8 +22,9 @@ const PostPage = () => {
   const renderPost = () => {
     return (
       <>
-        <Post {...post} />
-        <CommentList postId={postId} />
+        <Post {...post}>
+          <CommentList postId={postId} />
+        </Post>
       </>
     );
   };

@@ -37,6 +37,14 @@ div#root {
   flex-wrap: nowrap !important;
 }
 
+.wrap {
+  flex-wrap: wrap !important;
+}
+
+.text-wrap {
+  overflow-wrap: break-word;
+}
+
 .row-dir.hor-center {
   justify-content: center !important;
 }
@@ -83,6 +91,14 @@ div#root {
 
 .p-1 {
   padding: 3px !important;
+}
+
+.p-2 {
+  padding: 6px !important;
+}
+
+.py-2 {
+  padding: 6px 0 !important;
 }
 
 .pl-3 {
