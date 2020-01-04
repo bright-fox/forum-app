@@ -103,6 +103,7 @@ export const getNestedComments = async comments => {
 
     comment.replies = await Comment.find({ post: comment.post, replyTo: comment._id })
       .sort({ createdAt: -1 })
+      .populate("author")
       .lean()
       .exec();
 
