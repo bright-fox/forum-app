@@ -1,3 +1,7 @@
+body {
+  background-color: lightgray;
+}
+
 div#root {
   background-color: lightgray;
 }
@@ -25,7 +29,19 @@ div#root {
   align-items: center !important;
 }
 
-.text {
+.row-dir.vert-center {
+  align-items: center !important;
+}
+
+.no-wrap {
+  flex-wrap: nowrap !important;
+}
+
+.row-dir.hor-center {
+  justify-content: center !important;
+}
+
+.text-center {
   text-align: center;
 }
 
@@ -45,12 +61,40 @@ div#root {
   margin: 14px !important;
 }
 
+.mr-0 {
+  margin-right: 0 !important;
+}
+
 .mt-0 {
   margin-top: 0 !important;
 }
 
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.m-0 {
+  margin: 0 !important;
+}
+
 .p-0 {
   padding: 0 !important;
+}
+
+.p-1 {
+  padding: 3px !important;
+}
+
+.pl-3 {
+  padding-left: 10px !important;
+}
+
+.pl-2 {
+  padding-left: 6px !important;
+}
+
+.pl-1 {
+  padding-left: 3px !important;
 }
 
 .ui.bg-gray {
@@ -64,4 +108,20 @@ div#root {
 
 .link:hover {
   text-decoration: underline;
+}
+
+.full-width {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.meta {
+  color: gray;
+  font-size: 0.8rem;
+  display: inline-block;
+  padding: 0 0.5rem;
+}
+
+.comment-reply {
+  margin-left: 30px;
 }

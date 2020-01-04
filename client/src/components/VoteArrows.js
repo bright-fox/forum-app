@@ -1,14 +1,17 @@
 import React from "react";
 import "../stylesheets/index.css";
 
-const VoteArrows = ({ upvotes }) => {
+const VoteArrows = ({ upvotes, type }) => {
+  const size = type === "comment" ? { fontSize: "1rem" } : {};
+  const marginFix = type === "comment" ? { marginBottom: "7px" } : {};
+
   return (
-    <div className="fluid medium flex col-dir center">
-      <i className="angle up icon m-0"></i>
-      <div className="text">
+    <div style={size} className="fluid medium flex col-dir center">
+      <i style={marginFix} className="angle up icon mr-0"></i>
+      <div className="text-center">
         <span>{upvotes}</span>
       </div>
-      <i className="angle down icon m-0"></i>
+      <i className="angle down icon mr-0"></i>
     </div>
   );
 };

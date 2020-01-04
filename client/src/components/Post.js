@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 import VoteArrows from "./VoteArrows";
 import "../stylesheets/index.css";
 
-const Post = ({ upvotes, createdAt, community, author, title, content, comments }) => {
+const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments }) => {
   return (
-    <div className="ui center segment grid">
+    <div className="ui center segment grid mb-0 p-1 no-wrap">
       <div className="one wide column">
         <VoteArrows upvotes={upvotes} />
       </div>
@@ -25,13 +25,15 @@ const Post = ({ upvotes, createdAt, community, author, title, content, comments 
           </Link>
           <span className="meta">
             {" "}
-            ~ posted by{" "}
+            ~ by{" "}
             <Link className="link" to={`/users/${author._id}`}>
               u/{author.username}
             </Link>
           </span>
 
-          <div className="header mt-3">{title}</div>
+          <div className="header mt-3">
+            <Link to={`/posts/${_id}`}>{title}</Link>
+          </div>
           <div className="description">{content}</div>
         </div>
 
