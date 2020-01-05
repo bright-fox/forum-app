@@ -4,17 +4,19 @@ import { Link } from "react-router-dom";
 import { request } from "../api";
 import VoteArrows from "./VoteArrows";
 
-const CommentList = ({ postId }) => {
+const CommentList = ({ postId, trigger }) => {
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
+    console.log("fetched the data");
     const fetchPost = async () => {
       const res = await request({ method: "GET", path: `/posts/${postId}/comments/page/1` });
       const data = await res.json();
       setComments(data.comments);
+      console.log(data.comments);
     };
     fetchPost();
-  }, [postId]);
+  }, [postId, trigger]);
 
   const renderComments = (comments, isReply) => {
     return comments.map(comment => {

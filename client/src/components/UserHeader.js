@@ -20,7 +20,7 @@ const UserHeader = () => {
   };
 
   const handleLogout = async () => {
-    const tokenResponse = await requestToken(localStorage.getItem("refreshToken"));
+    const tokenResponse = await requestToken();
     if (tokenResponse.status !== 200) return; // TODO: subject to change
 
     const { idToken } = await tokenResponse.json();
@@ -39,9 +39,13 @@ const UserHeader = () => {
   const renderLoginAndSignUp = () => {
     return (
       <>
-        <button onClick={handleSignUp}>Sign Up</button>
+        <button className="ui button inverted orange" onClick={handleSignUp}>
+          Sign Up
+        </button>
         <SignUpForm show={showSignUp} onDismiss={() => setShowSignUp(false)} />
-        <button onClick={handleLogin}>Login</button>
+        <button className="ui button orange" onClick={handleLogin}>
+          Login
+        </button>
         <LoginForm show={showLogin} onDismiss={() => setShowLogin(false)} />
       </>
     );
@@ -50,12 +54,14 @@ const UserHeader = () => {
   const renderLogout = () => {
     return (
       <>
-        <button onClick={handleLogout}>Logout</button>
+        <button className="ui button grey" onClick={handleLogout}>
+          Logout
+        </button>
       </>
     );
   };
 
-  return <>{state.isLoggedIn ? renderLogout() : renderLoginAndSignUp()}</>;
+  return <div className="ui segment no-border">{state.isLoggedIn ? renderLogout() : renderLoginAndSignUp()}</div>;
 };
 
 export default UserHeader;

@@ -7,10 +7,11 @@ export const request = async ({ method, path, body, token }) => {
   return res;
 };
 
-export const requestToken = async token => {
+export const requestToken = async () => {
+  const refreshToken = localStorage.getItem("refreshToken");
   return await fetch(`${baseApiURL}/token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refreshToken: token })
+    body: JSON.stringify({ refreshToken })
   });
 };
