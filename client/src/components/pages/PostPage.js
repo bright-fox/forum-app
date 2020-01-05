@@ -21,17 +21,17 @@ const PostPage = () => {
       setPost(data.post);
     };
     fetchPost();
-  }, [postId]);
+  }, [postId, trigger]);
 
   // const renderAuthButtons = () => {};
 
   const renderPost = () => {
     return (
       <>
-        <Post {...post}>
+        <Post {...post} setTrigger={setTrigger}>
           {/* {state.isLoggedIn ? <CommentForm /> : renderAuthButtons()} */}
           <CommentForm postId={postId} setTrigger={setTrigger} />
-          <CommentList postId={postId} trigger={trigger} />
+          <CommentList postId={postId} trigger={trigger} setTrigger={setTrigger} />
         </Post>
       </>
     );

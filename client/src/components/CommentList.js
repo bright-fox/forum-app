@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { request } from "../api";
 import VoteArrows from "./VoteArrows";
 
-const CommentList = ({ postId, trigger }) => {
+const CommentList = ({ postId, trigger, setTrigger }) => {
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
@@ -21,7 +21,12 @@ const CommentList = ({ postId, trigger }) => {
       return (
         <div className="row py-2" key={comment._id}>
           <div className="one wide column p-0">
-            <VoteArrows upvotes={comment.upvotes} type="comment" />
+            <VoteArrows
+              upvotes={comment.upvotes}
+              type="comment"
+              path={`/posts/${postId}/comments/${comment._id}/votes`}
+              setTrigger={setTrigger}
+            />
           </div>
           <div className="fifteen wide column flex row-dir vert-center ui grid p-0 m-0">
             <div>

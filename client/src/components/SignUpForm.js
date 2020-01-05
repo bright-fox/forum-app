@@ -1,13 +1,11 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import Modal from "./Modal";
-import UserContext from "../contexts/UserContext";
 import { useInput } from "../hooks";
 import { request } from "../api";
 import { cacheUser } from "../utils";
 import { SIGNUP } from "../actions";
 
-const SignUpForm = ({ show, onDismiss }) => {
-  const { dispatch } = useContext(UserContext);
+const SignUpForm = ({ dispatch, onDismiss }) => {
   const { value: username, bind: bindUsername } = useInput("");
   const { value: email, bind: bindEmail } = useInput("");
   const { value: password, bind: bindPassword } = useInput("");
@@ -43,7 +41,7 @@ const SignUpForm = ({ show, onDismiss }) => {
       <form className="ui form" onSubmit={handleSubmit}>
         <div className="field">
           <label htmlFor="username">Username:</label>
-          <input type="text" name="username" placeholder="username" {...bindUsername} />
+          <input type="text" autoFocus name="username" placeholder="username" {...bindUsername} />
         </div>
         <div className="field">
           <label htmlFor="email">E-Mail:</label>
@@ -99,11 +97,14 @@ const SignUpForm = ({ show, onDismiss }) => {
         <button className="ui button" type="submit">
           Submit
         </button>
+        <button className="ui button red" onClick={onDismiss} type="button">
+          Cancel
+        </button>
       </form>
     );
   };
 
-  return <Modal show={show} onDismiss={onDismiss} title={renderTitle()} content={renderContent()} />;
+  return <Modal onDismiss={onDismiss} title={renderTitle()} content={renderContent()} />;
 };
 
 export default SignUpForm;

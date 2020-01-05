@@ -1,18 +1,16 @@
 import React from "react";
-import ReactDOM from "react-dom";
 
-const Modal = ({ show, onDismiss, title, content, actions }) => {
-  const isActive = show ? "active" : "";
+const Modal = ({ onDismiss, title, content, actions }) => {
+  document.querySelector("body").classList.add("modal__body-open");
 
-  return ReactDOM.createPortal(
-    <div onClick={onDismiss} className={`ui dimmer modals ${isActive}`}>
-      <div onClick={e => e.stopPropagation()} className={`ui modal ${isActive}`}>
+  return (
+    <div onClick={onDismiss} className="ui dimmer modals active">
+      <div onClick={e => e.stopPropagation()} className="ui modal active">
         <div className="header">{title}</div>
         <div className="content">{content}</div>
         {actions ? <div className="actions">{actions}</div> : ""}
       </div>
-    </div>,
-    document.querySelector("#modal")
+    </div>
   );
 };
 export default Modal;

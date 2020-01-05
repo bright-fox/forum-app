@@ -1,23 +1,12 @@
-import React, { useState, useContext } from "react";
-
-import LoginForm from "./LoginForm";
-import SignUpForm from "./SignUpForm";
+import React, { useContext } from "react";
+import LoginButton from "./LoginButton";
+import SignUpButton from "./SignUpButton";
 import UserContext from "../contexts/UserContext";
 import { request, requestToken } from "../api";
 import { LOGOUT } from "../actions";
 
 const UserHeader = () => {
   const { state, dispatch } = useContext(UserContext);
-  const [showLogin, setShowLogin] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
-
-  const handleLogin = () => {
-    setShowLogin(true);
-  };
-
-  const handleSignUp = () => {
-    setShowSignUp(true);
-  };
 
   const handleLogout = async () => {
     const tokenResponse = await requestToken();
@@ -37,17 +26,11 @@ const UserHeader = () => {
     dispatch({ type: LOGOUT });
   };
 
-  const renderLoginAndSignUp = () => {
+  const renderAuthButtons = () => {
     return (
       <>
-        <button className="ui button inverted orange" onClick={handleSignUp}>
-          Sign Up
-        </button>
-        <SignUpForm show={showSignUp} onDismiss={() => setShowSignUp(false)} />
-        <button className="ui button orange" onClick={handleLogin}>
-          Login
-        </button>
-        <LoginForm show={showLogin} onDismiss={() => setShowLogin(false)} />
+        <SignUpButton />
+        <LoginButton />
       </>
     );
   };
@@ -62,7 +45,7 @@ const UserHeader = () => {
     );
   };
 
-  return <div className="ui segment no-border">{state.isLoggedIn ? renderLogout() : renderLoginAndSignUp()}</div>;
+  return <div className="ui segment no-border">{state.isLoggedIn ? renderLogout() : renderAuthButtons()}</div>;
 };
 
 export default UserHeader;

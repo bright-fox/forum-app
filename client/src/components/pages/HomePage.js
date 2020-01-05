@@ -1,6 +1,5 @@
 import React from "react";
 import PostList from "../PostList";
-import "../../stylesheets/index.css";
 
 const HomePage = () => {
   return (

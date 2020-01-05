@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import UserHeader from "./UserHeader";
-import "../stylesheets/index.css";
 
 const Header = () => {
   return (

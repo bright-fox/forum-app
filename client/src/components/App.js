@@ -2,7 +2,7 @@ import React, { useReducer, useMemo } from "react";
 import { Router, Route, Switch } from "react-router-dom";
 
 import history from "../history";
-import "../stylesheets/index.css";
+import "../css/index.css";
 import userReducer from "../reducers/userReducer";
 import UserContext from "../contexts/UserContext";
 

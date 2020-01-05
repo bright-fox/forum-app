@@ -2,18 +2,18 @@ import React from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import VoteArrows from "./VoteArrows";
-import "../stylesheets/index.css";
 
-const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, children }) => {
+const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, setTrigger, children }) => {
   const renderChildren = () => {
     if (!children) return;
     return <>{children}</>;
   };
+
   return (
     <div className="ui segment grid">
       <div className="row no-wrap center">
         <div className="one wide column">
-          <VoteArrows upvotes={upvotes} />
+          <VoteArrows upvotes={upvotes} path={`/posts/${_id}/votes`} setTrigger={setTrigger} />
         </div>
 
         <div className="fifteen wide column wide ui card box-shadow-none p-0">
