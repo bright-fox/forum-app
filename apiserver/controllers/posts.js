@@ -92,6 +92,18 @@ router.delete(
   })
 );
 
+router.get(
+  "/:post_id/votes",
+  authenticateIdToken,
+  asyncHandler(async (req, res) => {
+    const postVote = await PostVote.findOne({ post: req.params.post_id, user: req.user.id })
+      .lean()
+      .exec();
+    if (!postVote) throw new CustomError(404, "No vote found");
+    res.status(200).json(postVote);
+  })
+);
+
 router.post(
   "/:post_id/votes",
   authenticateIdToken,
@@ -103,8 +115,8 @@ router.post(
     const foundPostVote = await PostVote.findOne({ post: req.params.post_id, user: req.user.id }).exec();
     if (foundPostVote) await foundPostVote.remove();
 
-    await postVote.save();
-    res.status(200).json({ success: "You successfully voted for this post" });
+    const createdVote = await postVote.save();
+    res.status(200).json({ success: "You successfully voted for this post", createdVote });
   })
 );
 

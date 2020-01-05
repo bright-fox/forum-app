@@ -80,6 +80,18 @@ router.delete(
   })
 );
 
+router.get(
+  "/:comment_id/votes",
+  authenticateIdToken,
+  asyncHandler(async (req, res) => {
+    const commentVote = await CommentVote.findOne({ comment: req.params.comment_id, user: req.user.id })
+      .lean()
+      .exec();
+    if (!commentVote) throw new CustomError(404, "No vote found");
+    res.status(200).json(commentVote);
+  })
+);
+
 router.post(
   "/:comment_id/votes",
   authenticateIdToken,
@@ -92,8 +104,8 @@ router.post(
     const foundCommentVote = await CommentVote.findOne({ comment: req.params.comment_id, user: req.user.id }).exec();
     if (foundCommentVote) await foundCommentVote.remove();
 
-    await commentVote.save();
-    res.status(200).json({ success: "You successfully voted for this comment" });
+    const createdVote = await commentVote.save();
+    res.status(200).json({ success: "You successfully voted for this comment", createdVote });
   })
 );
 
