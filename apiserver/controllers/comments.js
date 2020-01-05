@@ -32,7 +32,7 @@ router.get(
       .exec();
     // if (comments.length <= 0) throw new CustomError(404, "No comments yet");
     await getNestedComments(comments);
-    res.status(200).json({ comments, currentPage: req.params.p, maxPage });
+    res.status(200).json({ comments: unescapeDocs(comments, "content"), currentPage: req.params.p, maxPage });
   })
 );
 
