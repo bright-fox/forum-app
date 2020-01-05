@@ -33,6 +33,7 @@ const UserHeader = () => {
 
     if (res.status !== 200) return;
     localStorage.clear();
+    document.activeElement.blur();
     dispatch({ type: LOGOUT });
   };
 

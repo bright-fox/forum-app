@@ -8,12 +8,10 @@ const CommentList = ({ postId, trigger }) => {
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    console.log("fetched the data");
     const fetchPost = async () => {
       const res = await request({ method: "GET", path: `/posts/${postId}/comments/page/1` });
       const data = await res.json();
       setComments(data.comments);
-      console.log(data.comments);
     };
     fetchPost();
   }, [postId, trigger]);
