@@ -104,6 +104,10 @@ div#root {
   padding: 6px !important;
 }
 
+.px-5 {
+  padding: 0 30px !important;
+}
+
 .py-2 {
   padding: 6px 0 !important;
 }
@@ -164,4 +168,8 @@ div#root {
 
 .bold {
   font-weight: bold;
+}
+
+.pointer {
+  cursor: pointer;
 }
