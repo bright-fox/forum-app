@@ -28,7 +28,7 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
               setTrigger={setTrigger}
             />
           </div>
-          <div className="fifteen wide column flex row-dir vert-center ui grid p-0 m-0">
+          <div className="fifteen wide column flex col-dir vert-center ui grid p-0 m-0">
             <div>
               <Link to={`/users/${comment.author._id}`}>
                 <img

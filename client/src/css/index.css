@@ -28,7 +28,7 @@ div#root {
 }
 
 .col-dir {
-  flex-direction: column;
+  flex-direction: column !important;
 }
 
 .center {
@@ -154,10 +154,14 @@ div#root {
   color: #fe9a76;
 }
 
+.icon.angle.pressed:hover {
+  cursor: default;
+}
+
 .orange-color {
   color: #fe9a76;
 }
 
-.icon.angle.pressed:hover {
-  cursor: default;
+.bold {
+  font-weight: bold;
 }
