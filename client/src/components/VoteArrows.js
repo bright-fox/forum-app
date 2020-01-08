@@ -8,8 +8,6 @@ const VoteArrows = ({ upvotes, type, path, setTrigger }) => {
   const { state } = useContext(UserContext);
   const [vote, setVote] = useState(0);
 
-  console.log(vote);
-
   useEffect(() => {
     if (!state.isLoggedIn) return setVote(0);
     const fetchVote = async () => {

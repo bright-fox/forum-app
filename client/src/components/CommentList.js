@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import CommentForm from "./CommentForm";
-import { request } from "../api";
+import { request, requestToken } from "../api";
 import VoteArrows from "./VoteArrows";
+import UserContext from "../contexts/UserContext";
 
 const CommentList = ({ postId, trigger, setTrigger }) => {
   const [comments, setComments] = useState([]);
+  const { state } = useContext(UserContext);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -30,6 +32,14 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
       <CommentForm postId={postId} setTrigger={setTrigger} isReply commentId={e.target.getAttribute("data-id")} />,
       container
     );
+  };
+
+  const handleDelete = async e => {
+    const commentId = e.target.getAttribute("data-id");
+    const tokenRes = await requestToken();
+    const { idToken } = await tokenRes.json();
+    await request({ method: "DELETE", path: `/posts/${postId}/comments/${commentId}`, token: idToken });
+    setTrigger({});
   };
 
   const renderComments = (comments, isReply) => {
@@ -57,12 +67,19 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
                 {comment.author.username}
               </Link>
               <div className="meta">~ {moment(comment.createdAt).fromNow()}</div>
-              <div className="text-wrap">{comment.content}</div>
+              <div className={comment.isDeleted ? "italic small gray" : ""}>{comment.content}</div>
             </div>
             <div className="meta">
               <span className="link pointer" onClick={handleReply} data-id={comment._id}>
                 Reply
               </span>
+              {state.isLoggedIn && state.currUser.id === comment.author._id && !comment.isDeleted ? (
+                <span className="link pointer ml-2" onClick={handleDelete} data-id={comment._id}>
+                  Delete
+                </span>
+              ) : (
+                ""
+              )}
             </div>
             <div id={`commentform-${comment._id}`} data-show="0"></div>
             {renderComments(comment.replies, true)}

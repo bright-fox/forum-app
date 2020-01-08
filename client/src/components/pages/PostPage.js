@@ -44,7 +44,6 @@ const PostPage = () => {
   };
 
   const renderPost = () => {
-    console.log(state.isLoggedIn);
     return (
       <>
         <Post {...post} setTrigger={setTrigger}>

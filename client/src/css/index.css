@@ -76,6 +76,10 @@ div#root {
   margin: 14px !important;
 }
 
+.ml-2 {
+  margin-left: 10px !important;
+}
+
 .mr-0 {
   margin-right: 0 !important;
 }
@@ -170,6 +174,18 @@ div#root {
   font-weight: bold;
 }
 
+.italic {
+  font-style: italic;
+}
+
 .pointer {
   cursor: pointer;
+}
+
+.small {
+  font-size: 0.9rem;
+}
+
+.gray {
+  color: gray;
 }
