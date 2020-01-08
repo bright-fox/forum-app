@@ -4,9 +4,15 @@ import { request, requestToken } from "../api";
 import UserContext from "../contexts/UserContext";
 import Modal from "./Modal";
 
-const VoteArrows = ({ upvotes, type, path, setTrigger }) => {
+const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
   const { state } = useContext(UserContext);
   const [vote, setVote] = useState(0);
+
+  // styles
+  const commentSize = type === "comment" ? { fontSize: "1.1rem" } : {};
+  const commentMargin = type === "comment" ? { marginBottom: "5px" } : {};
+  const voted = v => (vote === v ? "orange-color pressed " : " ");
+  const disabled = !state.isLoggedIn || isDeleted ? "gray pressed " : " ";
 
   useEffect(() => {
     if (!state.isLoggedIn) return setVote(0);
@@ -43,26 +49,16 @@ const VoteArrows = ({ upvotes, type, path, setTrigger }) => {
     setTrigger({});
   };
 
-  const onClickUp = vote !== 1 ? handleClick : null;
-  const onClickDown = vote !== -1 ? handleClick : null;
+  const onClickUp = vote !== 1 && state.isLoggedIn && !isDeleted ? handleClick : null;
+  const onClickDown = vote !== -1 && state.isLoggedIn && !isDeleted ? handleClick : null;
 
   return (
-    <div style={type === "comment" ? { fontSize: "1.1rem" } : {}} className="fluid medium flex col-dir center">
-      <i
-        id="up"
-        style={type === "comment" ? { marginBottom: "5px" } : {}}
-        disabled
-        className={"angle up icon mr-0 " + (vote === 1 ? "orange-color pressed" : "")}
-        onClick={onClickUp}
-      ></i>
+    <div style={commentSize} className="fluid medium flex col-dir center">
+      <i id="up" style={commentMargin} className={"angle up icon mr-0 " + voted(1) + disabled} onClick={onClickUp}></i>
       <div className="text-center">
-        <span>{upvotes}</span>
+        <span className={"default " + disabled}>{upvotes}</span>
       </div>
-      <i
-        id="down"
-        className={"angle down icon mr-0 " + (vote === -1 ? "orange-color pressed" : "")}
-        onClick={onClickDown}
-      ></i>
+      <i id="down" className={"angle down icon mr-0 " + voted(-1) + disabled} onClick={onClickDown}></i>
     </div>
   );
 };

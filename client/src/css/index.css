@@ -162,6 +162,10 @@ div#root {
   color: #fe9a76;
 }
 
+.pressed.gray:hover {
+  color: gray;
+}
+
 .icon.angle.pressed:hover {
   cursor: default;
 }
@@ -188,4 +192,8 @@ div#root {
 
 .gray {
   color: gray;
+}
+
+.default {
+  cursor: default;
 }
