@@ -49,12 +49,10 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
         <span className="link pointer" onClick={handleReply} data-id={comment._id}>
           Reply
         </span>
-        {state.currUser.id === comment.author._id && !comment.isDeleted ? (
+        {state.currUser.id === comment.author._id && !comment.isDeleted && (
           <span className="link pointer ml-2" onClick={handleDelete} data-id={comment._id}>
             Delete
           </span>
-        ) : (
-          ""
         )}
       </div>
     );
@@ -86,7 +84,7 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
                 {comment.author.username}
               </Link>
               <div className="meta">~ {moment(comment.createdAt).fromNow()}</div>
-              <div className={comment.isDeleted ? "italic small gray" : ""}>{comment.content}</div>
+              <div className={comment.isDeleted && "italic small gray"}>{comment.content}</div>
             </div>
             {renderActions(comment)}
             <div id={`commentform-${comment._id}`} data-show="0"></div>

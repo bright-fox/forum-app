@@ -1,14 +1,15 @@
 import React from "react";
+import { unmountModal } from "../utils";
 
-const Modal = ({ onDismiss, title, content, actions }) => {
+const Modal = ({ title, content, actions }) => {
   document.querySelector("body").classList.add("modal__body-open");
 
   return (
-    <div onClick={onDismiss} className="ui dimmer modals active">
+    <div onClick={unmountModal} className="ui dimmer modals active">
       <div onClick={e => e.stopPropagation()} className="ui modal active">
-        <div className="header">{title}</div>
-        <div className="content">{content}</div>
-        {actions ? <div className="actions">{actions}</div> : ""}
+        {title && <div className="header">{title}</div>}
+        {content && <div className="content">{content}</div>}
+        {actions && <div className="actions">{actions}</div>}
       </div>
     </div>
   );

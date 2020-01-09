@@ -209,3 +209,7 @@ div#root {
 .text.center {
   text-align: center;
 }
+
+.half-width {
+  max-width: 50%;
+}

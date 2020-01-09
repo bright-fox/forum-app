@@ -36,9 +36,9 @@ const CommentForm = ({ postId, setTrigger, isReply, commentId }) => {
   };
 
   return (
-    <form className={"ui form segment m-0 box-shadow-none no-border " + (isReply ? "p-0" : "")} onSubmit={handleSubmit}>
+    <form className={"ui form segment m-0 box-shadow-none no-border " + (isReply && "p-0 ")} onSubmit={handleSubmit}>
       <div className="field">
-        {!isReply ? <label htmlFor="content">Write your comment:</label> : ""}
+        {!isReply && <label htmlFor="content">Write your comment:</label>}
         <textarea
           {...bindContent}
           name="content"
@@ -49,12 +49,10 @@ const CommentForm = ({ postId, setTrigger, isReply, commentId }) => {
         <button type="submit" className="ui button mt-3 mini">
           Submit
         </button>
-        {isReply && commentId ? (
+        {isReply && commentId && (
           <button className="ui button red mini" onClick={unmount}>
             Cancel
           </button>
-        ) : (
-          ""
         )}
       </div>
     </form>

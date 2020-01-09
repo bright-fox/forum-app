@@ -5,9 +5,9 @@ import Modal from "./Modal";
 import { useInput } from "../hooks";
 import { request } from "../api";
 import { LOGIN } from "../actions";
-import { cacheUser } from "../utils";
+import { cacheUser, unmountModal } from "../utils";
 
-const LoginForm = ({ dispatch, onDismiss }) => {
+const LoginForm = ({ dispatch }) => {
   const { value: username, bind: bindUsername } = useInput("");
   const { value: password, bind: bindPassword } = useInput("");
 
@@ -15,11 +15,11 @@ const LoginForm = ({ dispatch, onDismiss }) => {
     e.preventDefault();
 
     const res = await request({ method: "POST", path: "/login", body: { username, password } });
-    if (res.status !== 200) return onDismiss(); // TODO: subject to change
+    if (res.status !== 200) return unmountModal(); // TODO: subject to change
     const data = await res.json();
     cacheUser(data.user, data.refreshToken);
     dispatch({ type: LOGIN, payload: { currUser: data.user } });
-    onDismiss();
+    unmountModal();
   };
 
   const renderTitle = () => {
@@ -40,14 +40,14 @@ const LoginForm = ({ dispatch, onDismiss }) => {
         <button className="ui button" type="submit">
           Login
         </button>
-        <button className="ui button red" onClick={onDismiss} type="button">
+        <button className="ui button red" onClick={unmountModal} type="button">
           Cancel
         </button>
       </form>
     );
   };
 
-  return <Modal onDismiss={onDismiss} title={renderTitle()} content={renderContent()} />;
+  return <Modal title={renderTitle()} content={renderContent()} />;
 };
 
 export default LoginForm;

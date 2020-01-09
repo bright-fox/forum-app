@@ -1,8 +1,11 @@
 import React, { useContext } from "react";
+import ReactDOM from "react-dom";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import VoteArrows from "./VoteArrows";
 import UserContext from "../contexts/UserContext";
+import Modal from "./Modal";
+import { unmountModal } from "../utils";
 
 const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, setTrigger, children }) => {
   const { state } = useContext(UserContext);
@@ -10,6 +13,20 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
   const renderChildren = () => {
     if (!children) return;
     return <>{children}</>;
+  };
+
+  const handleDelete = e => {
+    e.stopPropagation();
+    const content = <div className="half width">Are you sure you want to delete this post?</div>;
+    const actions = (
+      <>
+        <button className="ui button mini">Yes</button>
+        <button className="ui button red mini" onClick={unmountModal}>
+          Cancel
+        </button>
+      </>
+    );
+    ReactDOM.render(<Modal content={content} actions={actions} />, document.querySelector("#modal"));
   };
 
   return (
@@ -45,23 +62,21 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
           </div>
 
           <div className="content">
-            {state.isLoggedIn && state.currUser.id === author._id ? (
+            {state.isLoggedIn && state.currUser.id === author._id && (
               <div className="right floated">
                 <button className="ui button mini green animated">
                   <div className="hidden content">Edit</div>
                   <div className="visible content">
-                    <i class="edit icon"></i>
+                    <i className="edit icon"></i>
                   </div>
                 </button>
-                <button className="ui button mini red animated">
+                <button className="ui button mini red animated" onClick={handleDelete}>
                   <div className="hidden content">Delete</div>
                   <div className="visible content text center">
-                    <i class="trash alternate icon"></i>
+                    <i className="trash alternate icon"></i>
                   </div>
                 </button>
               </div>
-            ) : (
-              ""
             )}
 
             <div className="">
@@ -71,12 +86,10 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
           </div>
         </div>
       </div>
-      {children ? (
+      {children && (
         <div className="row p-0">
           <div className="full-width">{renderChildren()}</div>
         </div>
-      ) : (
-        ""
       )}
     </div>
   );

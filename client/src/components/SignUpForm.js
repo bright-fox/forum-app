@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import Modal from "./Modal";
 import { useInput } from "../hooks";
 import { request } from "../api";
-import { cacheUser } from "../utils";
+import { cacheUser, unmountModal } from "../utils";
 import { SIGNUP } from "../actions";
 
-const SignUpForm = ({ dispatch, onDismiss }) => {
+const SignUpForm = ({ dispatch }) => {
   const { value: username, bind: bindUsername } = useInput("");
   const { value: email, bind: bindEmail } = useInput("");
   const { value: password, bind: bindPassword } = useInput("");
@@ -24,12 +24,12 @@ const SignUpForm = ({ dispatch, onDismiss }) => {
       path: "/register",
       body: { username, email, password, biography, gender }
     });
-    if (res.status !== 200) return onDismiss();
+    if (res.status !== 200) return unmountModal();
     const { user, refreshToken } = await res.json();
     const currUser = { id: user._id, username: user.username, gender: user.gender };
     cacheUser(currUser, refreshToken);
     dispatch({ type: SIGNUP, payload: { currUser } });
-    onDismiss();
+    unmountModal();
   };
 
   const renderTitle = () => {
@@ -97,14 +97,14 @@ const SignUpForm = ({ dispatch, onDismiss }) => {
         <button className="ui button" type="submit">
           Submit
         </button>
-        <button className="ui button red" onClick={onDismiss} type="button">
+        <button className="ui button red" onClick={unmountModal} type="button">
           Cancel
         </button>
       </form>
     );
   };
 
-  return <Modal onDismiss={onDismiss} title={renderTitle()} content={renderContent()} />;
+  return <Modal title={renderTitle()} content={renderContent()} />;
 };
 
 export default SignUpForm;
