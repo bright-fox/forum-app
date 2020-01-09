@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import VoteArrows from "./VoteArrows";
+import UserContext from "../contexts/UserContext";
 
 const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, setTrigger, children }) => {
+  const { state } = useContext(UserContext);
+
   const renderChildren = () => {
     if (!children) return;
     return <>{children}</>;
@@ -11,7 +14,7 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
 
   return (
     <div className="ui segment grid">
-      <div className="row no-wrap center">
+      <div className="row no-wrap center pb-0">
         <div className="one wide column">
           <VoteArrows upvotes={upvotes} path={`/posts/${_id}/votes`} setTrigger={setTrigger} />
         </div>
@@ -42,6 +45,25 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
           </div>
 
           <div className="content">
+            {state.isLoggedIn && state.currUser.id === author._id ? (
+              <div className="right floated">
+                <button className="ui button mini green animated">
+                  <div className="hidden content">Edit</div>
+                  <div className="visible content">
+                    <i class="edit icon"></i>
+                  </div>
+                </button>
+                <button className="ui button mini red animated">
+                  <div className="hidden content">Delete</div>
+                  <div className="visible content text center">
+                    <i class="trash alternate icon"></i>
+                  </div>
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
+
             <div className="">
               <i className="comment icon"></i>
               {comments} comments
