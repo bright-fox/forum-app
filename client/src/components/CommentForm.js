@@ -1,14 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { useInput } from "../hooks";
+import useForm from "../hooks/useForm";
 import { request, requestToken } from "../api";
 
 const CommentForm = ({ postId, setTrigger, isReply, commentId }) => {
-  const { value: content, setValue: setContent, bind: bindContent } = useInput("");
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    const body = { content, post: postId };
+  const submitCallback = async inputs => {
+    const body = { content: inputs.content, post: postId };
     if (isReply && commentId) body.replyTo = commentId;
 
     const res = await requestToken();
@@ -21,11 +18,13 @@ const CommentForm = ({ postId, setTrigger, isReply, commentId }) => {
     });
 
     // reset text area
-    setContent("");
+    resetField("content");
     // trigger parent rerender
     setTrigger({});
     unmount();
   };
+
+  const { inputs, handleSubmit, handleInputChange, resetField } = useForm({ content: "" }, submitCallback);
 
   const unmount = () => {
     if (isReply && commentId) {
@@ -40,7 +39,8 @@ const CommentForm = ({ postId, setTrigger, isReply, commentId }) => {
       <div className="field">
         {!isReply && <label htmlFor="content">Write your comment:</label>}
         <textarea
-          {...bindContent}
+          value={inputs.content}
+          onChange={handleInputChange}
           name="content"
           rows="5"
           placeholder="Express your thoughts.."

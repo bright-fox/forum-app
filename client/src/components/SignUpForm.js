@@ -1,28 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import Modal from "./Modal";
-import { useInput } from "../hooks";
 import { request } from "../api";
 import { cacheUser, unmountModal } from "../utils";
 import { SIGNUP } from "../actions";
+import useForm from "../hooks/useForm";
 
 const SignUpForm = ({ dispatch }) => {
-  const { value: username, bind: bindUsername } = useInput("");
-  const { value: email, bind: bindEmail } = useInput("");
-  const { value: password, bind: bindPassword } = useInput("");
-  const { value: biography, bind: bindBiography } = useInput("");
-  const [gender, setGender] = useState("male");
-
-  const handleGenderChange = e => {
-    setGender(e.target.value);
-  };
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-
+  const initValues = { username: "", email: "", password: "", biography: "", gender: "" };
+  const submitCallback = async inputs => {
     const res = await request({
       method: "POST",
       path: "/register",
-      body: { username, email, password, biography, gender }
+      body: inputs
     });
     if (res.status !== 200) return unmountModal();
     const { user, refreshToken } = await res.json();
@@ -31,6 +20,7 @@ const SignUpForm = ({ dispatch }) => {
     dispatch({ type: SIGNUP, payload: { currUser } });
     unmountModal();
   };
+  const { inputs, handleSubmit, handleInputChange } = useForm(initValues, submitCallback);
 
   const renderTitle = () => {
     return <h1>Sign Up</h1>;
@@ -41,15 +31,28 @@ const SignUpForm = ({ dispatch }) => {
       <form className="ui form" onSubmit={handleSubmit}>
         <div className="field">
           <label htmlFor="username">Username:</label>
-          <input type="text" autoFocus name="username" placeholder="username" {...bindUsername} />
+          <input
+            type="text"
+            autoFocus
+            name="username"
+            placeholder="username"
+            value={inputs.username}
+            onChange={handleInputChange}
+          />
         </div>
         <div className="field">
           <label htmlFor="email">E-Mail:</label>
-          <input type="text" name="email" placeholder="email" {...bindEmail} />
+          <input type="text" name="email" placeholder="email" value={inputs.email} onChange={handleInputChange} />
         </div>
         <div className="field">
           <label htmlFor="password">Password:</label>
-          <input type="password" name="password" placeholder="password" {...bindPassword} />
+          <input
+            type="password"
+            name="password"
+            placeholder="password"
+            value={inputs.password}
+            onChange={handleInputChange}
+          />
         </div>
         <div className="inline fields">
           <label htmlFor="gender">Gender:</label>
@@ -58,8 +61,8 @@ const SignUpForm = ({ dispatch }) => {
               <input
                 type="radio"
                 name="gender"
-                checked={gender === "male"}
-                onChange={handleGenderChange}
+                checked={inputs.gender === "male"}
+                onChange={handleInputChange}
                 value="male"
               />
               <label>male</label>
@@ -70,8 +73,8 @@ const SignUpForm = ({ dispatch }) => {
               <input
                 type="radio"
                 name="gender"
-                checked={gender === "female"}
-                onChange={handleGenderChange}
+                checked={inputs.gender === "female"}
+                onChange={handleInputChange}
                 value="female"
               />
               <label>female</label>
@@ -82,8 +85,8 @@ const SignUpForm = ({ dispatch }) => {
               <input
                 type="radio"
                 name="gender"
-                checked={gender === "others"}
-                onChange={handleGenderChange}
+                checked={inputs.Modalgender === "others"}
+                onChange={handleInputChange}
                 value="others"
               />
               <label>others</label>
@@ -92,7 +95,13 @@ const SignUpForm = ({ dispatch }) => {
         </div>
         <div className="field">
           <label htmlFor="Biography">Biography:</label>
-          <textarea rows="5" name="biography" placeholder="Type something about yourself.." {...bindBiography} />
+          <textarea
+            rows="5"
+            name="biography"
+            placeholder="Type something about yourself.."
+            value={inputs.biography}
+            onChange={handleInputChange}
+          />
         </div>
         <button className="ui button" type="submit">
           Submit

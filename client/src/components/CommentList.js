@@ -84,7 +84,7 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
                 {comment.author.username}
               </Link>
               <div className="meta">~ {moment(comment.createdAt).fromNow()}</div>
-              <div className={comment.isDeleted && "italic small gray"}>{comment.content}</div>
+              <div className={comment.isDeleted ? "italic small gray" : undefined}>{comment.content}</div>
             </div>
             {renderActions(comment)}
             <div id={`commentform-${comment._id}`} data-show="0"></div>

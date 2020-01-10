@@ -49,16 +49,20 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
     setTrigger({});
   };
 
-  const onClickUp = vote !== 1 && state.isLoggedIn && !isDeleted ? handleClick : null;
-  const onClickDown = vote !== -1 && state.isLoggedIn && !isDeleted ? handleClick : null;
+  const click = v => (vote !== v && state.isLoggedIn && !isDeleted ? handleClick : null);
 
   return (
     <div style={commentSize} className="fluid medium flex col-dir center">
-      <i id="up" style={commentMargin} className={"angle up icon mr-0 " + voted(1) + disabled} onClick={onClickUp}></i>
+      <i
+        id="up"
+        style={commentMargin}
+        className={"angle up icon mr-0 " + voted(1) + disabled}
+        onClick={() => click(1)}
+      ></i>
       <div className="text-center">
         <span className={"default " + disabled}>{upvotes}</span>
       </div>
-      <i id="down" className={"angle down icon mr-0 " + voted(-1) + disabled} onClick={onClickDown}></i>
+      <i id="down" className={"angle down icon mr-0 " + voted(-1) + disabled} onClick={() => click(-1)}></i>
     </div>
   );
 };
