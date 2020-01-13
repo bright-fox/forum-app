@@ -1,12 +1,14 @@
 import React from "react";
 import Modal from "./Modal";
 import { request } from "../api";
-import { cacheUser, unmountModal } from "../utils";
+import { cacheUser, unmountModal, isEmpty } from "../utils";
 import { SIGNUP } from "../actions";
 import useForm from "../hooks/useForm";
+import validateRegister from "../validation/validateRegister";
 
 const SignUpForm = ({ dispatch }) => {
-  const initValues = { username: "", email: "", password: "", biography: "", gender: "" };
+  const initValues = { username: "", email: "", password: "", biography: "", gender: "male" };
+
   const submitCallback = async inputs => {
     const res = await request({
       method: "POST",
@@ -20,17 +22,17 @@ const SignUpForm = ({ dispatch }) => {
     dispatch({ type: SIGNUP, payload: { currUser } });
     unmountModal();
   };
-  const { inputs, handleSubmit, handleInputChange } = useForm(initValues, submitCallback);
 
-  const renderTitle = () => {
-    return <h1>Sign Up</h1>;
-  };
+  const { inputs, handleSubmit, handleInputChange, errors } = useForm(initValues, submitCallback, validateRegister);
+
+  const hasError = field => (errors.hasOwnProperty(field) ? "error" : "");
+  const renderErrorMessage = field => hasError(field) && <small className="error">{errors[field]}</small>;
 
   const renderContent = () => {
     return (
-      <form className="ui form" onSubmit={handleSubmit}>
-        <div className="field">
-          <label htmlFor="username">Username:</label>
+      <form className={"ui form " + (!isEmpty(errors) ? " error" : " ")} onSubmit={handleSubmit}>
+        <div className={"field " + hasError("username")}>
+          <label htmlFor="username">Username*:</label>
           <input
             type="text"
             autoFocus
@@ -39,13 +41,15 @@ const SignUpForm = ({ dispatch }) => {
             value={inputs.username}
             onChange={handleInputChange}
           />
+          {renderErrorMessage("username")}
         </div>
-        <div className="field">
-          <label htmlFor="email">E-Mail:</label>
+        <div className={"field " + hasError("email")}>
+          <label htmlFor="email">E-Mail*:</label>
           <input type="text" name="email" placeholder="email" value={inputs.email} onChange={handleInputChange} />
+          {renderErrorMessage("email")}
         </div>
-        <div className="field">
-          <label htmlFor="password">Password:</label>
+        <div className={"field " + hasError("password")}>
+          <label htmlFor="password">Password*:</label>
           <input
             type="password"
             name="password"
@@ -53,10 +57,11 @@ const SignUpForm = ({ dispatch }) => {
             value={inputs.password}
             onChange={handleInputChange}
           />
+          {renderErrorMessage("password")}
         </div>
-        <div className="inline fields">
-          <label htmlFor="gender">Gender:</label>
-          <div className="field">
+        <div className={"inline fields " + hasError("gender")}>
+          <label htmlFor="gender">Gender*:</label>
+          <div className={"field " + hasError("gender")}>
             <div className="ui radio checkbox">
               <input
                 type="radio"
@@ -68,7 +73,7 @@ const SignUpForm = ({ dispatch }) => {
               <label>male</label>
             </div>
           </div>
-          <div className="field">
+          <div className={"field " + hasError("gender")}>
             <div className="ui radio checkbox">
               <input
                 type="radio"
@@ -79,13 +84,14 @@ const SignUpForm = ({ dispatch }) => {
               />
               <label>female</label>
             </div>
+            {renderErrorMessage("gender")}
           </div>
-          <div className="field">
+          <div className={"field " + hasError("gender")}>
             <div className="ui radio checkbox">
               <input
                 type="radio"
                 name="gender"
-                checked={inputs.Modalgender === "others"}
+                checked={inputs.gender === "others"}
                 onChange={handleInputChange}
                 value="others"
               />
@@ -113,7 +119,7 @@ const SignUpForm = ({ dispatch }) => {
     );
   };
 
-  return <Modal title={renderTitle()} content={renderContent()} />;
+  return <Modal title={<h1>Sign Up</h1>} content={renderContent()} />;
 };
 
 export default SignUpForm;

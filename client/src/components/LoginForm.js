@@ -19,10 +19,6 @@ const LoginForm = ({ dispatch }) => {
 
   const { inputs, handleSubmit, handleInputChange, errors } = useForm(initValues, callback, validateLogin);
 
-  const renderTitle = () => {
-    return <h1>Login</h1>;
-  };
-
   const hasError = field => (errors.hasOwnProperty(field) ? "error" : "");
   const renderErrorMessage = field => hasError(field) && <small className="error">{errors[field]}</small>;
 
@@ -30,7 +26,7 @@ const LoginForm = ({ dispatch }) => {
     return (
       <form className={"ui form " + (!isEmpty(errors) ? "error " : "")} onSubmit={handleSubmit}>
         <div className={"field " + hasError("username")}>
-          <label htmlFor="username">Username: </label>
+          <label htmlFor="username">Username*: </label>
           <input
             type="text"
             autoFocus
@@ -42,7 +38,7 @@ const LoginForm = ({ dispatch }) => {
           {renderErrorMessage("username")}
         </div>
         <div className={"field " + hasError("password")}>
-          <label htmlFor="password">Password:</label>
+          <label htmlFor="password">Password*:</label>
           <input
             type="password"
             name="password"
@@ -62,7 +58,7 @@ const LoginForm = ({ dispatch }) => {
     );
   };
 
-  return <Modal title={renderTitle()} content={renderContent()} />;
+  return <Modal title={<h1>Login</h1>} content={renderContent()} />;
 };
 
 export default LoginForm;
