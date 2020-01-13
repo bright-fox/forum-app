@@ -1,16 +1,31 @@
 import { useState } from "react";
+import { isEmpty } from "../utils";
+import useRefState from "./useRefState";
 
-export default (initValues, callback) => {
+export default (initValues, callback, validate) => {
   const [inputs, setInputs] = useState(initValues);
+  const [errors, errorsRef, setErrors] = useRefState({});
 
-  const handleSubmit = async e => {
-    if (e) e.preventDefault();
+  const handleSubmit = async event => {
+    if (event) event.preventDefault();
+    // check all inputs for mistakes before submitting
+    if (validate) {
+      for (const [key, val] of Object.entries(inputs)) {
+        errorsRef.current = validate(key, val, errorsRef.current);
+      }
+      setErrors(errorsRef.current);
+    }
+
+    if (!isEmpty(errorsRef.current)) return;
     await callback(inputs);
   };
 
-  const handleInputChange = e => {
-    e.persist();
-    setInputs({ ...inputs, [e.target.name]: e.target.value });
+  const handleInputChange = event => {
+    event.persist();
+    setInputs({ ...inputs, [event.target.name]: event.target.value });
+    if (!validate) return;
+    errorsRef.current = validate(event.target.name, event.target.value, errorsRef.current);
+    setErrors(errorsRef.current);
   };
 
   const setField = (field, value) => {
@@ -31,6 +46,7 @@ export default (initValues, callback) => {
     handleSubmit,
     setField,
     resetField,
-    resetForm
+    resetForm,
+    errors
   };
 };

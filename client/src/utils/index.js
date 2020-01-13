@@ -1,5 +1,7 @@
 import ReactDOM from "react-dom";
 
+export const isEmpty = obj => Object.keys(obj).length === 0;
+
 export const cacheUser = (user, refreshToken) => {
   localStorage.setItem("isLoggedIn", true);
   localStorage.setItem("currUser", JSON.stringify(user));

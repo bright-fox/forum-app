@@ -1,11 +1,10 @@
 import React from "react";
-
 import Modal from "./Modal";
-
 import useForm from "../hooks/useForm";
+import validateLogin from "../validation/validateLogin";
 import { request } from "../api";
 import { LOGIN } from "../actions";
-import { cacheUser, unmountModal } from "../utils";
+import { cacheUser, unmountModal, isEmpty } from "../utils";
 
 const LoginForm = ({ dispatch }) => {
   const initValues = { username: "", password: "" };
@@ -18,16 +17,19 @@ const LoginForm = ({ dispatch }) => {
     unmountModal();
   };
 
-  const { inputs, handleSubmit, handleInputChange } = useForm(initValues, callback);
+  const { inputs, handleSubmit, handleInputChange, errors } = useForm(initValues, callback, validateLogin);
 
   const renderTitle = () => {
     return <h1>Login</h1>;
   };
 
+  const hasError = field => (errors.hasOwnProperty(field) ? "error" : "");
+  const renderErrorMessage = field => hasError(field) && <small className="error">{errors[field]}</small>;
+
   const renderContent = () => {
     return (
-      <form className="ui form" onSubmit={handleSubmit}>
-        <div className="field">
+      <form className={"ui form " + (!isEmpty(errors) ? "error " : "")} onSubmit={handleSubmit}>
+        <div className={"field " + hasError("username")}>
           <label htmlFor="username">Username: </label>
           <input
             type="text"
@@ -36,10 +38,10 @@ const LoginForm = ({ dispatch }) => {
             placeholder="username"
             value={inputs.username}
             onChange={handleInputChange}
-            required
           />
+          {renderErrorMessage("username")}
         </div>
-        <div className="field">
+        <div className={"field " + hasError("password")}>
           <label htmlFor="password">Password:</label>
           <input
             type="password"
@@ -47,8 +49,8 @@ const LoginForm = ({ dispatch }) => {
             placeholder="password"
             value={inputs.password}
             onChange={handleInputChange}
-            required
           />
+          {renderErrorMessage("password")}
         </div>
         <button className="ui button" type="submit">
           Login
