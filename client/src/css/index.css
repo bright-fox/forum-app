@@ -217,3 +217,7 @@ div#root {
 small.error {
   color: #e7bdbc;
 }
+
+.quarter.height {
+  height: 25vh;
+}
