@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import ReactDOM from "react-dom";
-import { request, requestToken } from "../api";
+import { requestProtectedResource } from "../api";
 import UserContext from "../contexts/UserContext";
 import Modal from "./Modal";
+import { redirectToAuthModal } from "../utils";
 
 const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
-  const { state } = useContext(UserContext);
+  const { state, dispatch } = useContext(UserContext);
   const [vote, setVote] = useState(0);
 
   // styles
@@ -17,12 +18,9 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
   useEffect(() => {
     if (!state.isLoggedIn) return setVote(0);
     const fetchVote = async () => {
-      const tokenRes = await requestToken();
-      const { idToken } = await tokenRes.json();
-      const res = await request({ method: "GET", path, token: idToken });
-      if (res.status !== 200) {
-        return setVote(0);
-      }
+      const res = await requestProtectedResource({ method: "GET", path });
+      if (!res) return redirectToAuthModal(dispatch);
+      if (res.status !== 200) return setVote(0);
       const data = await res.json();
       setVote(data.vote);
     };
@@ -30,7 +28,7 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
 
     // clean-up
     return setVote(0);
-  }, [state.isLoggedIn, path]);
+  }, [state.isLoggedIn, path, dispatch]);
 
   const handleClick = async e => {
     if (!state.isLoggedIn) {
@@ -38,12 +36,10 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
       return ReactDOM.render(<Modal onDismiss={() => ReactDOM.unmountComponentAtNode(modal)} />, modal);
     }
     const vote = e.target.id === "up" ? 1 : -1;
-    const tokenRes = await requestToken();
-    const { idToken } = await tokenRes.json();
-    const res = await request({ method: "POST", path, token: idToken, body: { vote } });
-    if (res.status !== 200) {
-      return setVote(0);
-    }
+    const res = await requestProtectedResource({ method: "POST", path, body: { vote } });
+    if (!res) return redirectToAuthModal();
+    if (res.status !== 200) return setVote(0);
+
     const data = await res.json();
     setVote(data.createdVote.vote);
     setTrigger({});

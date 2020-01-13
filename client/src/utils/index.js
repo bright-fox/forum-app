@@ -1,4 +1,7 @@
+import React from "react";
 import ReactDOM from "react-dom";
+import AuthModal from "../components/AuthModal";
+import { LOGOUT } from "../actions";
 
 export const isEmpty = obj => Object.keys(obj).length === 0;
 
@@ -11,4 +14,9 @@ export const cacheUser = (user, refreshToken) => {
 export const unmountModal = () => {
   ReactDOM.unmountComponentAtNode(document.querySelector("#modal"));
   document.querySelector("body").classList.remove("modal__body-open");
+};
+
+export const redirectToAuthModal = dispatch => {
+  dispatch({ type: LOGOUT });
+  ReactDOM.render(<AuthModal />, document.querySelector("#modal"));
 };

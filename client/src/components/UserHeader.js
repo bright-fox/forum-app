@@ -2,24 +2,20 @@ import React, { useContext } from "react";
 import LoginButton from "./LoginButton";
 import SignUpButton from "./SignUpButton";
 import UserContext from "../contexts/UserContext";
-import { request, requestToken } from "../api";
+import { requestProtectedResource } from "../api";
 import { LOGOUT } from "../actions";
+import { redirectToAuthModal } from "../utils";
 
 const UserHeader = () => {
   const { state, dispatch } = useContext(UserContext);
 
   const handleLogout = async () => {
-    const tokenResponse = await requestToken();
-    if (tokenResponse.status !== 200) return; // TODO: subject to change
-
-    const { idToken } = await tokenResponse.json();
-    const res = await request({
+    const res = await requestProtectedResource({
       method: "POST",
       path: "/logout",
-      token: idToken,
       body: { refreshToken: localStorage.getItem("refreshToken") }
     });
-
+    if (!res) return redirectToAuthModal(dispatch);
     if (res.status !== 200) return;
     localStorage.clear();
     document.activeElement.blur();

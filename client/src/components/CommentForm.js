@@ -1,21 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import ReactDOM from "react-dom";
 import useForm from "../hooks/useForm";
-import { request, requestToken } from "../api";
+import { requestProtectedResource } from "../api";
+import { redirectToAuthModal } from "../utils";
+import UserContext from "../contexts/UserContext";
 
 const CommentForm = ({ postId, setTrigger, isReply, commentId }) => {
+  const { dispatch } = useContext(UserContext);
+
   const submitCallback = async inputs => {
     const body = { content: inputs.content, post: postId };
     if (isReply && commentId) body.replyTo = commentId;
 
-    const res = await requestToken();
-    const { idToken } = await res.json();
-    await request({
-      method: "POST",
-      path: `/posts/${postId}/comments`,
-      token: idToken,
-      body
-    });
+    const res = await requestProtectedResource({ method: "POST", path: `/posts/${postId}/comments`, body });
+    if (!res) return redirectToAuthModal(dispatch);
 
     // reset text area
     resetField("content");

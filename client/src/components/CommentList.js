@@ -3,13 +3,14 @@ import ReactDOM from "react-dom";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import CommentForm from "./CommentForm";
-import { request, requestToken } from "../api";
+import { request, requestProtectedResource } from "../api";
 import VoteArrows from "./VoteArrows";
 import UserContext from "../contexts/UserContext";
+import { redirectToAuthModal } from "../utils";
 
 const CommentList = ({ postId, trigger, setTrigger }) => {
   const [comments, setComments] = useState([]);
-  const { state } = useContext(UserContext);
+  const { state, dispatch } = useContext(UserContext);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -36,9 +37,8 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
 
   const handleDelete = async e => {
     const commentId = e.target.getAttribute("data-id");
-    const tokenRes = await requestToken();
-    const { idToken } = await tokenRes.json();
-    await request({ method: "DELETE", path: `/posts/${postId}/comments/${commentId}`, token: idToken });
+    const res = await requestProtectedResource({ method: "DELETE", path: `/posts/${postId}/comments/${commentId}` });
+    if (!res) redirectToAuthModal(dispatch);
     setTrigger({});
   };
 

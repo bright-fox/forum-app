@@ -9,9 +9,18 @@ export const request = async ({ method, path, body, token }) => {
 
 export const requestToken = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
-  return await fetch(`${baseApiURL}/token`, {
+  if (!refreshToken) return;
+  const res = await fetch(`${baseApiURL}/token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ refreshToken })
   });
+  if (res.status !== 200) return;
+  return await res.json();
+};
+
+export const requestProtectedResource = async ({ method, path, body }) => {
+  const tokenObj = await requestToken();
+  if (!tokenObj) return;
+  return await request({ method, path, body, token: tokenObj.idToken });
 };
