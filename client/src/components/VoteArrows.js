@@ -30,14 +30,13 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
     return setVote(0);
   }, [state.isLoggedIn, path, dispatch]);
 
-  const handleClick = async e => {
+  const handleClick = async v => {
     if (!state.isLoggedIn) {
       const modal = document.querySelector("#modal");
       return ReactDOM.render(<Modal onDismiss={() => ReactDOM.unmountComponentAtNode(modal)} />, modal);
     }
-    const vote = e.target.id === "up" ? 1 : -1;
-    const res = await requestProtectedResource({ method: "POST", path, body: { vote } });
-    if (!res) return redirectToAuthModal();
+    const res = await requestProtectedResource({ method: "POST", path, body: { vote: v } });
+    if (!res) return redirectToAuthModal(dispatch);
     if (res.status !== 200) return setVote(0);
 
     const data = await res.json();
@@ -45,8 +44,9 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
     setTrigger({});
   };
 
-  const click = v => (vote !== v && state.isLoggedIn && !isDeleted ? handleClick : null);
-
+  const click = v => {
+    return vote !== v && state.isLoggedIn && !isDeleted ? handleClick(v) : null;
+  };
   return (
     <div style={commentSize} className="fluid medium flex col-dir center">
       <i
