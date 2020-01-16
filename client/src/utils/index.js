@@ -17,6 +17,7 @@ export const unmountModal = () => {
 };
 
 export const redirectToAuthModal = dispatch => {
+  localStorage.clear();
   dispatch({ type: LOGOUT });
   ReactDOM.render(<AuthModal />, document.querySelector("#modal"));
 };

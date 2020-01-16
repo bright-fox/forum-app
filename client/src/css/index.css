@@ -112,6 +112,11 @@ div#root {
   padding: 0 30px !important;
 }
 
+.py-0 {
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+
 .py-2 {
   padding: 6px 0 !important;
 }
@@ -220,4 +225,11 @@ small.error {
 
 .quarter.height {
   height: 25vh;
+}
+
+.ui.menu.fixed .item,
+.ui.menu.fixed .item:first-child {
+  border-radius: 0.3rem !important;
+  padding: 3px 10px !important;
+  margin: 5px !important;
 }

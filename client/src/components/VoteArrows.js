@@ -19,7 +19,7 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
     if (!state.isLoggedIn) return setVote(0);
     const fetchVote = async () => {
       const res = await requestProtectedResource({ method: "GET", path });
-      if (!res) return redirectToAuthModal(dispatch);
+      if (!res) return; //redirectToAuthModal(dispatch)?
       if (res.status !== 200) return setVote(0);
       const data = await res.json();
       setVote(data.vote);
