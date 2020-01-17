@@ -1,26 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Post from "./Post";
 import { request } from "../api";
+import Pagination from "./Pagination";
 
-const PostList = () => {
+const PostList = ({ path }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [posts, setPosts] = useState([]);
-  const maxPage = useRef(0);
+  const [maxPage, setMaxPage] = useState(1);
   const [trigger, setTrigger] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await request({
         method: "GET",
-        path: `/posts/page/${currentPage}`
+        path: `${path}/page/${currentPage}`
       });
       const data = await res.json();
-      maxPage.current = parseInt(data.maxPage);
-      setCurrentPage(parseInt(data.currentPage));
+      setMaxPage(parseInt(data.maxPage));
+      // setCurrentPage(parseInt(data.currentPage)); not useful
       setPosts(data.posts);
     };
     fetchData();
-  }, [currentPage, trigger]);
+  }, [currentPage, trigger, path]);
 
   const renderList = () => {
     return posts.map(post => {
@@ -28,7 +29,12 @@ const PostList = () => {
     });
   };
 
-  return <>{renderList()}</>;
+  return (
+    <>
+      {renderList()}
+      <Pagination currPage={currentPage} maxPage={maxPage} setCurrPage={setCurrentPage} />
+    </>
+  );
 };
 
 export default PostList;

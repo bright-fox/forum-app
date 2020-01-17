@@ -6,7 +6,7 @@ const HomePage = () => {
     <div className="ui stackable grid centered">
       <div className="row">
         <div className="ten wide column">
-          <PostList />
+          <PostList path="/posts" />
         </div>
       </div>
     </div>

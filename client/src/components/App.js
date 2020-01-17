@@ -9,6 +9,7 @@ import UserContext from "../contexts/UserContext";
 import Header from "./Header";
 import HomePage from "./pages/HomePage";
 import PostPage from "./pages/PostPage";
+import CommunityPage from "./pages/CommunityPage";
 
 const App = () => {
   const initialState = {
@@ -33,6 +34,9 @@ const App = () => {
               </Route>
               <Route path="/posts/:postId" exact>
                 <PostPage />
+              </Route>
+              <Route path="/communities/:communityId" exact>
+                <CommunityPage />
               </Route>
             </Switch>
           </div>
