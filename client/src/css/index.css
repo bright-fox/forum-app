@@ -121,12 +121,20 @@ div#root {
   padding: 6px 0 !important;
 }
 
-.pl-3 {
-  padding-left: 10px !important;
+.pl-1 {
+  padding-left: 3px !important;
 }
 
 .pl-2 {
   padding-left: 6px !important;
+}
+
+.pl-3 {
+  padding-left: 10px !important;
+}
+
+.pl-4 {
+  padding-left: 15px !important;
 }
 
 .pr-2 {
@@ -224,7 +232,11 @@ small.error {
 }
 
 .quarter.height {
-  height: 25vh;
+  height: 25vh !important;
+}
+
+.quarter.width {
+  width: 25vw !important;
 }
 
 .ui.menu.fixed .item,
@@ -232,4 +244,8 @@ small.error {
   border-radius: 0.3rem !important;
   padding: 3px 10px !important;
   margin: 5px !important;
+}
+
+.ui.menu .edit.icon {
+  padding-left: 4px;
 }

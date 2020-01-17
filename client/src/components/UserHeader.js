@@ -42,7 +42,7 @@ const UserHeader = () => {
   };
 
   return (
-    <div className="ui segment no-border py-0 flex center">
+    <div className="ui segment no-border py-0 flex center m-0">
       {state.isLoggedIn ? renderLogout() : renderAuthButtons()}
     </div>
   );
