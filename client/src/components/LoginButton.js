@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import ReactDOM from "react-dom";
-import LoginForm from "./LoginForm";
+import LoginForm from "./modals/LoginForm";
 import UserContext from "../contexts/UserContext";
 
 const LoginButton = () => {

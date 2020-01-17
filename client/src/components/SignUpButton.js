@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import ReactDOM from "react-dom";
-import SignUpForm from "./SignUpForm";
+import SignUpForm from "./modals/SignUpForm";
 import UserContext from "../contexts/UserContext";
 
 const SignUpButton = () => {

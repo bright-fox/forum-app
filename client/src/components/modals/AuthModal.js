@@ -1,7 +1,7 @@
 import React from "react";
-import Modal from "./Modal";
-import LoginButton from "./LoginButton";
-import SignUpButton from "./SignUpButton";
+import Modal from "../Modal";
+import LoginButton from "../LoginButton";
+import SignUpButton from "../SignUpButton";
 
 const AuthModal = () => {
   const renderContent = () => {

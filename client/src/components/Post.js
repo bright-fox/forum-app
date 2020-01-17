@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import VoteArrows from "./VoteArrows";
 import UserContext from "../contexts/UserContext";
 import Modal from "./Modal";
-import { unmountModal } from "../utils";
+import ModalCancelButton from "./ModalCancelButton";
 
 const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, setTrigger, children }) => {
   const { state } = useContext(UserContext);
@@ -21,9 +21,7 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
     const actions = (
       <>
         <button className="ui button mini">Yes</button>
-        <button className="ui button red mini" onClick={unmountModal}>
-          Cancel
-        </button>
+        <ModalCancelButton />
       </>
     );
     ReactDOM.render(<Modal content={content} actions={actions} />, document.querySelector("#modal"));

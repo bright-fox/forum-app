@@ -1,10 +1,11 @@
 import React from "react";
-import Modal from "./Modal";
-import useForm from "../hooks/useForm";
-import validateLogin from "../validation/validateLogin";
-import { request } from "../api";
-import { LOGIN } from "../actions";
-import { cacheUser, unmountModal, isEmpty } from "../utils";
+import Modal from "../Modal";
+import useForm from "../../hooks/useForm";
+import validateLogin from "../../validation/validateLogin";
+import { request } from "../../api";
+import { LOGIN } from "../../actions";
+import { cacheUser, unmountModal, isEmpty } from "../../utils";
+import ModalCancelButton from "../ModalCancelButton";
 
 const LoginForm = ({ dispatch }) => {
   const initValues = { username: "", password: "" };
@@ -48,12 +49,10 @@ const LoginForm = ({ dispatch }) => {
           />
           {renderErrorMessage("password")}
         </div>
-        <button className="ui button" type="submit">
+        <button className="ui button mini" type="submit">
           Login
         </button>
-        <button className="ui button red" onClick={unmountModal} type="button">
-          Cancel
-        </button>
+        <ModalCancelButton />
       </form>
     );
   };

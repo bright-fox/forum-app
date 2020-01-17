@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import AuthModal from "../components/AuthModal";
+import AuthModal from "../components/modals/AuthModal";
 import { LOGOUT } from "../actions";
 
 export const isEmpty = obj => Object.keys(obj).length === 0;

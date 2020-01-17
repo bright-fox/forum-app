@@ -1,10 +1,11 @@
 import React from "react";
-import Modal from "./Modal";
-import { request } from "../api";
-import { cacheUser, unmountModal, isEmpty } from "../utils";
-import { SIGNUP } from "../actions";
-import useForm from "../hooks/useForm";
-import validateRegister from "../validation/validateRegister";
+import Modal from "../Modal";
+import { request } from "../../api";
+import { cacheUser, unmountModal, isEmpty } from "../../utils";
+import { SIGNUP } from "../../actions";
+import useForm from "../../hooks/useForm";
+import validateRegister from "../../validation/validateRegister";
+import ModalCancelButton from "../ModalCancelButton";
 
 const SignUpForm = ({ dispatch }) => {
   const initValues = { username: "", email: "", password: "", biography: "", gender: "male" };
@@ -109,12 +110,10 @@ const SignUpForm = ({ dispatch }) => {
             onChange={handleInputChange}
           />
         </div>
-        <button className="ui button" type="submit">
+        <button className="ui button mini" type="submit">
           Submit
         </button>
-        <button className="ui button red" onClick={unmountModal} type="button">
-          Cancel
-        </button>
+        <ModalCancelButton />
       </form>
     );
   };
