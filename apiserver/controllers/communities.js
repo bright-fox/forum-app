@@ -21,6 +21,8 @@ router.get(
     const communities = await Community.find({})
       .skip(req.params.p * limit - limit)
       .limit(limit)
+      .populate("author")
+      .populate("community")
       .lean()
       .exec();
     // if (communities.length <= 0) throw new CustomError(404, "There are no communities yet!"); --> does not get called because of checkPageUnderMax check
@@ -48,6 +50,8 @@ router.get(
   "/:community_id",
   asyncHandler(async (req, res) => {
     const community = await Community.findById(req.params.community_id)
+      .populate("author")
+      .populate("community")
       .lean()
       .exec();
     if (!community) throw new CustomError(404, "No community found");
@@ -89,6 +93,8 @@ router.get(
     const posts = await Post.find({ community: req.params.community_id })
       .skip(req.params.p * limit - limit)
       .limit(limit)
+      .populate("author")
+      .populate("community")
       .lean()
       .exec();
     // if (posts.length <= 0) throw new CustomError(404, "No posts for this community found"); --> wont be check because of checkPageUnderMax
