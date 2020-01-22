@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { request } from "../../api";
+import { request, requestProtectedResource } from "../../api";
 import Modal from "../Modal";
 import useForm from "../../hooks/useForm";
 import ModalCancelButton from "../ModalCancelButton";
+import { unmountModal } from "../../utils";
 
 const PostForm = ({ type, state }) => {
   const initVals = { community: "", title: "", content: "" };
-  const { inputs, handleSubmit, handleInputChange, setField } = useForm(initVals, inputs => {
-    console.log(inputs);
+  const { inputs, handleSubmit, handleInputChange, setField } = useForm(initVals, async inputs => {
+    await requestProtectedResource({ method: "POST", path: "/posts", body: inputs });
+    unmountModal();
+    window.location.reload(); // fetchs all the data again
   });
   const [communities, setCommunities] = useState([]);
 
@@ -20,6 +23,7 @@ const PostForm = ({ type, state }) => {
     }
   }, [setField]);
 
+  // fetch the communities of user
   useEffect(() => {
     const fetchCommunities = async () => {
       const res = await request({ method: "GET", path: `/users/${state.currUser.id}/communities/page/1` });
@@ -37,7 +41,7 @@ const PostForm = ({ type, state }) => {
           <option value="">Select community..</option>
           {communities.map(community => (
             <option name="community" key={community._id} value={community._id}>
-              {community.name}
+              c/{community.name}
             </option>
           ))}
         </select>
@@ -77,7 +81,7 @@ const PostForm = ({ type, state }) => {
     );
   };
 
-  return <Modal content={renderContent()} />;
+  return <Modal title={type === "edit" ? <h1>Edit Post</h1> : <h1>Create Post</h1>} content={renderContent()} />;
 };
 
 export default PostForm;
