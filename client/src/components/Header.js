@@ -5,6 +5,7 @@ import UserHeader from "./UserHeader";
 import SearchBar from "./Searchbar";
 import UserContext from "../contexts/UserContext";
 import CommunityForm from "./modals/CommunityForm";
+import PostForm from "./modals/PostForm";
 
 const Header = () => {
   const { state } = useContext(UserContext);
@@ -26,7 +27,7 @@ const Header = () => {
           {state.isLoggedIn && (
             <>
               <Link
-                to="/testing"
+                to="/"
                 className="item pointer"
                 onClick={e => {
                   e.preventDefault();
@@ -35,7 +36,14 @@ const Header = () => {
               >
                 <i className="users icon"></i>
               </Link>
-              <Link to="/testing" className="item pointer" onClick={e => e.preventDefault()}>
+              <Link
+                to="/"
+                className="item pointer"
+                onClick={e => {
+                  e.preventDefault();
+                  ReactDOM.render(<PostForm state={state} />, document.querySelector("#modal"));
+                }}
+              >
                 <i className="edit icon"></i>
               </Link>
             </>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { isEmpty } from "../utils";
 import useRefState from "./useRefState";
 
@@ -17,7 +17,7 @@ export default (initValues, callback, validate) => {
     }
 
     if (!isEmpty(errorsRef.current)) return;
-    await callback(inputs);
+    if (callback) await callback(inputs);
   };
 
   const handleInputChange = event => {
@@ -28,9 +28,11 @@ export default (initValues, callback, validate) => {
     setErrors(errorsRef.current);
   };
 
-  const setField = (field, value) => {
-    setInputs({ ...inputs, [field]: value });
-  };
+  const setField = useCallback((field, value) => {
+    setInputs(i => {
+      return { ...i, [field]: value };
+    });
+  }, []);
 
   const resetField = field => {
     setInputs({ ...inputs, [field]: initValues[field] });
