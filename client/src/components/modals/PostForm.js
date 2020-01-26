@@ -4,34 +4,47 @@ import Modal from "../Modal";
 import useForm from "../../hooks/useForm";
 import ModalCancelButton from "../ModalCancelButton";
 import { unmountModal } from "../../utils";
+import { edit, create } from "../../utils/variables";
 
-const PostForm = ({ type, state }) => {
+const PostForm = ({ type, state, id, title, content }) => {
   const initVals = { community: "", title: "", content: "" };
-  const { inputs, handleSubmit, handleInputChange, setField } = useForm(initVals, async inputs => {
-    await requestProtectedResource({ method: "POST", path: "/posts", body: inputs });
+  const { inputs, handleSubmit, handleInputChange, setField, setFields } = useForm(initVals, async inputs => {
+    if (type === create) await requestProtectedResource({ method: "POST", path: "/posts", body: inputs });
+    if (type === edit) await requestProtectedResource({ method: "PUT", path: `/posts/${id}`, body: inputs });
     unmountModal();
     window.location.reload(); // fetchs all the data again
   });
   const [communities, setCommunities] = useState([]);
 
-  // get the URL community id
+  // set fields for the edit form
   useEffect(() => {
-    const url = window.location.href;
-    if (/.+\/communities\/[a-zA-Z0-9]{24}$/.test(url)) {
-      const parts = url.split("/");
-      setField("community", parts[parts.length - 1]);
+    if (type === edit) {
+      setFields({ title, content });
     }
-  }, [setField]);
+  }, [type, setFields, title, content]);
 
-  // fetch the communities of user
+  // fetch the communities of user for create forms
   useEffect(() => {
-    const fetchCommunities = async () => {
-      const res = await request({ method: "GET", path: `/users/${state.currUser.id}/communities/page/1` });
-      const data = await res.json();
-      setCommunities(data.communities);
-    };
-    fetchCommunities();
-  }, [state.currUser.id]);
+    if (type === create) {
+      const fetchCommunities = async () => {
+        const res = await request({ method: "GET", path: `/users/${state.currUser.id}/communities/page/1` });
+        const data = await res.json();
+        setCommunities(data.communities);
+      };
+      fetchCommunities();
+    }
+  }, [type, state.currUser.id]);
+
+  // pre select community dropdown if there is a community id
+  useEffect(() => {
+    if (type === create) {
+      const url = window.location.href;
+      if (/.+\/communities\/[a-zA-Z0-9]{24}$/.test(url)) {
+        const parts = url.split("/");
+        setField("community", parts[parts.length - 1]);
+      }
+    }
+  }, [setField, type]);
 
   const renderCommunityDropdown = () => {
     return (
@@ -52,7 +65,7 @@ const PostForm = ({ type, state }) => {
   const renderContent = () => {
     return (
       <form className="ui form" onSubmit={handleSubmit}>
-        {renderCommunityDropdown()}
+        {type === create && renderCommunityDropdown()}
         <div className="field">
           <label htmlFor="title">Post Title:</label>
           <input
@@ -81,7 +94,7 @@ const PostForm = ({ type, state }) => {
     );
   };
 
-  return <Modal title={type === "edit" ? <h1>Edit Post</h1> : <h1>Create Post</h1>} content={renderContent()} />;
+  return <Modal title={type === edit ? <h1>Edit Post</h1> : <h1>Create Post</h1>} content={renderContent()} />;
 };
 
 export default PostForm;

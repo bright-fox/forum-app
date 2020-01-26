@@ -4,17 +4,19 @@ import useForm from "../../hooks/useForm";
 import ModalCancelButton from "../ModalCancelButton";
 import { requestProtectedResource } from "../../api";
 import { redirectToAuthModal, unmountModal } from "../../utils";
+import { edit } from "../../utils/variables";
 
 const CommunityForm = ({ type }) => {
   const submitCallback = async inputs => {
     const res = await requestProtectedResource({ method: "POST", path: "/communities", body: inputs });
     if (!res) redirectToAuthModal();
     unmountModal();
+    window.location.reload(); // maybe not useful?
   };
 
   const { inputs, handleInputChange, handleSubmit } = useForm({ name: "", description: "" }, submitCallback);
 
-  const renderTitle = () => (type === "edit" ? <h1>Edit Community</h1> : <h1>Create Community</h1>);
+  const renderTitle = () => (type === edit ? <h1>Edit Community</h1> : <h1>Create Community</h1>);
   const renderContent = () => {
     return (
       <form className="ui form" onSubmit={handleSubmit}>

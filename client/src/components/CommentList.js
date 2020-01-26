@@ -61,7 +61,7 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
   const renderComments = (comments, isReply) => {
     return comments.map(comment => {
       return (
-        <div className="row py-2" key={comment._id}>
+        <div className="row py-0" key={comment._id}>
           <div className="one wide column p-0">
             <VoteArrows
               upvotes={comment.upvotes}

@@ -6,6 +6,7 @@ import SearchBar from "./Searchbar";
 import UserContext from "../contexts/UserContext";
 import CommunityForm from "./modals/CommunityForm";
 import PostForm from "./modals/PostForm";
+import { create } from "../utils/variables";
 
 const Header = () => {
   const { state } = useContext(UserContext);
@@ -31,7 +32,7 @@ const Header = () => {
                 className="item pointer"
                 onClick={e => {
                   e.preventDefault();
-                  ReactDOM.render(<CommunityForm type="create" />, document.querySelector("#modal"));
+                  ReactDOM.render(<CommunityForm type={create} />, document.querySelector("#modal"));
                 }}
               >
                 <i className="users icon"></i>
@@ -41,7 +42,7 @@ const Header = () => {
                 className="item pointer"
                 onClick={e => {
                   e.preventDefault();
-                  ReactDOM.render(<PostForm state={state} />, document.querySelector("#modal"));
+                  ReactDOM.render(<PostForm state={state} type={create} />, document.querySelector("#modal"));
                 }}
               >
                 <i className="edit icon"></i>

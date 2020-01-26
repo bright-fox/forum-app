@@ -6,6 +6,10 @@ import VoteArrows from "./VoteArrows";
 import UserContext from "../contexts/UserContext";
 import Modal from "./Modal";
 import ModalCancelButton from "./ModalCancelButton";
+import { requestProtectedResource } from "../api";
+import { unmountModal } from "../utils";
+import PostForm from "./modals/PostForm";
+import { edit } from "../utils/variables";
 
 const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, setTrigger, children }) => {
   const { state } = useContext(UserContext);
@@ -15,12 +19,28 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
     return <>{children}</>;
   };
 
+  const handleEdit = e => {
+    e.stopPropagation();
+    ReactDOM.render(
+      <PostForm type={edit} state={state} id={_id} title={title} content={content} />,
+      document.querySelector("#modal")
+    );
+  };
+
+  const deletePost = async () => {
+    await requestProtectedResource({ method: "DELETE", path: `/posts/${_id}` });
+    setTrigger({});
+    unmountModal();
+  };
+
   const handleDelete = e => {
     e.stopPropagation();
     const content = <div className="half width">Are you sure you want to delete this post?</div>;
     const actions = (
       <>
-        <button className="ui button mini">Yes</button>
+        <button className="ui button mini" onClick={deletePost}>
+          Yes
+        </button>
         <ModalCancelButton />
       </>
     );
@@ -62,7 +82,7 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
           <div className="content">
             {state.isLoggedIn && state.currUser.id === author._id && (
               <div className="right floated">
-                <button className="ui button mini green animated">
+                <button className="ui button mini green animated" onClick={handleEdit}>
                   <div className="hidden content">Edit</div>
                   <div className="visible content">
                     <i className="edit icon"></i>

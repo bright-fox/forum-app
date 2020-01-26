@@ -34,6 +34,12 @@ export default (initValues, callback, validate) => {
     });
   }, []);
 
+  const setFields = useCallback(fields => {
+    setInputs(i => {
+      return { ...i, ...fields };
+    });
+  }, []);
+
   const resetField = field => {
     setInputs({ ...inputs, [field]: initValues[field] });
   };
@@ -47,6 +53,7 @@ export default (initValues, callback, validate) => {
     handleInputChange,
     handleSubmit,
     setField,
+    setFields,
     resetField,
     resetForm,
     errors
