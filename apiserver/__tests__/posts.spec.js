@@ -67,6 +67,26 @@ describe("Post Routes", () => {
     await Post.deleteMany({}).exec();
   });
 
+  describe("GET search post", () => {
+    test("it should return empty array", async done => {
+      const res = await request(app).get("/posts/search?q=");
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty("posts");
+      expect(res.body.posts).toEqual([]);
+      done();
+    });
+
+    test("it should return array with one entry", async done => {
+      const res = await request(app).get("/posts/search?q=testpost");
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty("posts");
+      expect(res.body.posts).toHaveLength(1);
+      done();
+    });
+  });
+
   describe("GET all posts", () => {
     test("it should get all posts", async done => {
       const res = await request(app).get(`/posts/page/1`);

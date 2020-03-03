@@ -50,6 +50,27 @@ describe("Community Routes", () => {
     await Community.deleteMany({}).exec();
   });
 
+  describe("GET search community", () => {
+    test("it should return empty array", async done => {
+      const res = await request(app).get("/communities/search?q=");
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty("communities");
+      expect(res.body.communities).toEqual([]);
+      done();
+    });
+
+    test("it should return array with one entry", async done => {
+      const createdCommunity = await createCommunity();
+      const res = await request(app).get("/communities/search?q=testlovers");
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty("communities");
+      expect(res.body.communities).toHaveLength(1);
+      done();
+    });
+  });
+
   describe("GET all communities", () => {
     test("it should get all communities", async done => {
       await createCommunity();

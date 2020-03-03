@@ -37,6 +37,26 @@ describe("User Routes", () => {
     await Refreshtoken.deleteMany({}).exec();
   });
 
+  describe("GET search user", () => {
+    test("it should return empty array", async done => {
+      const res = await request(app).get("/users/search?q=");
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty("users");
+      expect(res.body.users).toEqual([]);
+      done();
+    });
+
+    test("it should return array with one entry", async done => {
+      const res = await request(app).get("/users/search?q=testperson");
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty("users");
+      expect(res.body.users).toHaveLength(1);
+      done();
+    });
+  });
+
   describe("GET specific user", () => {
     test("it should get public profile", async done => {
       const res = await request(app).get(`/users/${userId}`);
