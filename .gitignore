@@ -27,3 +27,6 @@ yarn-error.log*
 
 # react public folder
 assets/
+
+# vs-code
+.vscode
