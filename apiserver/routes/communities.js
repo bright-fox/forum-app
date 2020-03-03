@@ -13,12 +13,11 @@ const router = express.Router();
 router.get(
   "/search",
   asyncHandler(async (req, res) => {
-    const communities = await Community.find(
-      { $text: { $search: req.query.q } },
-      { score: { $meta: "textScore" } }
-    ).sort({
-      score: { $meta: "textScore" }
-    });
+    const communities = await Community.find({ $text: { $search: req.query.q } }, { score: { $meta: "textScore" } })
+      .sort({
+        score: { $meta: "textScore" }
+      })
+      .exec();
     res.status(200).json({ communities });
   })
 );

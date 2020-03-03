@@ -41,7 +41,7 @@ const communitySchema = new Schema({
   }
 });
 
-communitySchema.index({ name: "text" });
+communitySchema.index({ name: "text", description: "text" }, { weights: { name: 2, description: 1 } });
 
 communitySchema.pre("save", async function() {
   const date = new Date();
