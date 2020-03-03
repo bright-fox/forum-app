@@ -9,6 +9,7 @@ import UserContext from "../contexts/UserContext";
 import Header from "./Header";
 import HomePage from "./pages/HomePage";
 import PostPage from "./pages/PostPage";
+import SearchPage from "./pages/SearchPage";
 import CommunityPage from "./pages/CommunityPage";
 
 const App = () => {
@@ -31,6 +32,9 @@ const App = () => {
             <Switch>
               <Route path="/" exact>
                 <HomePage />
+              </Route>
+              <Route path="/search">
+                <SearchPage />
               </Route>
               <Route path="/posts/:postId" exact>
                 <PostPage />

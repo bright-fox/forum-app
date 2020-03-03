@@ -1,12 +1,14 @@
 import React, { useRef } from "react";
 import ReactDOM from "react-dom";
 import useForm from "../hooks/useForm";
+import history from "../history";
 
 const SearchBar = () => {
   const formRef = useRef(null);
 
   const submitCallback = inputs => {
     if (!inputs.query) return;
+    history.push(`/search?q=${inputs.query}`);
   };
   const { inputs, handleInputChange, handleSubmit } = useForm({ query: "" }, submitCallback);
   return (
