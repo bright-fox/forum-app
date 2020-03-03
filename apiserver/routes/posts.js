@@ -21,7 +21,7 @@ router.get(
     const posts = await Post.find({ $text: { $search: req.query.q } }, { score: { $meta: "textScore" } }).sort({
       score: { $meta: "textScore" }
     });
-    res.status(200).json(posts);
+    res.status(200).json({ posts });
   })
 );
 

@@ -19,7 +19,7 @@ router.get(
     ).sort({
       score: { $meta: "textScore" }
     });
-    res.status(200).json(communities);
+    res.status(200).json({ communities });
   })
 );
 

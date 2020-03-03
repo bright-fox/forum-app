@@ -23,7 +23,7 @@ router.get(
         score: { $meta: "textScore" }
       })
       .exec();
-    res.status(200).json(users);
+    res.status(200).json({ users });
   })
 );
 
