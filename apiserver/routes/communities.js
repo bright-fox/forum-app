@@ -11,6 +11,19 @@ import CustomError from "../util/CustomError";
 const router = express.Router();
 
 router.get(
+  "/search",
+  asyncHandler(async (req, res) => {
+    const communities = await Community.find(
+      { $text: { $search: req.query.q } },
+      { score: { $meta: "textScore" } }
+    ).sort({
+      score: { $meta: "textScore" }
+    });
+    res.status(200).json(communities);
+  })
+);
+
+router.get(
   "/page/:p",
   validatePage(),
   asyncHandler(async (req, res) => {

@@ -3,7 +3,7 @@ import User from "./user";
 import Community from "./community";
 import PostVote from "./postVote";
 import Comment from "./comment";
-import { removeDependentDocs, makeHash, isSpam } from "../util";
+import { makeHash, isSpam } from "../util";
 import CustomError from "../util/CustomError";
 import CommentVote from "./commentVote";
 
@@ -58,6 +58,7 @@ const postSchema = new Schema({
 
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ community: 1, createdAt: -1 });
+postSchema.index({ title: "text", content: "text" }, { weights: { title: 2, content: 1 } });
 
 postSchema.pre("save", async function() {
   const date = new Date();

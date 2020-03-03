@@ -41,6 +41,8 @@ const communitySchema = new Schema({
   }
 });
 
+communitySchema.index({ name: "text" });
+
 communitySchema.pre("save", async function() {
   const date = new Date();
   if (this.isNew) this.createdAt = date;

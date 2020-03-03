@@ -5,11 +5,11 @@ import config from "config";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import communityRoutes from "./controllers/communities";
-import indexRoutes from "./controllers/index.js";
-import postRoutes from "./controllers/posts";
-import userRoutes from "./controllers/users";
-import commentRoutes from "./controllers/comments";
+import communityRoutes from "./routes/communities";
+import indexRoutes from "./routes/index.js";
+import postRoutes from "./routes/posts";
+import userRoutes from "./routes/users";
+import commentRoutes from "./routes/comments";
 import { handleError, handleMongoError, logError } from "./middlewares";
 
 dotenv.config();

@@ -16,6 +16,18 @@ import CustomError from "../util/CustomError";
 const router = express.Router();
 
 router.get(
+  "/search",
+  asyncHandler(async (req, res) => {
+    const users = await User.find({ $text: { $search: req.query.q } }, { score: { $meta: "textScore" } })
+      .sort({
+        score: { $meta: "textScore" }
+      })
+      .exec();
+    res.status(200).json(users);
+  })
+);
+
+router.get(
   "/:user_id",
   asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.user_id)
