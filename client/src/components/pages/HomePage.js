@@ -1,5 +1,6 @@
 import React from "react";
 import PostList from "../PostList";
+import CommunitySidebar from "../CommunitySidebar";
 
 const HomePage = () => {
   return (
@@ -7,6 +8,9 @@ const HomePage = () => {
       <div className="row">
         <div className="ten wide column">
           <PostList path="/posts" />
+        </div>
+        <div className="five wide column">
+          <CommunitySidebar />
         </div>
       </div>
     </div>
