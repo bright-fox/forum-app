@@ -20,7 +20,8 @@ export const validateRegister = () => {
     body("password")
       .exists()
       .not()
-      .isEmpty(),
+      .isEmpty()
+      .trim(),
     body("biography")
       .exists()
       .escape()
