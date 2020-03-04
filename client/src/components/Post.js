@@ -58,7 +58,7 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
           <div className="content">
             <div className="right floated meta">{moment(createdAt).fromNow()}</div>
             <img
-              src={`${process.env.PUBLIC_URL}/assets/avatars/community.png`}
+              src={`${process.env.PUBLIC_URL}/assets/avatars/community_default.jpg`}
               alt="avatar"
               className="ui avatar image"
             />

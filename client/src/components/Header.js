@@ -15,7 +15,7 @@ const Header = () => {
     <>
       <div className="ui fixed borderless menu">
         <Link to="/" id="brand-name" className="item header">
-          <img src={`${process.env.PUBLIC_URL}/forum.png`} className="ui avatar" alt="brandimage" />
+          <img src={`${process.env.PUBLIC_URL}/icon_default.jpg`} className="ui avatar image" alt="brandimage" />
           Talky
         </Link>
         <Link to="/" className="item">
