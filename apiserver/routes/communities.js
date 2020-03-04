@@ -7,6 +7,8 @@ import { validateCommunity, validatePage } from "../middlewares/validation";
 import { authenticateIdToken, checkCommunityOwnership, checkCommunityMemberOwnership } from "../middlewares/auth";
 import { checkValidationErrors, asyncHandler, unescapeDocs, checkPageUnderMax } from "../util";
 import CustomError from "../util/CustomError";
+import GrowingCommunity from "../models/growingCommunity";
+import { oneWeek } from "../util/variables";
 
 const router = express.Router();
 
@@ -17,6 +19,18 @@ router.get(
       .sort({
         score: { $meta: "textScore" }
       })
+      .exec();
+    res.status(200).json({ communities });
+  })
+);
+
+router.get(
+  "/growing",
+  asyncHandler(async (req, res) => {
+    const communities = await GrowingCommunity.find({ createdAt: { $gte: Date.now() - oneWeek } })
+      .limit(20)
+      .populate("community")
+      .sort({ rank: 1 })
       .exec();
     res.status(200).json({ communities });
   })

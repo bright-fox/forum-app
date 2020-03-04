@@ -1,10 +1,10 @@
 import CommunityMember from "../models/communityMember";
 import GrowingCommunity from "../models/growingCommunity";
 import moment from "moment";
+import { oneWeek } from "../util/variables";
 
 export const updateGrowingCommunitiesList = async () => {
   // get date from one week ago
-  const oneWeek = 7 * 24 * 60 * 60 * 1000;
   const oneWeekAgo = new Date(Date.now() - oneWeek);
 
   // aggregate the communities
