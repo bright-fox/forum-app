@@ -5,7 +5,7 @@ import { updateGrowingCommunitiesList } from "./cronjobs";
 
 // Cronjob for updating the growing communities collection (every 7 days)
 const job = new CronJob(
-  " * * */7 * *",
+  "* * */7 * *",
   () => {
     console.log("==================CRONJOB====================");
     console.log("Updating the Growing Communities Collection..");

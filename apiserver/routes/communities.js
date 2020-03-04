@@ -9,6 +9,7 @@ import { checkValidationErrors, asyncHandler, unescapeDocs, checkPageUnderMax } 
 import CustomError from "../util/CustomError";
 import GrowingCommunity from "../models/growingCommunity";
 import { oneWeek } from "../util/variables";
+import { updateGrowingCommunitiesList } from "../cronjobs";
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ router.get(
   "/growing",
   asyncHandler(async (req, res) => {
     const communities = await GrowingCommunity.find({ createdAt: { $gte: Date.now() - oneWeek } })
-      .limit(20)
+      .limit(10)
       .populate("community")
       .sort({ rank: 1 })
       .exec();
@@ -104,6 +105,7 @@ router.delete(
   checkCommunityOwnership,
   asyncHandler(async (req, res) => {
     await req.doc.remove();
+    await updateGrowingCommunitiesList();
     res.status(200).json({ success: "You successfully deleted the community!", docId: req.params.community_id });
   })
 );
