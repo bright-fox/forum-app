@@ -48,7 +48,7 @@ router.get(
     const communities = await Community.find({})
       .skip(req.params.p * limit - limit)
       .limit(limit)
-      .populate("author")
+      .populate("creator")
       .populate("community")
       .lean()
       .exec();
@@ -77,7 +77,7 @@ router.get(
   "/:community_id",
   asyncHandler(async (req, res) => {
     const community = await Community.findById(req.params.community_id)
-      .populate("author")
+      .populate("creator")
       .populate("community")
       .lean()
       .exec();
