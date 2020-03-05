@@ -31,9 +31,9 @@ router.get(
     const communities = await GrowingCommunity.find({ createdAt: { $gte: Date.now() - oneWeek } })
       .limit(10)
       .populate("community")
-      .sort({ rank: 1 })
+      .sort({ createdAt: -1 })
       .exec();
-    res.status(200).json({ communities });
+    res.status(200).json(communities);
   })
 );
 
@@ -105,7 +105,6 @@ router.delete(
   checkCommunityOwnership,
   asyncHandler(async (req, res) => {
     await req.doc.remove();
-    await updateGrowingCommunitiesList();
     res.status(200).json({ success: "You successfully deleted the community!", docId: req.params.community_id });
   })
 );

@@ -7,10 +7,7 @@ const growingCommunitySchema = new Schema({
   },
   rank: Number,
   count: Number,
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
+  createdAt: Date
 });
 
 growingCommunitySchema.index({ createdAt: -1 });

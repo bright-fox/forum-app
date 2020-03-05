@@ -5,6 +5,7 @@ import { oneWeek } from "../util/variables";
 
 export const updateGrowingCommunitiesList = async () => {
   // get date from one week ago
+  const dateNow = new Date().toISOString();
   const oneWeekAgo = new Date(Date.now() - oneWeek);
 
   // aggregate the communities
@@ -21,6 +22,9 @@ export const updateGrowingCommunitiesList = async () => {
   for (let i = 0; i < community.length; i++) {
     // add rank of community based on count
     community[i].rank = i + 1;
+    // add the same createdAt date for each community
+    community[i].createdAt = dateNow;
+
     // create growing community entry
     const growingCommunity = new GrowingCommunity(community[i]);
     await growingCommunity.save();
