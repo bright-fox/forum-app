@@ -130,8 +130,19 @@ router.get(
   })
 );
 
+router.get(
+  "/:community_id/members/status",
+  authenticateIdToken,
+  asyncHandler(async (req, res) => {
+    const { id } = req.user;
+    const member = await CommunityMember.findOne({ member: id, community: req.params.community_id }).exec();
+    if (!member) throw new CustomError(404, "Not a member of this community");
+    res.status(200).json(member);
+  })
+);
+
 router.post(
-  "/:community_id/member",
+  "/:community_id/members",
   authenticateIdToken,
   asyncHandler(async (req, res) => {
     const { id } = req.user;
@@ -143,7 +154,7 @@ router.post(
 );
 
 router.delete(
-  "/:community_id/member/:member_id",
+  "/:community_id/members/:member_id",
   authenticateIdToken,
   checkCommunityMemberOwnership,
   asyncHandler(async (req, res) => {
