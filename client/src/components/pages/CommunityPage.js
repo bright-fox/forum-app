@@ -12,6 +12,8 @@ const CommunityPage = () => {
   const [membership, setMembership] = useState(null);
   const { state } = useContext(UserContext);
 
+  console.log(membership);
+
   useEffect(() => {
     const fetchData = async () => {
       // fetch community
@@ -32,14 +34,39 @@ const CommunityPage = () => {
     fetchData();
   }, [communityId, state.isLoggedIn]);
 
+  const handleLeaveCommunity = async () => {
+    if (!membership) return;
+    const res = await requestProtectedResource({
+      method: "DELETE",
+      path: `/communities/${communityId}/members/${membership._id}`
+    });
+    if (!res || res.status !== 200) return;
+    setMembership(null);
+  };
+
+  const handleJoinCommunity = async () => {
+    if (membership) return;
+    const res = await requestProtectedResource({
+      method: "POST",
+      path: `/communities/${communityId}/members`
+    });
+    if (!res || res.status !== 200) return;
+    const data = await res.json();
+    setMembership(data.member);
+  };
+
   const renderInfoButtons = () => {
     return (
       <>
         {state.currUser.id !== community.creator._id && !membership && (
-          <button className="ui blue button fluid">Join Community</button>
+          <button className="ui blue button fluid" onClick={handleJoinCommunity}>
+            Join Community
+          </button>
         )}
         {state.currUser.id !== community.creator._id && membership && (
-          <button className="ui red button fluid">Leave Community</button>
+          <button className="ui red button fluid" onClick={handleLeaveCommunity}>
+            Leave Community
+          </button>
         )}
         {state.currUser.id === community.creator._id && (
           <div className="mt-3 flex center">
