@@ -7,8 +7,10 @@ import moment from "moment";
 import { isEmpty } from "../../utils";
 import UserContext from "../../contexts/UserContext";
 import CommunityForm from "../modals/CommunityForm";
-import { edit } from "../../utils/variables";
+import PostForm from "../modals/PostForm";
+import { edit, create } from "../../utils/variables";
 import history from "../../history";
+import AuthBar from "../AuthBar";
 
 const CommunityPage = () => {
   const { communityId } = useParams();
@@ -30,7 +32,7 @@ const CommunityPage = () => {
         method: "GET",
         path: `/communities/${communityId}/members/status`
       });
-      if (!membershipRes || membershipRes.status !== 200) return;
+      if (!membershipRes || membershipRes.status !== 200) return setMembership(null);
       const membershipData = await membershipRes.json();
       setMembership(membershipData);
     };
@@ -72,6 +74,10 @@ const CommunityPage = () => {
     });
     if (!res || res.status !== 200) return;
     history.push("/");
+  };
+
+  const handleCreatePost = () => {
+    ReactDOM.render(<PostForm type={create} state={state} />, document.querySelector("#modal"));
   };
 
   // ======== Render functions ============
@@ -134,6 +140,12 @@ const CommunityPage = () => {
     <div className="ui grid stackable centered">
       <div className="row">
         <div className="eleven wide column">
+          {!state.isLoggedIn && <AuthBar text="Login or Sign up to participate!" margin="mb-1" />}
+          {state.isLoggedIn && membership && (
+            <button className="ui button fluid blue mb-1" onClick={handleCreatePost}>
+              Create Post
+            </button>
+          )}
           <PostList path={`/communities/${communityId}/posts`} />
         </div>
         <div className="five wide column">

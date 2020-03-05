@@ -31,7 +31,7 @@ const PostPage = () => {
           {state.isLoggedIn ? (
             <CommentForm postId={postId} setTrigger={setTrigger} />
           ) : (
-            <AuthBar text="Sign up or Login to comment!" />
+            <AuthBar text="Sign up or Login to comment!" margin="m-3" />
           )}
           <CommentList postId={postId} trigger={trigger} setTrigger={setTrigger} />
         </Post>

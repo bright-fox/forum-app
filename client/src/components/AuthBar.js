@@ -2,9 +2,9 @@ import React from "react";
 import SignUpButton from "./SignUpButton";
 import LoginButton from "./LoginButton";
 
-const AuthBar = ({ text }) => {
+const AuthBar = ({ text, margin }) => {
   return (
-    <div className="ui segment m-3">
+    <div className={`ui segment ${margin}`}>
       <div className="ui two column very relaxed centered stackable grid">
         <div className="middle aligned column bold">{text}</div>
         <div className="middle aligned column">
