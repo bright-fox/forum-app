@@ -36,6 +36,10 @@ div#root {
   align-items: center !important;
 }
 
+.align-center {
+  align-items: center;
+}
+
 .row-dir.vert-center {
   align-items: center !important;
 }
