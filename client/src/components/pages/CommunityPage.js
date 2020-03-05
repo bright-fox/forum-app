@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useContext } from "react";
+import ReactDOM from "react-dom";
 import { useParams, Link } from "react-router-dom";
 import PostList from "../PostList";
 import { request, requestProtectedResource } from "../../api";
 import moment from "moment";
 import { isEmpty } from "../../utils";
 import UserContext from "../../contexts/UserContext";
+import CommunityForm from "../modals/CommunityForm";
+import { edit } from "../../utils/variables";
+import history from "../../history";
 
 const CommunityPage = () => {
   const { communityId } = useParams();
   const [community, setCommunity] = useState({});
   const [membership, setMembership] = useState(null);
   const { state } = useContext(UserContext);
-
-  console.log(membership);
+  const [reloadCommunity, setReloadCommunity] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,8 +35,9 @@ const CommunityPage = () => {
       setMembership(membershipData);
     };
     fetchData();
-  }, [communityId, state.isLoggedIn]);
+  }, [communityId, state.isLoggedIn, reloadCommunity]);
 
+  // ======== On click handlers ============
   const handleLeaveCommunity = async () => {
     if (!membership) return;
     const res = await requestProtectedResource({
@@ -41,7 +45,7 @@ const CommunityPage = () => {
       path: `/communities/${communityId}/members/${membership._id}`
     });
     if (!res || res.status !== 200) return;
-    setMembership(null);
+    setReloadCommunity({});
   };
 
   const handleJoinCommunity = async () => {
@@ -51,10 +55,26 @@ const CommunityPage = () => {
       path: `/communities/${communityId}/members`
     });
     if (!res || res.status !== 200) return;
-    const data = await res.json();
-    setMembership(data.member);
+    setReloadCommunity({});
   };
 
+  const handleEdit = () => {
+    ReactDOM.render(
+      <CommunityForm type={edit} id={community._id} name={community.name} description={community.description} />,
+      document.querySelector("#modal")
+    );
+  };
+
+  const handleDelete = async () => {
+    const res = await requestProtectedResource({
+      method: "DELETE",
+      path: `/communities/${communityId}`
+    });
+    if (!res || res.status !== 200) return;
+    history.push("/");
+  };
+
+  // ======== Render functions ============
   const renderInfoButtons = () => {
     return (
       <>
@@ -70,8 +90,12 @@ const CommunityPage = () => {
         )}
         {state.currUser.id === community.creator._id && (
           <div className="mt-3 flex center">
-            <button className="ui green button fluid">Edit</button>
-            <button className="ui red button fluid">Delete</button>
+            <button className="ui green button fluid" onClick={handleEdit}>
+              Edit
+            </button>
+            <button className="ui red button fluid" onClick={handleDelete}>
+              Delete
+            </button>
           </div>
         )}
       </>
@@ -103,6 +127,8 @@ const CommunityPage = () => {
       </div>
     );
   };
+
+  // ======== return statement ============
 
   return (
     <div className="ui grid stackable centered">
