@@ -10,13 +10,17 @@ const CommunitySidebar = () => {
     const fetchData = async () => {
       const res = await request({ method: "GET", path: "/communities/growing" });
       const data = await res.json();
-      setCommunities(data.communities);
+      // process data
+      const latestDate = data[0]["createdAt"];
+      const communities = data.filter(d => d.createdAt === latestDate);
+      setCommunities(communities);
     };
     fetchData();
   }, []);
 
   const renderList = () => {
     return communities.map(item => {
+      if (!item.community) return "";
       const { _id, name, members } = item.community;
       return (
         <div className="item flex align-center" key={item._id}>
