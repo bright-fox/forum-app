@@ -222,19 +222,20 @@ describe("Community Routes", () => {
       test("it should create communitymember and increment members field in community", async done => {
         const createdCommunity = await createCommunity();
         const res = await request(app)
-          .post(`/communities/${createdCommunity._id}/member`)
+          .post(`/communities/${createdCommunity._id}/members`)
           .set("Authorization", "bearer " + idToken);
         const resTwo = await request(app).get(`/communities/${createdCommunity._id}`);
 
         expect(res.statusCode).toEqual(200);
         expect(res.body).toHaveProperty("success");
+        expect(res.body).toHaveProperty("member");
         expect(resTwo.body.community.members).toEqual(1);
         done();
       });
 
       test("fail to become member of community due to no existence", async done => {
         const res = await request(app)
-          .post("/communities/aaaaaaaaaaaaaaaaaaaaaaaa/member")
+          .post("/communities/aaaaaaaaaaaaaaaaaaaaaaaa/members")
           .set("Authorization", "bearer " + idToken);
         expect(res.statusCode).toEqual(500);
         done();
@@ -245,14 +246,14 @@ describe("Community Routes", () => {
       test("it should delete a community member and decrement members field in community", async done => {
         const createdCommunity = await createCommunity();
         await request(app)
-          .post(`/communities/${createdCommunity._id}/member`)
+          .post(`/communities/${createdCommunity._id}/members`)
           .set("Authorization", "bearer " + idToken);
         const member = await CommunityMember.findOne({ community: createdCommunity._id })
           .lean()
           .exec();
 
         const res = await request(app)
-          .delete(`/communities/${createdCommunity._id}/member/${member._id}`)
+          .delete(`/communities/${createdCommunity._id}/members/${member._id}`)
           .set("Authorization", "bearer " + idToken);
 
         const resTwo = await request(app).get(`/communities/${createdCommunity._id}`);
@@ -266,7 +267,7 @@ describe("Community Routes", () => {
       test("fail to delete member due to no existence", async done => {
         const createdCommunity = await createCommunity();
         const res = await request(app)
-          .delete(`/communities/${createdCommunity._id}/member/aaaaaaaaaaaaaaaaaaaaaaaa`)
+          .delete(`/communities/${createdCommunity._id}/members/aaaaaaaaaaaaaaaaaaaaaaaa`)
           .set("Authorization", "bearer " + idToken);
 
         expect(res.statusCode).toEqual(404);

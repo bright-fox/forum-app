@@ -149,7 +149,7 @@ router.post(
     const member = new CommunityMember({ member: id, community: req.params.community_id });
 
     const createdMember = await member.save();
-    res.status(200).json({ success: "You successfully joined the community!" });
+    res.status(200).json({ member: createdMember, success: "You successfully joined the community!" });
   })
 );
 
