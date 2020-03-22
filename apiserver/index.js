@@ -3,9 +3,9 @@ import app from "./app";
 import { CronJob } from "cron";
 import { updateGrowingCommunitiesList } from "./cronjobs";
 
-// Cronjob for updating the growing communities collection (every 7 days)
+// Cronjob for updating the growing communities collection (every Sunday at 00:00)
 const job = new CronJob(
-  "* * */7 * *",
+  "0 0 * * 0",
   () => {
     console.log("==================CRONJOB====================");
     console.log("Updating the Growing Communities Collection..");
