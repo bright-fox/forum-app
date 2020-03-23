@@ -33,6 +33,7 @@ router.get(
       .populate("community")
       .sort({ createdAt: -1 })
       .exec();
+    if (communities.length <= 0) throw new CustomError(404, "There are no communities yet!");
     res.status(200).json(communities);
   })
 );
