@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon -r esm",
+    "seed": "node -r esm seeds/index.js",
     "test": "cross-env NODE_ENV=test jest --detectOpenHandles"
   },
   "jest": {
@@ -29,21 +30,21 @@
   "author": "Hung Vu",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^3.0.8",
     "body-parser": "^1.19.0",
-    "config": "^3.2.4",
+    "config": "^3.3.0",
     "cors": "^2.8.5",
     "cron": "^1.8.2",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "express": "^4.17.1",
-    "express-validator": "^6.2.0",
+    "express-validator": "^6.4.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
-    "mongoose": "^5.7.1"
+    "mongoose": "^5.9.5"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.7.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.9.0",
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
     "nodemon": "^2.0.2",
