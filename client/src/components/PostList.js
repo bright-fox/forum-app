@@ -15,6 +15,7 @@ const PostList = ({ path }) => {
         method: "GET",
         path: `${path}/page/${currentPage}`
       });
+      if (res.status !== 200) return;
       const data = await res.json();
       setMaxPage(parseInt(data.maxPage));
       // setCurrentPage(parseInt(data.currentPage)); not useful
