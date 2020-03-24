@@ -6,6 +6,7 @@ import CommentForm from "../CommentForm.js";
 import { request, requestProtectedResource } from "../../api";
 import UserContext from "../../contexts/UserContext";
 import AuthBar from "../AuthBar";
+import Loader from "../Loader";
 
 const PostPage = () => {
   // check if props params is
@@ -45,7 +46,7 @@ const PostPage = () => {
     );
   };
 
-  return <>{post ? renderPost() : <div>Loading..</div>}</>;
+  return <>{post ? renderPost() : <Loader />}</>;
 };
 
 export default PostPage;

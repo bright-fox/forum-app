@@ -261,3 +261,7 @@ small.error {
 .ui.menu .edit.icon {
   padding-left: 4px;
 }
+
+.min-height-small {
+  min-height: 10vh;
+}

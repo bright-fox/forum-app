@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { request } from "../api";
 import { isEmpty } from "../utils";
+import Loader from "./Loader";
 
 const CommunitySidebar = () => {
   const [communities, setCommunities] = useState([]);
@@ -44,7 +45,7 @@ const CommunitySidebar = () => {
   return (
     <div className="ui segment">
       <h2>Growing Communities</h2>
-      <div className="ui ordered divided list">{!isEmpty(communities) ? renderList() : <div>Loading..</div>}</div>
+      <div className="ui ordered divided list">{!isEmpty(communities) ? renderList() : <Loader />}</div>
     </div>
   );
 };

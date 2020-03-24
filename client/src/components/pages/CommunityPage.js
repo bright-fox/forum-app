@@ -11,6 +11,7 @@ import PostForm from "../modals/PostForm";
 import { edit, create } from "../../utils/variables";
 import history from "../../history";
 import AuthBar from "../AuthBar";
+import Loader from "../Loader";
 
 const CommunityPage = () => {
   const { communityId } = useParams();
@@ -149,7 +150,7 @@ const CommunityPage = () => {
           <PostList path={`/communities/${communityId}/posts`} />
         </div>
         <div className="five wide column">
-          {!isEmpty(community) ? renderCommunityInfo() : <div className="ui segment">Loading..</div>}
+          {!isEmpty(community) ? renderCommunityInfo() : <Loader />}
         </div>
       </div>
     </div>

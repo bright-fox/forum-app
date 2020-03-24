@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
+import moment from "moment";
 import { request } from "../../api";
 import { isEmpty } from "../../utils";
-import moment from "moment";
+import Loader from "../Loader";
+
 
 const SearchPage = () => {
   const location = useLocation();
@@ -84,7 +86,7 @@ const SearchPage = () => {
   return (
     <div className="ui segment">
       <h1>Search Results</h1>
-      {!isEmpty(searchResults) ? renderSearchResults() : <div>..Loading</div>}
+      {!isEmpty(searchResults) ? renderSearchResults() : <Loader />}
     </div>
   );
 };
