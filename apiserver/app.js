@@ -10,6 +10,7 @@ import indexRoutes from "./routes/index.js";
 import postRoutes from "./routes/posts";
 import userRoutes from "./routes/users";
 import commentRoutes from "./routes/comments";
+import voteRoutes from "./routes/votes";
 import { handleError, handleMongoError, logError } from "./middlewares";
 
 dotenv.config();
@@ -40,6 +41,7 @@ app.use("/users", userRoutes);
 app.use("/communities", communityRoutes);
 app.use("/posts", postRoutes);
 app.use("/posts/:post_id/comments", commentRoutes);
+app.use("/votes", voteRoutes);
 
 // Error handling middleware
 if (process.env.NODE_ENV !== "test") app.use(logError);

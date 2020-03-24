@@ -1,34 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import ReactDOM from "react-dom";
 import { requestProtectedResource } from "../api";
 import UserContext from "../contexts/UserContext";
 import Modal from "./Modal";
 import { redirectToAuthModal } from "../utils";
 
-const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
+const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted, userVote }) => {
   const { state, dispatch } = useContext(UserContext);
-  const [vote, setVote] = useState(0);
+  const [vote, setVote] = useState(userVote || 0);
 
   // styles
-  const commentSize = type === "comment" ? { fontSize: "1.1rem" } : {};
-  const commentMargin = type === "comment" ? { marginBottom: "5px" } : {};
+  const arrowSize = type === "comment" ? { fontSize: "1.1rem" } : {};
+  const arrowMargin = type === "comment" ? { marginBottom: "5px" } : {};
   const voted = v => (vote === v ? "orange-color pressed " : " ");
   const disabled = !state.isLoggedIn || isDeleted ? "gray pressed " : " ";
-
-  useEffect(() => {
-    if (!state.isLoggedIn) return setVote(0);
-    const fetchVote = async () => {
-      const res = await requestProtectedResource({ method: "GET", path });
-      if (!res) return; //redirectToAuthModal(dispatch)?
-      if (res.status !== 200) return setVote(0);
-      const data = await res.json();
-      setVote(data.vote);
-    };
-    fetchVote();
-
-    // clean-up
-    return setVote(0);
-  }, [state.isLoggedIn, path, dispatch]);
 
   const handleClick = async v => {
     if (!state.isLoggedIn) {
@@ -48,10 +33,10 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted }) => {
     return vote !== v && state.isLoggedIn && !isDeleted ? handleClick(v) : null;
   };
   return (
-    <div style={commentSize} className="fluid medium flex col-dir center">
+    <div style={arrowSize} className="fluid medium flex col-dir center">
       <i
         id="up"
-        style={commentMargin}
+        style={arrowMargin}
         className={"angle up icon mr-0 " + voted(1) + disabled}
         onClick={() => click(1)}
       ></i>

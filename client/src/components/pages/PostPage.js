@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Post from "../Post";
 import CommentList from "../CommentList";
 import CommentForm from "../CommentForm.js";
-import { request } from "../../api";
+import { request, requestProtectedResource } from "../../api";
 import UserContext from "../../contexts/UserContext";
 import AuthBar from "../AuthBar";
 
@@ -19,10 +19,16 @@ const PostPage = () => {
     const fetchPost = async () => {
       const res = await request({ method: "GET", path: `/posts/${postId}` });
       const data = await res.json();
+      // Get if user voted for it already
+      if (state.isLoggedIn) {
+        const voteRes = await requestProtectedResource({ method: "GET", path: `/posts/${postId}/votes` });
+        const voteData = await voteRes.json();
+        data.post.userVote = voteData.vote;
+      };
       setPost(data.post);
     };
     fetchPost();
-  }, [postId, trigger]);
+  }, [postId, trigger, state.isLoggedIn]);
 
   const renderPost = () => {
     return (
@@ -31,8 +37,8 @@ const PostPage = () => {
           {state.isLoggedIn ? (
             <CommentForm postId={postId} setTrigger={setTrigger} />
           ) : (
-            <AuthBar text="Sign up or Login to comment!" margin="m-3" />
-          )}
+              <AuthBar text="Sign up or Login to comment!" margin="m-3" />
+            )}
           <CommentList postId={postId} trigger={trigger} setTrigger={setTrigger} />
         </Post>
       </>

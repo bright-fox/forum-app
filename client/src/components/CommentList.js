@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import CommentForm from "./CommentForm";
-import { request, requestProtectedResource } from "../api";
+import { request, requestProtectedResource, appendVotes } from "../api";
 import VoteArrows from "./VoteArrows";
 import UserContext from "../contexts/UserContext";
 import { redirectToAuthModal } from "../utils";
@@ -15,11 +15,16 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
   useEffect(() => {
     const fetchPost = async () => {
       const res = await request({ method: "GET", path: `/posts/${postId}/comments/page/1` });
+      if (res.status !== 200) return;
       const data = await res.json();
+      if (state.isLoggedIn) {
+        data.comments = await appendVotes(data.comments, "comment");
+      }
+
       setComments(data.comments);
     };
     fetchPost();
-  }, [postId, trigger]);
+  }, [postId, trigger, state.isLoggedIn]);
 
   const handleReply = e => {
     const container = document.querySelector(`#commentform-${e.target.getAttribute("data-id")}`);
@@ -66,6 +71,7 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
             <VoteArrows
               upvotes={comment.upvotes}
               type="comment"
+              userVote={comment.userVote}
               path={`/posts/${postId}/comments/${comment._id}/votes`}
               setTrigger={setTrigger}
               isDeleted={comment.isDeleted}

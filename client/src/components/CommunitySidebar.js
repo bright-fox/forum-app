@@ -9,7 +9,6 @@ const CommunitySidebar = () => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await request({ method: "GET", path: "/communities/growing" });
-      console.log(res);
       if (res.status !== 200) return;
       const data = await res.json();
       // process data
