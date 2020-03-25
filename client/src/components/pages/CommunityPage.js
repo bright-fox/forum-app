@@ -138,20 +138,18 @@ const CommunityPage = () => {
   // ======== return statement ============
 
   return (
-    <div className="ui grid stackable centered">
-      <div className="row">
-        <div className="eleven wide column">
-          {!state.isLoggedIn && <AuthBar text="Login or Sign up to participate!" margin="mb-1" />}
-          {state.isLoggedIn && membership && (
-            <button className="ui button fluid blue mb-1" onClick={handleCreatePost}>
-              Create Post
-            </button>
-          )}
-          <PostList path={`/communities/${communityId}/posts`} />
-        </div>
-        <div className="five wide column">
-          {!isEmpty(community) ? renderCommunityInfo() : <Loader />}
-        </div>
+    <div className="ui stackable grid">
+      <div className="five wide column">
+        {!isEmpty(community) ? renderCommunityInfo() : <Loader />}
+      </div>
+      <div className="eleven wide column">
+        {!state.isLoggedIn && <AuthBar text="Login or Sign up to participate!" margin="mb-1" />}
+        {state.isLoggedIn && membership && (
+          <button className="ui button fluid blue mb-1" onClick={handleCreatePost}>
+            Create Post
+          </button>
+        )}
+        <PostList path={`/communities/${communityId}/posts`} />
       </div>
     </div>
   );
