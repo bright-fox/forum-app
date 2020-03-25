@@ -21,3 +21,14 @@ export const redirectToAuthModal = dispatch => {
   dispatch({ type: LOGOUT });
   ReactDOM.render(<AuthModal />, document.querySelector("#modal"));
 };
+
+export const convertKarma = karma => {
+  let i;
+  const magnitudes = ["K", "Mio", "Bio", "Trio", "Qua", "Qui", "Sex", "Sep", "Oc", "Non", "Dec"];
+  if (karma <= 1000) return karma;
+  for (i = 0; i < magnitudes.length; i++) {
+    karma /= 1000;
+    if (karma <= 1000 && karma >= 1) break;
+  }
+  return `${Math.round((karma + Number.EPSILON) * 100) / 100} ${magnitudes[i]}`
+}

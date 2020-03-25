@@ -18,7 +18,7 @@ const SignUpForm = ({ dispatch }) => {
     });
     if (res.status !== 200) return unmountModal();
     const { user, refreshToken } = await res.json();
-    const currUser = { id: user._id, username: user.username, gender: user.gender };
+    const currUser = { id: user._id, username: user.username, gender: user.gender, karma: user.karma };
     cacheUser(currUser, refreshToken);
     dispatch({ type: SIGNUP, payload: { currUser } });
     unmountModal();

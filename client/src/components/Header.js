@@ -49,7 +49,6 @@ const Header = () => {
               </Link>
             </>
           )}
-
           <UserHeader />
         </div>
       </div>

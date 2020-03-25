@@ -55,7 +55,7 @@ router.post(
       success: "You successfully logged in!",
       idToken,
       refreshToken,
-      user: { ...payload, gender: user.gender }
+      user: { ...payload, gender: user.gender, karma: user.karma }
     });
   })
 );

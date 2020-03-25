@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"
 
 const Dropdown = ({ heading, children }) => {
-    console.log()
     const [dropped, setDropped] = useState(false);
 
     useEffect(() => {
