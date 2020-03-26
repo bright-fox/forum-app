@@ -108,6 +108,18 @@ div#root {
   margin: 0 !important;
 }
 
+.m-1 {
+  margin: 3px !important;
+}
+
+.m-2 {
+  margin: 6px !important;
+}
+
+.m-3 {
+  margin: 9px !important;
+}
+
 .mx-1 {
   margin: 0 3px !important
 }
@@ -119,6 +131,7 @@ div#root {
 .mx-3 {
   margin: 0 9px !important
 }
+
 
 .p-0 {
   padding: 0 !important;
@@ -352,12 +365,20 @@ small.error {
 /* Block Hover */
 
 .border-hover {
-  border: 2px solid transparent;
-  border-radius: 5px;
+  border: 2px solid transparent !important;
+  border-top: 2px solid lightgrey !important;
+  border-radius: 0 0 5px 5px;
+  margin: 3px;
+}
+
+.border-hover:first-child {
+  border: 2px solid transparent !important;
+  border-radius: 0 0 5px 5px;
 }
 
 .border-hover:hover {
-  border: 2px solid lightgrey;
+  border: 2px solid lightgrey !important; 
+  border-radius: 5px;
 }
 
 .block {
