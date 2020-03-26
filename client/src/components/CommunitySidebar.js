@@ -3,14 +3,15 @@ import { Link } from "react-router-dom";
 import { request } from "../api";
 import { isEmpty } from "../utils";
 import Loader from "./Loader";
+import ErrorDisplay from "./ErrorDisplay";
 
 const CommunitySidebar = () => {
-  const [communities, setCommunities] = useState([]);
+  const [communities, setCommunities] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await request({ method: "GET", path: "/communities/growing" });
-      if (res.status !== 200) return;
+      if (res.status !== 200) return setCommunities([]);
       const data = await res.json();
       // process data
       const latestDate = data[0]["createdAt"];
@@ -45,7 +46,7 @@ const CommunitySidebar = () => {
   return (
     <div className="ui segment">
       <h2>Growing Communities</h2>
-      <div className="ui ordered divided list">{!isEmpty(communities) ? renderList() : <Loader />}</div>
+      <div className="ui ordered divided list">{communities ? (!isEmpty(communities) ? renderList() : <ErrorDisplay />) : <Loader />}</div>
     </div>
   );
 };

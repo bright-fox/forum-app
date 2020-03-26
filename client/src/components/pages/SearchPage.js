@@ -4,6 +4,7 @@ import moment from "moment";
 import { request } from "../../api";
 import { isEmpty } from "../../utils";
 import Loader from "../Loader";
+import ErrorDisplay from "../ErrorDisplay";
 
 
 const SearchPage = () => {
@@ -72,13 +73,13 @@ const SearchPage = () => {
     return (
       <>
         <h3>Posts</h3>
-        <div className="ui relaxed divided list">{posts.length > 0 ? posts : <div>No entries found..</div>}</div>
+        <div className="ui relaxed divided list">{posts.length > 0 ? posts : <ErrorDisplay />}</div>
         <h3>Communities</h3>
         <div className="ui relaxed divided list">
-          {communities.length > 0 ? communities : <div>No entries found..</div>}
+          {communities.length > 0 ? communities : <ErrorDisplay />}
         </div>
         <h3>Users</h3>
-        <div className="ui relaxed divided list">{users.length > 0 ? users : <div>No entries found..</div>}</div>
+        <div className="ui relaxed divided list">{users.length > 0 ? users : <ErrorDisplay />}</div>
       </>
     );
   };
