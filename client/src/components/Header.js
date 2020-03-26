@@ -18,7 +18,7 @@ const Header = () => {
           <img src={`${process.env.PUBLIC_URL}/icon_default.jpg`} className="ui avatar image" alt="brandimage" />
           Talky
         </Link>
-        <Link to="/" className="item">
+        <Link to="/communities" className="item">
           Communities
         </Link>
         <div className="item">

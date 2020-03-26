@@ -9,7 +9,7 @@ const HomePage = () => {
         <div className="ten wide column">
           <PostList path="/posts" />
         </div>
-        <div className="five wide column">
+        <div className="five wide column large screen only">
           <CommunitySidebar />
         </div>
       </div>

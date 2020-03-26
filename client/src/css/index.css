@@ -132,6 +132,10 @@ div#root {
   padding: 6px !important;
 }
 
+.p-3 {
+  padding: 9px !important;
+}
+
 .px-5 {
   padding: 0 30px !important;
 }
@@ -233,6 +237,10 @@ div#root {
 
 .small {
   font-size: 0.9rem;
+}
+
+.medium {
+  font-size: 1.2rem;
 }
 
 .gray {
@@ -339,4 +347,27 @@ small.error {
 
 .hidden {
   display: none;
+}
+
+/* Block Hover */
+
+.border-hover {
+  border: 2px solid transparent;
+  border-radius: 5px;
+}
+
+.border-hover:hover {
+  border: 2px solid lightgrey;
+}
+
+.block {
+  display: block;
+}
+
+.black {
+  color: black !important;
+}
+
+.gray {
+  color: gray !important;
 }

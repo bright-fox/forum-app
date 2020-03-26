@@ -11,6 +11,7 @@ import HomePage from "./pages/HomePage";
 import PostPage from "./pages/PostPage";
 import SearchPage from "./pages/SearchPage";
 import CommunityPage from "./pages/CommunityPage";
+import CommunitiesPage from "./pages/CommunitiesPage";
 
 const App = () => {
   const initialState = {
@@ -38,6 +39,9 @@ const App = () => {
               </Route>
               <Route path="/posts/:postId" exact>
                 <PostPage />
+              </Route>
+              <Route path="/communities" exact>
+                <CommunitiesPage />
               </Route>
               <Route path="/communities/:communityId" exact>
                 <CommunityPage />
