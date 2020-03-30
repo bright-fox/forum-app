@@ -1,22 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CommunitySidebar from "../CommunitySidebar";
 import Pagination from "../Pagination";
-import UserContext from "../../contexts/UserContext";
 import { request } from "../../api";
 import { isEmpty } from "../../utils";
 import ErrorDisplay from "../ErrorDisplay";
 import Loader from "../Loader";
 
 const CommunitiesPage = () => {
-    const { state } = useContext(UserContext);
     const [communities, setCommunities] = useState(null);
     const [currPage, setCurrPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
 
     useEffect(() => {
         const fetchData = async _ => {
-            const res = await request({ method: "GET", path: state.isLoggedIn ? `/users/${state.currUser.id}/communities/page/${currPage}` : `/communities/page/${currPage}` })
+            const res = await request({ method: "GET", path: `/communities/page/${currPage}` })
             if (res.status !== 200) return setCommunities([]);
             const data = await res.json()
             setCommunities(data.communities);
@@ -24,7 +22,7 @@ const CommunitiesPage = () => {
             setMaxPage(data.maxPage)
         }
         fetchData();
-    }, [state.isLoggedIn, state.currUser, currPage]);
+    }, [currPage]);
 
     const renderCommunities = () => {
         return communities.map(community => {
@@ -45,7 +43,7 @@ const CommunitiesPage = () => {
         <>
             <CommunitySidebar />
             <div className="ui segment">
-                <h1>{state.isLoggedIn ? "Your communities" : "Communities"}</h1>
+                <h1>Browse through the communities</h1>
                 <div>
                     {communities ? (!isEmpty(communities) ? renderCommunities() : <ErrorDisplay />) : <Loader />}
                 </div>

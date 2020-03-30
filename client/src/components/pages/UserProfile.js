@@ -13,15 +13,25 @@ const UserProfile = () => {
 
     const [selection, setSelection] = useState(query === "communities" || query === "comments" ? query : "posts");
     const [docs, setDocs] = useState(null);
+    const [user, setUser] = useState(null);
     const [currPage, setCurrPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
+
+    useEffect(() => {
+        const fetchData = async _ => {
+            const res = await request({ method: "GET", path: `/users/${userId}` });
+            if (res.status !== 200) return;
+            const data = await res.json();
+            setUser(data.user);
+        }
+        fetchData();
+    }, [userId]);
 
     useEffect(() => {
         const fetchData = async _ => {
             const res = await request({ method: "GET", path: `/users/${userId}/${selection}/page/${currPage}` });
             if (res.status !== 200) return setDocs([]);
             const data = await res.json();
-            console.log(data);
             setDocs(data[selection]);
             setCurrPage(Number(data.currentPage));
             setMaxPage(Number(data.maxPage));
@@ -86,18 +96,39 @@ const UserProfile = () => {
         }
     }
 
-    return (
-        <div className="ui segment">
-            <div className="ui top attached tabular menu">
-                <div className={`${selection === "posts" ? "active " : ""} item pointer`} onClick={handleSelection}>Posts</div>
-                <div className={`${selection === "communities" ? "active " : ""} item pointer`} onClick={handleSelection}>Communities</div>
-                <div className={`${selection === "comments" ? "active " : ""} item pointer`} onClick={handleSelection}>Comments</div>
+    const renderUserInfo = () => {
+        return (
+            <div className="ui segment">
+                <h1><img src={`${process.env.PUBLIC_URL}/assets/avatars/${user.gender}.png`} alt="" className="ui avatar image" /> {user.username}</h1>
+                <div><span className="bold">Joined</span> {moment(user.createdAt).fromNow()} | {user.karma} <span className="bold">Karma </span></div>
+                <br />
+                <div className="bold">Things to know about me</div>
+                <div>{user.biography}</div>
             </div>
-            <div className="ui bottom attached segment">
-                {docs ? renderContent() : <Loader />}
-                <Pagination currPage={currPage} maxPage={maxPage} setCurrPage={setCurrPage} />
+        )
+    };
+
+
+    return (
+        <div className="ui stackable centered grid">
+            <div className="four wide column">
+                {user ? renderUserInfo() : <Loader />}
+            </div>
+            <div className="twelve wide column">
+                <div className="ui segment">
+                    <div className="ui top attached tabular menu">
+                        <div className={`${selection === "posts" ? "active " : ""} item pointer`} onClick={handleSelection}>Posts</div>
+                        <div className={`${selection === "communities" ? "active " : ""} item pointer`} onClick={handleSelection}>Communities</div>
+                        <div className={`${selection === "comments" ? "active " : ""} item pointer`} onClick={handleSelection}>Comments</div>
+                    </div>
+                    <div className="ui bottom attached segment">
+                        {docs ? renderContent() : <Loader />}
+                        <Pagination currPage={currPage} maxPage={maxPage} setCurrPage={setCurrPage} />
+                    </div>
+                </div>
             </div>
         </div>
+
 
     )
 }
