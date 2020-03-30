@@ -97,10 +97,10 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
               </div>
             )}
 
-            <div className="">
+            <Link className="block black" to={`/posts/${_id}`}>
               <i className="comment icon"></i>
               {comments} comments
-            </div>
+            </Link>
           </div>
         </div>
       </div>
