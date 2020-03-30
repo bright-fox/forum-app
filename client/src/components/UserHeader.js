@@ -47,10 +47,10 @@ const UserHeader = () => {
   const renderDropdown = () => {
     return (
       <Dropdown heading={renderDropdownHeading()}>
-        <Link to={`/users/${state.currUser.id}/profile`} className="dropdown-item">Your profile</Link>
-        <Link to={`/users/${state.currUser.id}/communities`} className="dropdown-item">Communities</Link>
-        <Link to={`/users/${state.currUser.id}/posts`} className="dropdown-item">Posts</Link>
-        <Link to={`/users/${state.currUser.id}/comments`} className="dropdown-item">Comments</Link>
+        <Link to={`/users/${state.currUser.id}`} className="dropdown-item">Your profile</Link>
+        <Link to={`/users/${state.currUser.id}?s=communities`} className="dropdown-item">Communities</Link>
+        <Link to={`/users/${state.currUser.id}?s=posts`} className="dropdown-item">Posts</Link>
+        <Link to={`/users/${state.currUser.id}?s=comments`} className="dropdown-item">Comments</Link>
         <div className="dropdown-item" onClick={handleLogout}>Logout</div>
       </Dropdown>
     );

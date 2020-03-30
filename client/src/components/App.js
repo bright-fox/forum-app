@@ -12,6 +12,7 @@ import PostPage from "./pages/PostPage";
 import SearchPage from "./pages/SearchPage";
 import CommunityPage from "./pages/CommunityPage";
 import CommunitiesPage from "./pages/CommunitiesPage";
+import UserProfile from "./pages/UserProfile";
 
 const App = () => {
   const initialState = {
@@ -45,6 +46,9 @@ const App = () => {
               </Route>
               <Route path="/communities/:communityId" exact>
                 <CommunityPage />
+              </Route>
+              <Route path="/users/:userId" exact>
+                <UserProfile />
               </Route>
             </Switch>
           </div>
