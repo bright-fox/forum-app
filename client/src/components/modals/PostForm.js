@@ -27,10 +27,11 @@ const PostForm = ({ type, state, id, title, content }) => {
   useEffect(() => {
     if (type === create) {
       const fetchCommunities = async () => {
-        const res = await request({ method: "GET", path: `/users/${state.currUser.id}/communities/page/1` });
+        const res = await request({ method: "GET", path: `/users/${state.currUser.id}/communities` });
         if (res.status !== 200) return;
         const data = await res.json();
-        setCommunities(data.communities);
+        console.log(data);
+        setCommunities([...data.adminCommunities, ...data.communities]);
       };
       fetchCommunities();
     }

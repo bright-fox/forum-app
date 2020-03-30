@@ -5,6 +5,7 @@ import _ from "lodash";
 import User from "../models/user";
 import Post from "../models/post";
 import Comment from "../models/comment";
+import Community from "../models/community";
 import CommunityMember from "../models/communityMember";
 
 import { generateIdToken, generateRefreshToken } from "../util";
@@ -192,5 +193,12 @@ router.get(
     res.status(200).json({ communities: unescapeDocs(communities, "description"), currentPage: req.params.p, maxPage });
   })
 );
+
+router.get("/:user_id/communities", asyncHandler(async (req, res) => {
+  const adminCommunities = await Community.find({ creator: req.params.user_id }).lean().exec();
+  const communityMembers = await CommunityMember.find({ member: req.params.user_id }).populate("community").lean().exec();
+  const communities = communityMembers.map(member => member.community);
+  res.status(200).json({ adminCommunities, communities });
+}));
 
 export default router;
