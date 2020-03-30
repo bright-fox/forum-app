@@ -22,6 +22,8 @@ router.get(
       .sort({
         score: { $meta: "textScore" }
       })
+      .populate("community")
+      .populate("author")
       .exec();
     res.status(200).json({ posts });
   })

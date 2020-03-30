@@ -34,7 +34,9 @@ const SearchPage = () => {
           <div className="content">
             <Link to={`/posts/${post._id}`}>{post.title}</Link>
             <div className="meta">
-              ~by u/{post.author}
+              ~ posted in <Link className="link">{post.community.name}</Link> by u/
+              <Link className="link">
+                {post.author.username}</Link>
               <span className="pl-3">[{moment(post.createdAt).fromNow()}]</span>
             </div>
             <div className="description">{post.content.substring(0, 100)}[...]</div>
