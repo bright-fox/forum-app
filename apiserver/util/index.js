@@ -61,7 +61,7 @@ export const checkDocOwnership = async (req, model, docId, userId, fieldName) =>
 };
 
 export const checkPageUnderMax = async (model, selection, limit, p) => {
-  const count = await model.estimatedDocumentCount(selection).exec();
+  const count = await model.countDocuments(selection).exec();
   const maxPage = Math.ceil(count / limit);
   const isValid = p <= maxPage;
   if (!isValid) throw new CustomError(404);
