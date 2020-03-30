@@ -312,12 +312,13 @@ small.error {
   align-items: center;
   cursor: pointer;
   padding: 5px 10px;
-  border: 1px solid black;
+  border: 1px solid transparent;
   border-radius: 10px;
   user-select: none;
 }
 
 .dropdown-menu.active {
+  border: 1px solid black;
   border-bottom: none;
   border-radius: 10px 10px 0 0;
 }
