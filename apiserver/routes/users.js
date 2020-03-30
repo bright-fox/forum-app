@@ -144,6 +144,8 @@ router.get(
     const posts = await Post.find({ author: req.params.user_id })
       .skip(req.params.p * limit - limit)
       .limit(limit)
+      .populate("community")
+      .populate("author")
       .lean()
       .exec();
     //if (posts.length <= 0) throw new CustomError(404, "You did not write any posts!");
@@ -161,6 +163,8 @@ router.get(
     const comments = await Comment.find({ author: req.params.user_id })
       .skip(req.params.p * limit - limit)
       .limit(limit)
+      .populate("post")
+      .populate("author")
       .lean()
       .exec();
     //if (comments.length <= 0) throw new CustomError(404, "You did not write any comments!");
@@ -176,11 +180,13 @@ router.get(
     const limit = 10;
     const maxPage = await checkPageUnderMax(CommunityMember, { member: req.params.user_id }, limit, req.params.p);
     const communityMembers = await CommunityMember.find({ member: req.params.user_id })
-      .populate("community")
       .skip(req.params.p * limit - limit)
       .limit(limit)
+      .populate("community")
       .lean()
       .exec();
+    await User.populate(communityMembers, { path: "community.creator" })
+
     //if (communityMembers.length <= 0) throw new CustomError(404, "You did not join any communitites!");
     const communities = communityMembers.map(communityMember => communityMember.community);
     res.status(200).json({ communities: unescapeDocs(communities, "description"), currentPage: req.params.p, maxPage });
