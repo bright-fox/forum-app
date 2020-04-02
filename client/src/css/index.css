@@ -393,3 +393,16 @@ small.error {
 .gray {
   color: gray !important;
 }
+
+.errorMessage {
+  position: absolute;
+  width: 95%;
+  background-color: palevioletred;
+  margin: auto;
+  left: 0;
+  right: 0;
+  color: white;
+  padding: 1rem;
+  border-radius: 5px;
+  z-index: 1000;
+}

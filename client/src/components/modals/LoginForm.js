@@ -4,29 +4,31 @@ import useForm from "../../hooks/useForm";
 import validateLogin from "../../validation/validateLogin";
 import { request } from "../../api";
 import { LOGIN } from "../../actions";
-import { cacheUser, unmountModal, isEmpty } from "../../utils";
+import { cacheUser, unmountModal, isEmpty, configError, renderErrMsg, hasErr } from "../../utils";
 import ModalCancelButton from "../ModalCancelButton";
+import useError from "../../hooks/useError";
 
 const LoginForm = ({ dispatch }) => {
+  // use form
   const initValues = { username: "", password: "" };
-  const callback = async inputs => {
+  const { inputs, handleSubmit, handleInputChange, errors } = useForm(initValues, callback, validateLogin);
+  // error on submit
+  const { err, setErr, errMsg, setErrMsg } = useError(false);
+
+  // submit callback function
+  async function callback(inputs) {
     const res = await request({ method: "POST", path: "/login", body: inputs });
-    if (res.status !== 200) return unmountModal(); // TODO: subject to change
+    if (res.status !== 200) return configError(setErr, setErrMsg, "Invalid username or password..")
     const data = await res.json();
     cacheUser(data.user, data.refreshToken);
     dispatch({ type: LOGIN, payload: { currUser: data.user } });
     unmountModal();
   };
 
-  const { inputs, handleSubmit, handleInputChange, errors } = useForm(initValues, callback, validateLogin);
-
-  const hasError = field => (errors.hasOwnProperty(field) ? "error" : "");
-  const renderErrorMessage = field => hasError(field) && <small className="error">{errors[field]}</small>;
-
   const renderContent = () => {
     return (
       <form className={"ui form " + (!isEmpty(errors) ? "error " : "")} onSubmit={handleSubmit}>
-        <div className={"field " + hasError("username")}>
+        <div className={"field " + hasErr(errors, "username")}>
           <label htmlFor="username">Username*: </label>
           <input
             type="text"
@@ -36,9 +38,9 @@ const LoginForm = ({ dispatch }) => {
             value={inputs.username}
             onChange={handleInputChange}
           />
-          {renderErrorMessage("username")}
+          {renderErrMsg("username")}
         </div>
-        <div className={"field " + hasError("password")}>
+        <div className={"field " + hasErr(errors, "password")}>
           <label htmlFor="password">Password*:</label>
           <input
             type="password"
@@ -47,7 +49,7 @@ const LoginForm = ({ dispatch }) => {
             value={inputs.password}
             onChange={handleInputChange}
           />
-          {renderErrorMessage("password")}
+          {renderErrMsg("password")}
         </div>
         <button className="ui button mini" type="submit">
           Login
@@ -57,7 +59,7 @@ const LoginForm = ({ dispatch }) => {
     );
   };
 
-  return <Modal title={<h1>Login</h1>} content={renderContent()} />;
+  return <Modal title={<h1>Login</h1>} content={renderContent()} err={err} errMsg={errMsg} />;
 };
 
 export default LoginForm;
