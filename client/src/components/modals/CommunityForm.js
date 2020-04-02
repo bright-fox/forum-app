@@ -25,7 +25,6 @@ const CommunityForm = ({ type, id, name, description }) => {
     window.location.reload(); // maybe there is a better alternative?
   };
 
-  const renderTitle = () => <h1>{type === edit ? "Edit" : "Create"} Community</h1>;
   const renderContent = () => {
     return (
       <form className={"ui form " + (!isEmpty(errors) ? " error" : " ")} onSubmit={handleSubmit}>
@@ -60,7 +59,7 @@ const CommunityForm = ({ type, id, name, description }) => {
       </form>
     );
   };
-  return <Modal title={renderTitle()} content={renderContent()} err={err} errMsg={errMsg} />;
+  return <Modal title={<h1>{type === edit ? "Edit" : "Create"} Community</h1>} content={renderContent()} err={err} errMsg={errMsg} />;
 };
 
 export default CommunityForm;

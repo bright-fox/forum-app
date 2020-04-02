@@ -11,12 +11,12 @@ import useError from "../../hooks/useError";
 const LoginForm = ({ dispatch }) => {
   // use form
   const initValues = { username: "", password: "" };
-  const { inputs, handleSubmit, handleInputChange, errors } = useForm(initValues, callback, validateLogin);
+  const { inputs, handleSubmit, handleInputChange, errors } = useForm(initValues, submitCallback, validateLogin);
   // error on submit
   const { err, setErr, errMsg, setErrMsg } = useError(false);
 
   // submit callback function
-  async function callback(inputs) {
+  async function submitCallback(inputs) {
     const res = await request({ method: "POST", path: "/login", body: inputs });
     if (res.status !== 200) return configError(setErr, setErrMsg, "Invalid username or password..")
     const data = await res.json();

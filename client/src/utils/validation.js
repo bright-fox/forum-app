@@ -9,3 +9,4 @@ export const isNumeric = val => /^[0-9]+$/.test(val);
 export const isAlphaNumeric = val => /^[a-zA-Z0-9]+$/.test(val);
 export const isEmail = val => /^[a-zA-Z0-9._+-]+@[a-zA-Z]+\.[a-zA-Z]+$/.test(val);
 export const isIn = (val, array) => array.includes(val);
+export const isId = val => /^[a-fA-F0-9]{24}$/.test(val);

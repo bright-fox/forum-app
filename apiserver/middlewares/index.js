@@ -4,7 +4,6 @@ export const logError = (err, req, res, next) => {
 };
 
 export const handleMongoError = (err, req, res, next) => {
-  console.log(err.code)
   if (err.name === "CastError") return res.status(500).json({ status: 500, message: "The ID is invalid" });
   if (err.code === 11000)
     return res.status(409).json({

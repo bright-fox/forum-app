@@ -11,3 +11,4 @@ export const isNumberMessage = field => ({ [field]: `${field} can only contain n
 export const isAlphaNumericMessage = field => ({ [field]: `${field} can only contain letters and numbers` });
 export const isEmailMessage = field => ({ [field]: `${field} is not a valid e-mail address` });
 export const isInMessage = (field, array) => ({ [field]: `${field} is not contained in ${array.join(", ")}` });
+export const isIdMessage = field => ({ [field]: `${field} is not a valid ID` });

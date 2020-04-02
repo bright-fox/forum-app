@@ -60,7 +60,7 @@ postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ community: 1, createdAt: -1 });
 postSchema.index({ title: "text", content: "text" }, { weights: { title: 2, content: 1 } });
 
-postSchema.pre("save", async function() {
+postSchema.pre("save", async function () {
   const date = new Date();
   if (this.isNew) this.createdAt = date;
   if (this.isModified("title content")) {
@@ -68,11 +68,11 @@ postSchema.pre("save", async function() {
     const obj = { author: this.author, title: this.title, content: this.content, community: this.community };
     this.hash = makeHash(obj);
     if (await isSpam(this.constructor, this.hash))
-      throw new CustomError(400, "You posted the same post already. Check out your posts of the past!");
+      throw new CustomError(409, "You posted the same post already. Check out your posts of the past!");
   }
 });
 
-postSchema.post("remove", async function() {
+postSchema.post("remove", async function () {
   await Comment.deleteMany({ post: this._id }).exec();
   await CommentVote.deleteMany({ post: this._id }).exec();
   await PostVote.deleteMany({ post: this._id }).exec();
