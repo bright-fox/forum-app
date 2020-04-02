@@ -112,14 +112,14 @@ const CommunityPage = () => {
   const renderCommunityInfo = () => {
     return (
       <div className="ui segment">
-        <h1 className="flex align-center">
+        <h3 className="flex align-center large screen only resize-font" style={{ overflowX: "hidden" }}>
           <img
             className="ui avatar image middle"
             src={`${process.env.PUBLIC_URL}/assets/avatars/community_default.jpg`}
             alt=""
           />
           {community.name}
-        </h1>
+        </h3>
         <div className="meta">
           <div>
             Creator: <Link to={`/users/${community.creator._id}`}>{community.creator.username}</Link>
@@ -145,9 +145,11 @@ const CommunityPage = () => {
       <div className="eleven wide column">
         {!state.isLoggedIn && <AuthBar text="Login or Sign up to participate!" margin="mb-1" />}
         {state.isLoggedIn && membership && (
-          <button className="ui button fluid blue mb-1" onClick={handleCreatePost}>
-            Create Post
+          <div className="ui segment">
+            <button className="ui button fluid blue mb-1" onClick={handleCreatePost}>
+              Create Post
           </button>
+          </div>
         )}
         <PostList path={`/communities/${communityId}/posts`} />
       </div>

@@ -3,11 +3,14 @@ import Post from "./Post";
 import { request, appendVotes } from "../api";
 import Pagination from "./Pagination";
 import UserContext from "../contexts/UserContext";
+import Loader from "./Loader";
+import { isEmpty } from "../utils";
+import ErrorDisplay from "./ErrorDisplay";
 
 const PostList = ({ path }) => {
   const { state } = useContext(UserContext);
   const [currentPage, setCurrentPage] = useState(1);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(null);
   const [maxPage, setMaxPage] = useState(1);
   const [trigger, setTrigger] = useState({});
 
@@ -18,7 +21,7 @@ const PostList = ({ path }) => {
         method: "GET",
         path: `${path}/page/${currentPage}`
       });
-      if (res.status !== 200) return;
+      if (res.status !== 200) return setPosts([]);
       const data = await res.json();
 
       // if user is logged in, fetch also the posts of the user
@@ -40,7 +43,7 @@ const PostList = ({ path }) => {
 
   return (
     <>
-      {renderList()}
+      {posts ? (!isEmpty(posts) ? renderList() : <ErrorDisplay msg="There are no posts yet.." />) : <Loader />}
       <Pagination currPage={currentPage} maxPage={maxPage} setCurrPage={setCurrentPage} />
     </>
   );

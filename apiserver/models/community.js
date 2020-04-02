@@ -12,7 +12,11 @@ const communitySchema = new Schema({
       collation: { locale: "en", strength: 2 }
     },
     trim: true,
-    required: [true, "Community name required"]
+    required: [true, "Community name required"],
+    validate: {
+      validator: name => name.length <= 25,
+      message: "The community name can only contain at most 25 characters"
+    }
   },
   createdAt: {
     type: Date,
@@ -43,13 +47,13 @@ const communitySchema = new Schema({
 
 communitySchema.index({ name: "text", description: "text" }, { weights: { name: 2, description: 1 } });
 
-communitySchema.pre("save", async function() {
+communitySchema.pre("save", async function () {
   const date = new Date();
   if (this.isNew) this.createdAt = date;
   if (this.isModified("description")) this.editedAt = date;
 });
 
-communitySchema.post("remove", async function() {
+communitySchema.post("remove", async function () {
   await removeDependentDocs(Post, { community: this._id });
   await CommunityMember.deleteMany({ community: this._id }).exec();
 });
