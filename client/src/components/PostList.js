@@ -44,7 +44,7 @@ const PostList = ({ path }) => {
   return (
     <>
       {posts ? (!isEmpty(posts) ? renderList() : <ErrorDisplay msg="There are no posts yet.." />) : <Loader />}
-      <Pagination currPage={currentPage} maxPage={maxPage} setCurrPage={setCurrentPage} />
+      {(!posts || !isEmpty(posts)) && <Pagination currPage={currentPage} maxPage={maxPage} setCurrPage={setCurrentPage} />}
     </>
   );
 };
