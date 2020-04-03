@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Post from "./Post";
-import { request, appendVotes } from "../api";
+import { request, appendVotes, requestProtectedResource } from "../api";
 import Pagination from "./Pagination";
 import UserContext from "../contexts/UserContext";
 import Loader from "./Loader";
@@ -17,10 +17,11 @@ const PostList = ({ path }) => {
   useEffect(() => {
     const fetchData = async () => {
       // fetch posts
-      const res = await request({
+      const conf = {
         method: "GET",
         path: `${path}/page/${currentPage}`
-      });
+      };
+      const res = (state.isLoggedIn) ? await requestProtectedResource(conf) : await request(conf);
       if (res.status !== 200) return setPosts([]);
       const data = await res.json();
 

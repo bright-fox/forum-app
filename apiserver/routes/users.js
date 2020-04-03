@@ -118,15 +118,23 @@ router.get(
   validatePage(),
   asyncHandler(async (req, res) => {
     if (checkValidationErrors(req)) throw new CustomError(400);
+    // get memberships and ownerships of communities
     const memberships = await CommunityMember.find({ member: req.doc._id })
       .lean()
       .exec();
-    const communities = memberships.map(membership => membership.community);
+    const c1 = memberships.map(membership => membership.community);
+    const ownerships = await Community.find({ creator: req.user.id }, "_id").lean().exec();
+    const c2 = ownerships.map(ownership => ownership._id);
+
+    // get communities
     const limit = 30;
-    const maxPage = await checkPageUnderMax(Post, { community: { $in: communities } }, limit, req.params.p);
-    const posts = await Post.find({ community: { $in: communities } })
+    const maxPage = await checkPageUnderMax(Post, { community: { $in: [...c1, ...c2] } }, limit, req.params.p);
+    const posts = await Post.find({ community: { $in: [...c1, ...c2] } })
+      .sort({ "createdAt": -1 })
       .skip(req.params.p * limit - limit)
       .limit(limit)
+      .populate("community")
+      .populate("author")
       .lean()
       .exec();
 
