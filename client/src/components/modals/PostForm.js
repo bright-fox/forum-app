@@ -76,6 +76,7 @@ const PostForm = ({ type, state, id, title, content }) => {
             type="text"
             name="title"
             placeholder="Post title.."
+            autoFocus
             value={inputs.title}
             onChange={handleInputChange}
           />

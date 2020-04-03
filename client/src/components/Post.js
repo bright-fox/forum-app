@@ -82,15 +82,13 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
           <div className="content">
             {state.isLoggedIn && state.currUser.id === author._id && (
               <div className="right floated">
-                <button className="ui button mini green animated" onClick={handleEdit}>
-                  <div className="hidden content">Edit</div>
-                  <div className="visible content">
+                <button className="ui button mini green" onClick={handleEdit}>
+                  <div className="text center">
                     <i className="edit icon"></i>
                   </div>
                 </button>
-                <button className="ui button mini red animated" onClick={handleDelete}>
-                  <div className="hidden content">Delete</div>
-                  <div className="visible content text center">
+                <button className="ui button mini red" onClick={handleDelete}>
+                  <div className="text center">
                     <i className="trash alternate icon"></i>
                   </div>
                 </button>
