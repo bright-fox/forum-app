@@ -11,7 +11,7 @@ let idToken;
 let refreshToken;
 const community = { name: "testlovers", description: "We love to test REST APIs" };
 
-const createCommunity = async () => {
+async function createCommunity() {
   const res = await request(app)
     .post("/communities")
     .set("Authorization", "bearer " + idToken)
@@ -104,7 +104,6 @@ describe("Community Routes", () => {
         .send(community);
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("community");
       done();
     });
@@ -142,7 +141,6 @@ describe("Community Routes", () => {
         .set("Authorization", "bearer " + idToken)
         .send({ name: "update", description: "updated Description" });
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       done();
     });
 
@@ -164,7 +162,6 @@ describe("Community Routes", () => {
         .delete("/communities/" + createdCommunity._id)
         .set("Authorization", "bearer " + idToken);
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("docId");
       done();
     });
@@ -227,7 +224,6 @@ describe("Community Routes", () => {
         const resTwo = await request(app).get(`/communities/${createdCommunity._id}`);
 
         expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty("success");
         expect(res.body).toHaveProperty("member");
         expect(resTwo.body.community.members).toEqual(1);
         done();

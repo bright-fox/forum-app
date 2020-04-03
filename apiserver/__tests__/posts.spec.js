@@ -114,7 +114,6 @@ describe("Post Routes", () => {
         .send({ title: "testpost 2", content: "test content", author: userId, community: communityId });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("post");
       done();
     });
@@ -154,7 +153,6 @@ describe("Post Routes", () => {
         .send({ title: " updated post", content: "updated content" });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       done();
     });
 
@@ -175,7 +173,6 @@ describe("Post Routes", () => {
         .set("Authorization", "bearer " + idToken);
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("docId");
       done();
     });
@@ -200,7 +197,6 @@ describe("Post Routes", () => {
       const resThree = await request(app).get(`/users/${userId}`);
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(resTwo.body.post.upvotes).toEqual(1);
       expect(resThree.body.user.karma).toEqual(1);
       done();
@@ -218,7 +214,6 @@ describe("Post Routes", () => {
         .send({ vote: 1 });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       done();
     });
 

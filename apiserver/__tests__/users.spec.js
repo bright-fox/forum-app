@@ -91,7 +91,6 @@ describe("User Routes", () => {
         .send({ biography: "updated bio" });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("user");
 
       done();
@@ -113,7 +112,6 @@ describe("User Routes", () => {
         .send({ oldPassword: "password", newPassword: "newPassword" });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("idToken");
       expect(res.body).toHaveProperty("refreshToken");
       done();
@@ -146,7 +144,6 @@ describe("User Routes", () => {
         .set("Authorization", "bearer " + idToken);
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("docId");
       done();
     });

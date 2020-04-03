@@ -12,10 +12,11 @@ import { edit, create } from "../../utils/variables";
 import history from "../../history";
 import AuthBar from "../AuthBar";
 import Loader from "../Loader";
+import ErrorDisplay from "../ErrorDisplay";
 
 const CommunityPage = () => {
   const { communityId } = useParams();
-  const [community, setCommunity] = useState({});
+  const [community, setCommunity] = useState(null);
   const [membership, setMembership] = useState(null);
   const { state } = useContext(UserContext);
   const [reloadCommunity, setReloadCommunity] = useState({});
@@ -23,11 +24,14 @@ const CommunityPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       // fetch community
-      const communityRes = await request({ method: "GET", path: `/communities/${communityId}` });
-      const communityData = await communityRes.json();
-      setCommunity(communityData.community);
+      const commRes = await request({ method: "GET", path: `/communities/${communityId}` });
+      if (commRes.status !== 200) return setCommunity({});
+      const commData = await commRes.json();
+      setCommunity(commData.community);
 
+      // if not logged in the user is not member
       if (!state.isLoggedIn) return setMembership(null);
+
       // check if user is member of the community
       const membershipRes = await requestProtectedResource({
         method: "GET",
@@ -137,20 +141,23 @@ const CommunityPage = () => {
 
   // ======== return statement ============
 
+  if (!community) return <Loader />
+  if (isEmpty(community)) return <ErrorDisplay />
+
   return (
     <div className="ui stackable grid">
       <div className="five wide column">
-        {!isEmpty(community) ? renderCommunityInfo() : <Loader />}
+        {renderCommunityInfo()}
       </div>
       <div className="eleven wide column">
         {!state.isLoggedIn && <AuthBar text="Login or Sign up to participate!" margin="mb-1" />}
-        {state.isLoggedIn && membership && (
+        {state.isLoggedIn && (membership || state.currUser.id === community.creator._id) ? (
           <div className="ui segment">
             <button className="ui button fluid blue mb-1" onClick={handleCreatePost}>
               Create Post
           </button>
           </div>
-        )}
+        ) : ""}
         <PostList path={`/communities/${communityId}/posts`} />
       </div>
     </div>

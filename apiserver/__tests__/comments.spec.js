@@ -79,7 +79,6 @@ describe("Comment Routes", () => {
         .send({ content: "test comment" });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("comment");
       done();
     });
@@ -102,7 +101,6 @@ describe("Comment Routes", () => {
         .send({ content: "test comment", replyTo: firstComment._id });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("comment");
       done();
     });
@@ -118,7 +116,6 @@ describe("Comment Routes", () => {
         .send({ content: "updated comment" });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("comment");
       done();
     });
@@ -144,7 +141,6 @@ describe("Comment Routes", () => {
         .set("Authorization", "bearer " + idToken);
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("docId");
       done();
     });
@@ -160,7 +156,6 @@ describe("Comment Routes", () => {
         .send({ vote: 1 });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       done();
     });
 
@@ -176,7 +171,6 @@ describe("Comment Routes", () => {
         .send({ vote: 1 });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       done();
     });
 
@@ -195,7 +189,7 @@ describe("Comment Routes", () => {
   });
 });
 
-const resetCollections = async () => {
+async function resetCollections() {
   await User.deleteMany({}).exec();
   await Refreshtoken.deleteMany({}).exec();
   await Community.deleteMany({}).exec();
@@ -203,7 +197,7 @@ const resetCollections = async () => {
   await Comment.deleteMany({}).exec();
 };
 
-const createComment = async (post, author, content, replyTo) => {
+async function createComment(post, author, content, replyTo) {
   const comment = { post, author, content };
   if (replyTo) comment.replyTo = replyTo;
   return await new Comment(comment).save();

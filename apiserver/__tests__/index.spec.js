@@ -29,7 +29,6 @@ describe("Index Endpoints", () => {
         .post("/register")
         .send(user);
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       expect(res.body).toHaveProperty("user");
       expect(res.body).toHaveProperty("idToken");
       expect(res.body).toHaveProperty("refreshToken");
@@ -136,7 +135,6 @@ describe("Index Endpoints", () => {
         .send({ refreshToken });
 
       expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("success");
       done();
     });
   });
