@@ -22,12 +22,12 @@ const PostPage = () => {
       const data = await res.json();
       // Get if user voted for it already
       if (state.isLoggedIn) {
-        const voteRes = await requestProtectedResource({ method: "GET", path: `/posts/${postId}/votes` });
+        const voteRes = await requestProtectedResource({ method: "GET", path: `/votes/posts/${postId}` });
         const voteData = await voteRes.json();
         data.post.userVote = voteData.vote;
-      };
+      }
       setPost(data.post);
-    };
+    }
     fetchPost();
   }, [postId, trigger, state.isLoggedIn]);
 

@@ -1,7 +1,6 @@
 import express from "express";
 import _ from "lodash";
 import Comment from "../models/comment";
-import CommentVote from "../models/commentVote";
 import { validateComment, validatePage } from "../middlewares/validation";
 import {
   checkValidationErrors,
@@ -11,7 +10,7 @@ import {
   getNestedComments,
   deleteComment
 } from "../util";
-import { authenticateIdToken, checkCommentOwnership, checkCommentVoteOwnership } from "../middlewares/auth";
+import { authenticateIdToken, checkCommentOwnership } from "../middlewares/auth";
 import CustomError from "../util/CustomError";
 
 const router = express.Router({ mergeParams: true });
@@ -35,6 +34,12 @@ router.get(
     res.status(200).json({ comments: unescapeDocs(comments, "content"), currentPage: req.params.p, maxPage });
   })
 );
+
+router.get("/:comment_id", asyncHandler(async (req, res) => {
+  const comment = await Comment.findOne({ _id: req.params.comment_id }).lean().exec();
+  if (!comment) throw new CustomError(404, "No comment found");
+  res.status(200).json({ comment: unescapeDocs(comment, "content") });
+}))
 
 router.post(
   "/",
@@ -77,45 +82,6 @@ router.delete(
   asyncHandler(async (req, res) => {
     await deleteComment(req.doc);
     res.status(200).json({ success: "You successfully deleted your comment!", docId: req.doc._id });
-  })
-);
-
-router.get(
-  "/:comment_id/votes",
-  authenticateIdToken,
-  asyncHandler(async (req, res) => {
-    const commentVote = await CommentVote.findOne({ comment: req.params.comment_id, user: req.user.id })
-      .lean()
-      .exec();
-    if (!commentVote) throw new CustomError(404, "No vote found");
-    res.status(200).json(commentVote);
-  })
-);
-
-router.post(
-  "/:comment_id/votes",
-  authenticateIdToken,
-  asyncHandler(async (req, res) => {
-    const { vote } = req.body;
-    const { post_id, comment_id } = req.params;
-    const commentVote = new CommentVote({ vote, user: req.user.id, comment: comment_id, post: post_id });
-
-    // check for existing vote and remove it
-    const foundCommentVote = await CommentVote.findOne({ comment: req.params.comment_id, user: req.user.id }).exec();
-    if (foundCommentVote) await foundCommentVote.remove();
-
-    const createdVote = await commentVote.save();
-    res.status(200).json({ success: "You successfully voted for this comment", createdVote });
-  })
-);
-
-router.delete(
-  "/:comment_id/votes/:vote_id",
-  authenticateIdToken,
-  checkCommentVoteOwnership,
-  asyncHandler(async (req, res) => {
-    await req.doc.remove();
-    res.status(200).json({ docId: req.params.vote_id });
   })
 );
 

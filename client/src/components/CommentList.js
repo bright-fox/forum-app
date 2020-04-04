@@ -72,7 +72,7 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
               upvotes={comment.upvotes}
               type="comment"
               userVote={comment.userVote}
-              path={`/posts/${postId}/comments/${comment._id}/votes`}
+              path={`/votes/posts/${postId}/comments/${comment._id}`}
               setTrigger={setTrigger}
               isDeleted={comment.isDeleted}
             />

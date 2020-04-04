@@ -4,25 +4,23 @@ import mongoose from "mongoose";
 import app from "../app";
 import User from "../models/user";
 import Post from "../models/post";
-import PostVote from "../models/postVote";
 import Community from "../models/community";
 import Refreshtoken from "../models/refreshtoken";
 
 let idToken;
-let refreshToken;
+// let refreshToken;
 let communityId;
 let userId;
 
 beforeAll(async done => {
   await User.deleteMany({}).exec();
   await Post.deleteMany({}).exec();
-  await PostVote.deleteMany({}).exec();
   await Refreshtoken.deleteMany({}).exec();
 
   const res = await request(app)
     .post("/register")
     .send({ username: "testperson", password: "password", email: "test@person.com", biography: "", gender: "male" });
-  refreshToken = res.body.refreshToken;
+  // refreshToken = res.body.refreshToken;
   idToken = res.body.idToken;
   userId = res.body.user._id;
 
@@ -47,10 +45,10 @@ describe("Post Routes", () => {
   let postId;
 
   beforeEach(async done => {
-    const res = await request(app)
-      .post("/token")
-      .send({ refreshToken });
-    idToken = res.body.idToken;
+    // const res = await request(app)
+    //   .post("/token")
+    //   .send({ refreshToken });
+    // idToken = res.body.idToken;
 
     const post = new Post({
       title: "testpost",
@@ -170,59 +168,6 @@ describe("Post Routes", () => {
     test("it should delete post", async done => {
       const res = await request(app)
         .delete(`/posts/${postId}`)
-        .set("Authorization", "bearer " + idToken);
-
-      expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("docId");
-      done();
-    });
-  });
-
-  describe("Post Vote Routes", () => {
-    beforeAll(async () => {
-      await PostVote.deleteMany({}).exec();
-    });
-
-    afterEach(async () => {
-      await PostVote.deleteMany({}).exec();
-    });
-
-    test("it should vote for post and update upvotes field of post and no update for karma", async done => {
-      const res = await request(app)
-        .post(`/posts/${postId}/votes`)
-        .set("Authorization", "bearer " + idToken)
-        .send({ vote: 1 });
-
-      const resTwo = await request(app).get(`/posts/${postId}`);
-      const resThree = await request(app).get(`/users/${userId}`);
-
-      expect(res.statusCode).toEqual(200);
-      expect(resTwo.body.post.upvotes).toEqual(1);
-      expect(resThree.body.user.karma).toEqual(1);
-      done();
-    });
-
-    test("it should vote for post and remove existing vote", async done => {
-      await request(app)
-        .post(`/posts/${postId}/votes`)
-        .set("Authorization", "bearer " + idToken)
-        .send({ vote: 1 });
-
-      const res = await request(app)
-        .post(`/posts/${postId}/votes`)
-        .set("Authorization", "bearer " + idToken)
-        .send({ vote: 1 });
-
-      expect(res.statusCode).toEqual(200);
-      done();
-    });
-
-    test("it should delete vote", async done => {
-      const vote = new PostVote({ post: postId, user: userId, vote: 1 });
-      const createdVote = await vote.save();
-
-      const res = await request(app)
-        .delete(`/posts/${postId}/votes/${createdVote._id}`)
         .set("Authorization", "bearer " + idToken);
 
       expect(res.statusCode).toEqual(200);

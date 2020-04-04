@@ -25,7 +25,7 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted, userVote }) =>
     if (res.status !== 200) return setVote(0);
 
     const data = await res.json();
-    setVote(data.createdVote.vote);
+    setVote(data[`${type}Vote`].vote);
     setTrigger({});
   };
 

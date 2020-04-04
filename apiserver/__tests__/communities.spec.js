@@ -27,6 +27,7 @@ beforeAll(async done => {
   const res = await request(app)
     .post("/register")
     .send({ username: "testperson", password: "password", email: "test@person.com", biography: "", gender: "male" });
+  idToken = res.body.idToken;
   refreshToken = res.body.refreshToken;
   done();
 });
@@ -38,14 +39,6 @@ afterAll(async () => {
 });
 
 describe("Community Routes", () => {
-  beforeEach(async done => {
-    const res = await request(app)
-      .post("/token")
-      .send({ refreshToken });
-    idToken = res.body.idToken;
-    done();
-  });
-
   afterEach(async () => {
     await Community.deleteMany({}).exec();
   });
@@ -205,70 +198,71 @@ describe("Community Routes", () => {
       done();
     });
   });
+});
 
-  describe("Community Member Routes", () => {
-    beforeEach(async () => {
-      await CommunityMember.deleteMany({}).exec();
-    });
+describe("Community Member Routes", () => {
+  let communityId;
+  let memberId;
+  let idTokenTwo;
+  // beforeEach(async () => {
+  //   await CommunityMember.deleteMany({}).exec();
+  // });
 
-    afterEach(async () => {
-      await CommunityMember.deleteMany({}).exec();
-    });
+  // afterEach(async () => {
+  //   await CommunityMember.deleteMany({}).exec();
+  // });
 
-    describe("/POST become member of community", () => {
-      test("it should create communitymember and increment members field in community", async done => {
-        const createdCommunity = await createCommunity();
-        const res = await request(app)
-          .post(`/communities/${createdCommunity._id}/members`)
-          .set("Authorization", "bearer " + idToken);
-        const resTwo = await request(app).get(`/communities/${createdCommunity._id}`);
+  beforeAll(async done => {
+    const community = await createCommunity();
+    communityId = community._id;
 
-        expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty("member");
-        expect(resTwo.body.community.members).toEqual(1);
-        done();
-      });
+    const res = await request(app)
+      .post("/register")
+      .send({ username: "testperson2", password: "password", email: "test2@person.com", biography: "", gender: "male" });
+    idTokenTwo = res.body.idToken;
+    done();
+  });
 
-      test("fail to become member of community due to no existence", async done => {
-        const res = await request(app)
-          .post("/communities/aaaaaaaaaaaaaaaaaaaaaaaa/members")
-          .set("Authorization", "bearer " + idToken);
-        expect(res.statusCode).toEqual(500);
-        done();
-      });
-    });
+  test("it should create communitymember and increment members field in community", async done => {
+    const res = await request(app)
+      .post(`/communities/${communityId}/members`)
+      .set("Authorization", "bearer " + idTokenTwo);
+    memberId = res.body.member._id;
+    const communityRes = await request(app).get(`/communities/${communityId}`);
 
-    describe("/DELETE remove member of community", () => {
-      test("it should delete a community member and decrement members field in community", async done => {
-        const createdCommunity = await createCommunity();
-        await request(app)
-          .post(`/communities/${createdCommunity._id}/members`)
-          .set("Authorization", "bearer " + idToken);
-        const member = await CommunityMember.findOne({ community: createdCommunity._id })
-          .lean()
-          .exec();
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty("member");
+    expect(communityRes.body.community.members).toEqual(1);
+    done();
+  });
 
-        const res = await request(app)
-          .delete(`/communities/${createdCommunity._id}/members/${member._id}`)
-          .set("Authorization", "bearer " + idToken);
+  test("fail to become member of community due to no existence", async done => {
+    const res = await request(app)
+      .post("/communities/aaaaaaaaaaaaaaaaaaaaaaaa/members")
+      .set("Authorization", "bearer " + idTokenTwo);
+    expect(res.statusCode).toEqual(500);
+    done();
+  });
 
-        const resTwo = await request(app).get(`/communities/${createdCommunity._id}`);
+  test("it should delete a community member and decrement members field in community", async done => {
+    const res = await request(app)
+      .delete(`/communities/${communityId}/members/${memberId}`)
+      .set("Authorization", "bearer " + idTokenTwo);
+    const resTwo = await request(app).get(`/communities/${communityId}`);
 
-        expect(res.statusCode).toEqual(200);
-        expect(res.body).toHaveProperty("docId");
-        expect(resTwo.body.community.members).toEqual(0);
-        done();
-      });
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toHaveProperty("docId");
+    expect(resTwo.body.community.members).toEqual(0);
+    done();
+  });
 
-      test("fail to delete member due to no existence", async done => {
-        const createdCommunity = await createCommunity();
-        const res = await request(app)
-          .delete(`/communities/${createdCommunity._id}/members/aaaaaaaaaaaaaaaaaaaaaaaa`)
-          .set("Authorization", "bearer " + idToken);
+  test("fail to delete member due to no existence", async done => {
+    const createdCommunity = await createCommunity();
+    const res = await request(app)
+      .delete(`/communities/${communityId}/members/aaaaaaaaaaaaaaaaaaaaaaaa`)
+      .set("Authorization", "bearer " + idToken);
 
-        expect(res.statusCode).toEqual(404);
-        done();
-      });
-    });
+    expect(res.statusCode).toEqual(404);
+    done();
   });
 });

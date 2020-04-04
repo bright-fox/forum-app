@@ -41,7 +41,7 @@ export const appendVotes = async (data, type) => {
 
   // create votes map
   const votesMap = new Map();
-  for (let voteD of voteData.votes) {
+  for (let voteD of voteData[`${type}Votes`]) {
     votesMap.set(voteD[type], voteD["vote"]);
   }
 

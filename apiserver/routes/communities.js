@@ -148,7 +148,7 @@ router.post(
     const { id } = req.user;
 
     // check first whether user is already member or creator
-    const isCreator = await Community.exists({ _id: req.params.community_id, creator: id }).exec();
+    const isCreator = await Community.exists({ _id: req.params.community_id, creator: id });
     if (isCreator) throw new CustomError(400, "The user is the creator of the community");
     const isMember = await CommunityMember.exists({ member: id, community: req.params.community_id });
     if (isMember) throw new CustomError(400, "The user is already a member of the community");

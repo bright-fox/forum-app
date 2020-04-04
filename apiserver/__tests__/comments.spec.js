@@ -7,10 +7,9 @@ import Post from "../models/post";
 import Refreshtoken from "../models/refreshtoken";
 import Community from "../models/community";
 import Comment from "../models/comment";
-import CommentVote from "../models/commentVote";
 
 let idToken;
-let refreshToken;
+// let refreshToken;
 let postId;
 let userId;
 
@@ -20,7 +19,7 @@ beforeAll(async done => {
     .post("/register")
     .send({ username: "testperson", password: "password", email: "test@person.com", biography: "", gender: "male" });
   idToken = res.body.idToken;
-  refreshToken = res.body.refreshToken;
+  // refreshToken = res.body.refreshToken;
   userId = res.body.user._id;
 
   const community = new Community({
@@ -140,48 +139,6 @@ describe("Comment Routes", () => {
         .delete(`/posts/${postId}/comments/${firstComment._id}`)
         .set("Authorization", "bearer " + idToken);
 
-      expect(res.statusCode).toEqual(200);
-      expect(res.body).toHaveProperty("docId");
-      done();
-    });
-  });
-
-  describe("Comment Vote Routes", () => {
-    test("it should take a vote for comment", async done => {
-      const firstComment = await createComment(postId, userId, "First comment");
-
-      const res = await request(app)
-        .post(`/posts/${postId}/comments/${firstComment._id}/votes`)
-        .set("Authorization", "bearer " + idToken)
-        .send({ vote: 1 });
-
-      expect(res.statusCode).toEqual(200);
-      done();
-    });
-
-    test("it should take a vote and remove existing vote of one user", async done => {
-      const firstComment = await createComment(postId, userId, "First comment");
-
-      const vote = new CommentVote({ vote: 1, user: userId, comment: firstComment._id, post: postId });
-      await vote.save();
-
-      const res = await request(app)
-        .post(`/posts/${postId}/comments/${firstComment._id}/votes`)
-        .set("Authorization", "bearer " + idToken)
-        .send({ vote: 1 });
-
-      expect(res.statusCode).toEqual(200);
-      done();
-    });
-
-    test("it should delete vote", async done => {
-      const firstComment = await createComment(postId, userId, "First comment");
-      const vote = new CommentVote({ vote: 1, user: userId, comment: firstComment._id, post: postId });
-      const commentVote = await vote.save();
-
-      const res = await request(app)
-        .delete(`/posts/${postId}/comments/${firstComment._id}/votes/${commentVote._id}`)
-        .set("Authorization", "bearer " + idToken);
       expect(res.statusCode).toEqual(200);
       expect(res.body).toHaveProperty("docId");
       done();

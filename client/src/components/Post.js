@@ -51,7 +51,7 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
     <div className="ui segment grid mt-0">
       <div className="row no-wrap center pb-0">
         <div className="one wide column">
-          <VoteArrows userVote={userVote} upvotes={upvotes} path={`/posts/${_id}/votes`} setTrigger={setTrigger} />
+          <VoteArrows type="post" userVote={userVote} upvotes={upvotes} path={`/votes/posts/${_id}`} setTrigger={setTrigger} />
         </div>
 
         <div className="fifteen wide column wide ui card box-shadow-none p-0">

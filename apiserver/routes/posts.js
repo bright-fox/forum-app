@@ -1,14 +1,12 @@
 import express from "express";
 import _ from "lodash";
 import Post from "../models/Post";
-import PostVote from "../models/postVote";
 
 import { validatePost, validatePage } from "../middlewares/validation";
 import {
   checkCommunityOwnerOrMember,
   authenticateIdToken,
-  checkPostOwnership,
-  checkPostVoteOwnership
+  checkPostOwnership
 } from "../middlewares/auth";
 import { checkValidationErrors, asyncHandler, checkPageUnderMax, unescapeDocs } from "../util";
 import CustomError from "../util/CustomError";
@@ -103,44 +101,6 @@ router.delete(
   asyncHandler(async (req, res) => {
     await req.doc.remove();
     res.status(200).json({ success: "You successfully deleted your post!", docId: req.params.post_id });
-  })
-);
-
-router.get(
-  "/:post_id/votes",
-  authenticateIdToken,
-  asyncHandler(async (req, res) => {
-    const postVote = await PostVote.findOne({ post: req.params.post_id, user: req.user.id })
-      .lean()
-      .exec();
-    if (!postVote) throw new CustomError(404, "No vote found");
-    res.status(200).json(postVote);
-  })
-);
-
-router.post(
-  "/:post_id/votes",
-  authenticateIdToken,
-  asyncHandler(async (req, res) => {
-    const { vote } = req.body;
-    const postVote = new PostVote({ vote, user: req.user.id, post: req.params.post_id });
-
-    // check for existing vote of user and remove it
-    const foundPostVote = await PostVote.findOne({ post: req.params.post_id, user: req.user.id }).exec();
-    if (foundPostVote) await foundPostVote.remove();
-
-    const createdVote = await postVote.save();
-    res.status(200).json({ success: "You successfully voted for this post", createdVote });
-  })
-);
-
-router.delete(
-  "/:post_id/votes/:vote_id",
-  authenticateIdToken,
-  checkPostVoteOwnership,
-  asyncHandler(async (req, res) => {
-    await req.doc.remove();
-    res.status(200).json({ docId: req.params.vote_id });
   })
 );
 
