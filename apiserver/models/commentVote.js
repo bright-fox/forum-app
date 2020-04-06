@@ -5,6 +5,7 @@ import Post from "./post";
 import User from "./user";
 
 import { updateParentField } from "../util";
+import { karmaPerCommentVote } from "../util/variables";
 
 const commentVoteSchema = new Schema({
   createdAt: {
@@ -52,16 +53,15 @@ const commentVoteSchema = new Schema({
 commentVoteSchema.index({ user: 1, vote: -1, createdAt: -1 });
 commentVoteSchema.index({ comment: 1, user: 1 });
 
-commentVoteSchema.pre("save", async function() {
-  const comment = await updateParentField(Comment, this.comment, "upvotes", this.vote);
-  if (this.vote === 1 && !_.isEqual(this.user, comment.author))
-    await updateParentField(User, comment.author, "karma", 2);
+commentVoteSchema.pre("save", async function () {
+  const voteInc = this.isNew ? this.vote : this.vote * 2;
+  const comment = await updateParentField(Comment, this.comment, "upvotes", voteInc);
+  if (!_.isEqual(this.user, comment.author)) await updateParentField(User, comment.author, "karma", this.vote * karmaPerCommentVote);
 });
 
-commentVoteSchema.post("remove", async function() {
+commentVoteSchema.post("remove", async function () {
   const comment = await updateParentField(Comment, this.comment, "upvotes", this.vote * -1);
-  if (this.vote === 1 && !_.isEqual(this.user, comment.author))
-    await updateParentField(User, comment.author, "karma", -2);
+  if (!_.isEqual(this.user, comment.author)) await updateParentField(User, comment.author, "karma", this.vote * karmaPerCommentVote * -1);
 });
 
 export default models.CommentVote || model("CommentVote", commentVoteSchema);

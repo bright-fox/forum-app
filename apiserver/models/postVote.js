@@ -3,6 +3,7 @@ import _ from "lodash";
 import Post from "./post";
 import User from "./user";
 import { updateParentField } from "../util";
+import { karmaPerPostVote } from "../util/variables";
 
 const postVoteSchema = new Schema({
   createdAt: {
@@ -40,14 +41,15 @@ const postVoteSchema = new Schema({
 postVoteSchema.index({ post: 1, user: 1 });
 postVoteSchema.index({ user: 1, vote: -1, createdAt: -1 });
 
-postVoteSchema.pre("save", async function() {
-  const post = await updateParentField(Post, this.post, "upvotes", this.vote);
-  if (this.vote === 1 && !_.isEqual(this.user, post.author)) await updateParentField(User, post.author, "karma", 3);
+postVoteSchema.pre("save", async function () {
+  const voteInc = this.isNew ? this.vote : this.vote * 2;
+  const post = await updateParentField(Post, this.post, "upvotes", voteInc);
+  if (!_.isEqual(this.user, post.author)) await updateParentField(User, post.author, "karma", this.vote * karmaPerPostVote);
 });
 
-postVoteSchema.post("remove", async function() {
+postVoteSchema.post("remove", async function () {
   const post = await updateParentField(Post, this.post, "upvotes", this.vote * -1);
-  if (this.vote === 1 && !_.isEqual(this.user, post.author)) await updateParentField(User, post.author, "karma", -3);
+  if (!_.isEqual(this.user, post.author)) await updateParentField(User, post.author, "karma", this.vote * karmaPerPostVote * -1);
 });
 
 export default models.PostVote || model("PostVote", postVoteSchema);
