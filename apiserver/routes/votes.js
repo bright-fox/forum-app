@@ -4,6 +4,7 @@ import { asyncHandler } from "../util"
 import CustomError from "../util/CustomError";
 import { authenticateIdToken, checkPostVoteOwnership, checkCommentVoteOwnership } from "../middlewares/auth";
 
+import Comment from "../models/comment";
 import PostVote from "../models/postVote";
 import CommentVote from "../models/commentVote";
 
@@ -87,6 +88,10 @@ router.post(
     "/posts/:post_id/comments/:comment_id",
     authenticateIdToken,
     asyncHandler(async (req, res) => {
+        // check if comment got soft deleted
+        const comment = await Comment.findById(req.params.comment_id).exec();
+        if (!comment || comment.isDeleted) throw new CustomError(400, "The comment does not exist or the comment is deleted!")
+
         // check if there is a comment vote
         const cv = await CommentVote.findOne({ comment: req.params.comment_id, user: req.user.id }).exec();
         if (!cv) {
