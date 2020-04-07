@@ -46,7 +46,7 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted, userVote, user
         onClick={() => !isDeleted ? handleClick(1) : null}
       />
       <div style={{ fontSize: "1.1rem" }} className={"default bold" + gotDeleted}>{upvotes}</div>
-      <i className={"angle down icon" + gotDeleted + gotVoted(-1)} onClick={() => !isDeleted ? handleClick : null} />
+      <i className={"angle down icon" + gotDeleted + gotVoted(-1)} onClick={() => !isDeleted ? handleClick(-1) : null} />
     </div>
   );
 };

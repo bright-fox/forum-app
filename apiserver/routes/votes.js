@@ -47,6 +47,7 @@ router.post(
         if (pv.vote === req.body.vote) throw new CustomError(409, "The user already voted for this post!");
 
         // update vote 
+        console.log(req.body.vote);
         Object.assign(pv, { vote: req.body.vote });
         const savedVote = await pv.save();
         res.status(200).json({ postVote: savedVote });

@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 import moment from "moment";
-import { request } from "../../api";
+import { request, appendVotes } from "../../api";
+import VoteArrows from "../VoteArrows";
 import Loader from "../Loader";
+import ErrorDisplay from "../ErrorDisplay";
 import Pagination from "../Pagination";
 import history from "../../history";
+import UserContext from "../../contexts/UserContext";
 
 const UserProfile = () => {
     const { userId } = useParams();
     const location = useLocation();
+    const { state } = useContext(UserContext);
     const query = new URLSearchParams(location.search).get("s");
 
     const [selection, setSelection] = useState(query === "communities" || query === "comments" ? query : "posts");
@@ -16,7 +20,9 @@ const UserProfile = () => {
     const [user, setUser] = useState(null);
     const [currPage, setCurrPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
+    const [trigger, setTrigger] = useState({});
 
+    // get user information
     useEffect(() => {
         const fetchData = async _ => {
             const res = await request({ method: "GET", path: `/users/${userId}` });
@@ -27,17 +33,24 @@ const UserProfile = () => {
         fetchData();
     }, [userId]);
 
+    // get the docs of the selection
     useEffect(() => {
         const fetchData = async _ => {
             const res = await request({ method: "GET", path: `/users/${userId}/${selection}/page/${currPage}` });
             if (res.status !== 200) return setDocs([]);
             const data = await res.json();
+
+            // if logged in and docs are either posts or comments, append votes
+            if (state.isLoggedIn && (selection === "posts" || selection === "comments")) {
+                data[selection] = await appendVotes(data[selection], selection.slice(0, -1));
+            }
+
             setDocs(data[selection]);
             setCurrPage(Number(data.currentPage));
             setMaxPage(Number(data.maxPage));
         }
         fetchData();
-    }, [selection, currPage, userId]);
+    }, [selection, currPage, userId, trigger, state.isLoggedIn]);
 
     const handleSelection = e => {
         if (e.target.textContent.toLowerCase() === selection) return;
@@ -53,14 +66,23 @@ const UserProfile = () => {
             case "posts":
                 return docs.map(doc => {
                     return (
-                        <div className="border-hover p-3 black" key={doc._id}>
-                            <Link to={`/posts/${doc._id}`}>{doc.title}</Link>
-                            <div className="meta">
-                                ~ posted in c/<Link className="link" to={`/communities/${doc.community._id}`}>{doc.community.name}</Link> {" "}
+                        <div className="border-hover p-3 black ui grid" key={doc._id}>
+                            <div className="row no-wrap">
+                                <div className="one wide column flex center">
+                                    <VoteArrows upvotes={doc.upvotes} userVote={doc.userVote} userVoteId={doc.userVoteId} type="post" path={`/votes/posts/${doc._id}`} setTrigger={setTrigger} />
+                                </div>
+                                <div className="fifteen wide column">
+                                    <Link to={`/posts/${doc._id}`}>{doc.title}</Link>
+                                    <div className="meta">
+                                        ~ posted in c/<Link className="link" to={`/communities/${doc.community._id}`}>{doc.community.name}</Link> {" "}
                                 by u/<Link className="link" to={`/users/${doc.author._id}`}>{doc.author.username}</Link>
-                                <span className="pl-3">[{moment(doc.createdAt).fromNow()}]</span>
+                                        <span className="pl-3">[{moment(doc.createdAt).fromNow()}]</span>
+                                    </div>
+                                    <div className="description">{doc.content.substring(0, 200)}[...]</div>
+                                </div>
                             </div>
-                            <div className="description">{doc.content.substring(0, 100)}[...]</div>
+
+
                         </div >
                     );
                 })
@@ -80,14 +102,21 @@ const UserProfile = () => {
             case "comments":
                 return docs.map(doc => {
                     return (
-                        <div className="border-hover p-3 black" key={doc._id}>
-                            <img src={`${process.env.PUBLIC_URL}/assets/avatars/${doc.author.gender}.png`} alt="user avatar" className="ui image avatar" />
-                            <Link className="link" to={`/users/${doc.author._id}`}>{doc.author.username}</Link>
-                            <div className="meta">
-                                ~ commented on <Link className="link" to={`/posts/${doc.post._id}`}>{doc.post.title}</Link>
-                                <span className="pl-3">[{moment(doc.createdAt).fromNow()}]</span>
+                        <div className="border-hover p-3 black ui grid" key={doc._id}>
+                            <div className="row no-wrap">
+                                <div className="one wide column">
+                                    <VoteArrows upvotes={doc.upvotes} userVote={doc.userVote} userVoteId={doc.userVoteId} type="comment" path={`/votes/posts/${doc.post}/comments/${doc._id}`} setTrigger={setTrigger} />
+                                </div>
+                                <div className="fifteen wide column">
+                                    <img src={`${process.env.PUBLIC_URL}/assets/avatars/${doc.author.gender}.png`} alt="user avatar" className="ui image avatar" />
+                                    <Link className="link" to={`/users/${doc.author._id}`}>{doc.author.username}</Link>
+                                    <div className="meta">
+                                        ~ commented on <Link className="link" to={`/posts/${doc.post._id}`}>{doc.post.title}</Link>
+                                        <span className="pl-3">[{moment(doc.createdAt).fromNow()}]</span>
+                                    </div>
+                                    <div>{doc.content}</div>
+                                </div>
                             </div>
-                            <div>{doc.content}</div>
                         </div>
                     )
                 });
@@ -122,8 +151,10 @@ const UserProfile = () => {
                         <div className={`${selection === "comments" ? "active " : ""} item pointer`} onClick={handleSelection}>Comments</div>
                     </div>
                     <div className="ui bottom attached segment">
-                        {docs ? renderContent() : <Loader />}
-                        <Pagination currPage={currPage} maxPage={maxPage} setCurrPage={setCurrPage} />
+                        {docs ? (docs.length > 0 ? renderContent() : <ErrorDisplay />) : <Loader />}
+                        {docs && docs.length > 0 && <div className="flex center">
+                            <Pagination currPage={currPage} maxPage={maxPage} setCurrPage={setCurrPage} />
+                        </div>}
                     </div>
                 </div>
             </div>
