@@ -40,14 +40,11 @@ router.post(
         if (!pv) {
             const postVote = new PostVote({ vote: req.body.vote, user: req.user.id, post: req.params.post_id });
             const savedPostVote = await postVote.save();
-            res.status(200).json({ postVote: savedPostVote });
+            return res.status(200).json({ postVote: savedPostVote });
         }
-
         // throw error if the exact same vote already exists
         if (pv.vote === req.body.vote) throw new CustomError(409, "The user already voted for this post!");
-
         // update vote 
-        console.log(req.body.vote);
         Object.assign(pv, { vote: req.body.vote });
         const savedVote = await pv.save();
         res.status(200).json({ postVote: savedVote });
@@ -95,7 +92,7 @@ router.post(
         if (!cv) {
             const commentVote = new CommentVote({ vote: req.body.vote, comment: req.params.comment_id, user: req.user.id, post: req.params.post_id });
             const savedCommentVote = await commentVote.save();
-            res.status(200).json({ commentVote: savedCommentVote });
+            return res.status(200).json({ commentVote: savedCommentVote });
         }
         if (cv.vote === req.body.vote) throw new CustomError(409, "The user already voted for this comment!")
         Object.assign(cv, { vote: req.body.vote });
