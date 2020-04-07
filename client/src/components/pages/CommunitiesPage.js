@@ -18,8 +18,8 @@ const CommunitiesPage = () => {
             if (res.status !== 200) return setCommunities([]);
             const data = await res.json()
             setCommunities(data.communities);
-            setCurrPage(data.currentPage);
-            setMaxPage(data.maxPage)
+            setCurrPage(Number(data.currentPage));
+            setMaxPage(Number(data.maxPage))
         }
         fetchData();
     }, [currPage]);
@@ -47,8 +47,10 @@ const CommunitiesPage = () => {
                 <div>
                     {communities ? (!isEmpty(communities) ? renderCommunities() : <ErrorDisplay />) : <Loader />}
                 </div>
-
-                {maxPage > 1 && <Pagination currPage={currPage} maxPage={maxPage} setCurrPage={setCurrPage} />}
+                {communities && communities.length > 0
+                    && (<div className="flex center">
+                        <Pagination currPage={currPage} maxPage={maxPage} setCurrPage={setCurrPage} />
+                    </div>)}
             </div>
         </>
     );
