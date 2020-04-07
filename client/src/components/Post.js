@@ -11,7 +11,7 @@ import { unmountModal } from "../utils";
 import PostForm from "./modals/PostForm";
 import { edit } from "../utils/variables";
 
-const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, setTrigger, userVote, children }) => {
+const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, setTrigger, userVote, userVoteId, children }) => {
   const { state } = useContext(UserContext);
 
   const renderChildren = () => {
@@ -51,11 +51,11 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
     <div className="ui segment grid mt-0">
       <div className="row no-wrap center pb-0">
         <div className="one wide column">
-          <VoteArrows type="post" userVote={userVote} upvotes={upvotes} path={`/votes/posts/${_id}`} setTrigger={setTrigger} />
+          <VoteArrows type="post" userVote={userVote} userVoteId={userVoteId} upvotes={upvotes} path={`/votes/posts/${_id}`} setTrigger={setTrigger} />
         </div>
 
         <div className="fifteen wide column wide ui card box-shadow-none p-0">
-          <div className="content">
+          <div className="content pl-0">
             <div className="right floated meta">{moment(createdAt).fromNow()}</div>
             <img
               src={`${process.env.PUBLIC_URL}/assets/avatars/community_default.jpg`}

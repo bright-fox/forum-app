@@ -72,6 +72,8 @@ div#root {
   box-shadow: none !important;
 }
 
+/* Padding and Margin */
+
 .mt-3 {
   margin-top: 10px !important;
 }
@@ -162,6 +164,10 @@ div#root {
   padding: 6px 0 !important;
 }
 
+.pl-0 {
+  padding-left: 0 !important;
+}
+
 .pl-1 {
   padding-left: 3px !important;
 }
@@ -219,22 +225,33 @@ div#root {
   margin-left: 30px;
 }
 
+/* Vote Arrow styling */
+
+.icon.angle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  font-weight: bold;
+  font-size: 1.4rem;
+}
+
 .icon.angle:hover {
   cursor: pointer;
   color: #fe9a76;
+  background-color: rgb(240, 240, 240);
 }
 
 .pressed.gray:hover {
   color: gray;
-}
-
-.icon.angle.pressed:hover {
-  cursor: default;
+  background-color: transparent;
 }
 
 .orange-color {
   color: #fe9a76;
 }
+
+/* Fonts */
 
 .bold {
   font-weight: bold;

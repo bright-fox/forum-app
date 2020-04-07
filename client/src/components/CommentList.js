@@ -72,13 +72,14 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
               upvotes={comment.upvotes}
               type="comment"
               userVote={comment.userVote}
+              userVoteId={comment.userVoteId}
               path={`/votes/posts/${postId}/comments/${comment._id}`}
               setTrigger={setTrigger}
               isDeleted={comment.isDeleted}
             />
           </div>
           <div className="fifteen wide column flex col-dir vert-center ui grid p-0 m-0">
-            <div>
+            <div className="pl-0">
               <Link to={`/users/${comment.author._id}`}>
                 <img
                   className="ui avatar image"

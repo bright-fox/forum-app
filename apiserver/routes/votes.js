@@ -104,7 +104,7 @@ router.post(
 );
 
 router.delete(
-    "/:vote_id/posts/:post_id/comments",
+    "/:vote_id/comments",
     authenticateIdToken,
     checkCommentVoteOwnership,
     asyncHandler(async (req, res) => {
