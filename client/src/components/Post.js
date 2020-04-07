@@ -7,11 +7,11 @@ import UserContext from "../contexts/UserContext";
 import Modal from "./Modal";
 import ModalCancelButton from "./ModalCancelButton";
 import { requestProtectedResource } from "../api";
-import { unmountModal } from "../utils";
+import { unmountModal, truncateText } from "../utils";
 import PostForm from "./modals/PostForm";
 import { edit } from "../utils/variables";
 
-const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, setTrigger, userVote, userVoteId, children }) => {
+const Post = ({ _id, upvotes, createdAt, community, author, title, content, comments, setTrigger, userVote, userVoteId, children, isListItem }) => {
   const { state } = useContext(UserContext);
 
   const renderChildren = () => {
@@ -76,7 +76,7 @@ const Post = ({ _id, upvotes, createdAt, community, author, title, content, comm
             <div className="header mt-3">
               <Link to={`/posts/${_id}`}>{title}</Link>
             </div>
-            <div className="description">{content}</div>
+            <div className="description">{isListItem ? truncateText(content) : content}</div>
           </div>
 
           <div className="content">

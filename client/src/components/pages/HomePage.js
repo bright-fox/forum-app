@@ -8,11 +8,11 @@ const HomePage = () => {
 
   return (
     <div className="ui stackable grid centered">
-      <div className="row">
-        <div className="ten wide column">
+      <div className="doubling row">
+        <div className="sixteen wide tablet ten wide computer column">
           <PostList path={!state.currUser ? "/posts" : `/users/${state.currUser.id}/home`} />
         </div>
-        <div className="five wide column large screen only">
+        <div className="five wide column computer only">
           <CommunitySidebar />
         </div>
       </div>

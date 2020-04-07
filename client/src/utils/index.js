@@ -42,3 +42,9 @@ export const configError = (setErr, setErrMsg, msg) => {
 // form errors
 export const hasErr = (errors, field) => (errors.hasOwnProperty(field) ? "error" : "");
 export const renderErrMsg = (errors, field) => hasErr(errors, field) && <small className="error">{errors[field]}</small>;
+
+export const truncateText = (text, end) => {
+  if (end === undefined) end = 200;
+  if (text.length < end) return text;
+  return text.substring(0, end) + " [...]";
+}

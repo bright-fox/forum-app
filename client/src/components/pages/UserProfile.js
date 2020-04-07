@@ -8,6 +8,7 @@ import ErrorDisplay from "../ErrorDisplay";
 import Pagination from "../Pagination";
 import history from "../../history";
 import UserContext from "../../contexts/UserContext";
+import { truncateText } from "../../utils";
 
 const UserProfile = () => {
     const { userId } = useParams();
@@ -78,7 +79,7 @@ const UserProfile = () => {
                                 by u/<Link className="link" to={`/users/${doc.author._id}`}>{doc.author.username}</Link>
                                         <span className="pl-3">[{moment(doc.createdAt).fromNow()}]</span>
                                     </div>
-                                    <div className="description">{doc.content.substring(0, 200)}[...]</div>
+                                    <div className="description">{truncateText(doc.content)}</div>
                                 </div>
                             </div>
 
@@ -94,7 +95,7 @@ const UserProfile = () => {
                             <Link className="link medium bold" to={`/communities/${doc._id}`}>{doc.name}</Link>
                             <div className="meta">~ <Link className="link gray" to={`/users/${doc.creator._id}`}>{doc.creator.username}</Link> | Members: {doc.members}</div>
                             <div className="description">
-                                {doc.description}
+                                {truncateText(doc.description)}
                             </div>
                         </div>
                     )
@@ -114,7 +115,7 @@ const UserProfile = () => {
                                         ~ commented on <Link className="link" to={`/posts/${doc.post._id}`}>{doc.post.title}</Link>
                                         <span className="pl-3">[{moment(doc.createdAt).fromNow()}]</span>
                                     </div>
-                                    <div>{doc.content}</div>
+                                    <div>{truncateText(doc.content)}</div>
                                 </div>
                             </div>
                         </div>

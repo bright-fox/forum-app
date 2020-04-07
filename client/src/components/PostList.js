@@ -38,7 +38,7 @@ const PostList = ({ path }) => {
 
   const renderList = () => {
     return posts.map(post => {
-      return <Post {...post} key={post._id} setTrigger={setTrigger} />;
+      return <Post {...post} key={post._id} setTrigger={setTrigger} isListItem={true} />;
     });
   };
 
