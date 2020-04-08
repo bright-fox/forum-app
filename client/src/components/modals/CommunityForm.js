@@ -3,24 +3,25 @@ import Modal from "../Modal";
 import useForm from "../../hooks/useForm";
 import ModalCancelButton from "../ModalCancelButton";
 import { requestProtectedResource } from "../../api";
-import { unmountModal, isEmpty, hasErr, renderErrMsg, configError } from "../../utils";
-import { edit } from "../../utils/variables";
+import { unmountModal, isEmpty, hasErr, renderErrMsg, configStatus } from "../../utils";
+import { edit, errorStatus } from "../../utils/variables";
 import validateCommunity from "../../validation/validateCommunity";
-import useError from "../../hooks/useError";
+import useStatus from "../../hooks/useStatus";
 
 const CommunityForm = ({ type, id, name, description }) => {
   const { inputs, handleInputChange, handleSubmit, errors } = useForm(
     { name: name || "", description: description || "" },
     submitCallback, validateCommunity
   );
-  const { err, setErr, errMsg, setErrMsg } = useError(false);
+
+  const { status, setStatus, msg, setMsg } = useStatus();
 
   async function submitCallback(inputs) {
     const method = type === edit ? "PUT" : "POST";
     const path = type === edit ? `/communities/${id}` : `/communities`;
     const res = await requestProtectedResource({ method, path, body: inputs });
-    if (res.status === 409) return configError(setErr, setErrMsg, "The community name exists already!");
-    if (res.status !== 200) return configError(setErr, setErrMsg);
+    if (res.status === 409) return configStatus(setStatus, setMsg, errorStatus, "The community name exists already!");
+    if (res.status !== 200) return configStatus(setStatus, setMsg, errorStatus);
     unmountModal();
     window.location.reload(); // maybe there is a better alternative?
   };
@@ -59,7 +60,7 @@ const CommunityForm = ({ type, id, name, description }) => {
       </form>
     );
   };
-  return <Modal title={<h1>{type === edit ? "Edit" : "Create"} Community</h1>} content={renderContent()} err={err} errMsg={errMsg} />;
+  return <Modal title={<h1>{type === edit ? "Edit" : "Create"} Community</h1>} content={renderContent()} status={status} msg={msg} />;
 };
 
 export default CommunityForm;

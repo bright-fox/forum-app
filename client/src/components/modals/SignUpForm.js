@@ -1,17 +1,18 @@
 import React from "react";
 import Modal from "../Modal";
 import { request } from "../../api";
-import { cacheUser, unmountModal, isEmpty, hasErr, renderErrMsg, configError } from "../../utils";
+import { cacheUser, unmountModal, isEmpty, hasErr, renderErrMsg, configStatus } from "../../utils";
 import { SIGNUP } from "../../actions";
 import useForm from "../../hooks/useForm";
 import validateRegister from "../../validation/validateRegister";
 import ModalCancelButton from "../ModalCancelButton";
-import useError from "../../hooks/useError";
+import useStatus from "../../hooks/useStatus";
+import { errorStatus } from "../../utils/variables";
 
 const SignUpForm = ({ dispatch }) => {
   const initValues = { username: "", email: "", password: "", biography: "", gender: "male" };
   const { inputs, handleSubmit, handleInputChange, errors } = useForm(initValues, submitCallback, validateRegister);
-  const { err, setErr, errMsg, setErrMsg } = useError(false);
+  const { status, setStatus, msg, setMsg } = useStatus();
 
   async function submitCallback(inputs) {
     const res = await request({
@@ -19,7 +20,7 @@ const SignUpForm = ({ dispatch }) => {
       path: "/register",
       body: inputs
     });
-    if (res.status !== 200) return configError(setErr, setErrMsg);
+    if (res.status !== 200) return configStatus(setStatus, setMsg, errorStatus);
     const { user, refreshToken } = await res.json();
     const currUser = { id: user._id, username: user.username, gender: user.gender, karma: user.karma };
     cacheUser(currUser, refreshToken);
@@ -116,7 +117,7 @@ const SignUpForm = ({ dispatch }) => {
     );
   };
 
-  return <Modal title={<h1>Sign Up</h1>} content={renderContent()} err={err} errMsg={errMsg} />;
+  return <Modal title={<h1>Sign Up</h1>} content={renderContent()} status={status} msg={msg} />;
 };
 
 export default SignUpForm;

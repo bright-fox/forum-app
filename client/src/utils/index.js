@@ -34,9 +34,9 @@ export const convertKarma = karma => {
 }
 
 // set error for error message
-export const configError = (setErr, setErrMsg, msg) => {
-  if (msg) setErrMsg(msg);
-  setErr(true);
+export const configStatus = (setStatus, setMsg, status, msg) => {
+  if (msg) setMsg(msg);
+  setStatus(status);
 }
 
 // form errors

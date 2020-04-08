@@ -410,11 +410,11 @@ small.error {
 .gray {
   color: gray !important;
 }
+/* Notification styling */
 
-.errorMessage {
+.message {
   position: absolute;
   width: 95%;
-  background-color: palevioletred;
   margin: auto;
   left: 0;
   right: 0;
@@ -423,6 +423,16 @@ small.error {
   border-radius: 5px;
   z-index: 1000;
 }
+
+.error-message {
+  background-color: palevioletred;
+}
+
+.success-message {
+  background-color: palegreen;
+}
+
+/* Media queries */ 
 
 @media screen and (max-width: 1000px){
   .resize-font {

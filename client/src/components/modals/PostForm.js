@@ -3,23 +3,24 @@ import { request, requestProtectedResource } from "../../api";
 import Modal from "../Modal";
 import useForm from "../../hooks/useForm";
 import ModalCancelButton from "../ModalCancelButton";
-import { unmountModal, configError, isEmpty, renderErrMsg, hasErr } from "../../utils";
-import { edit, create } from "../../utils/variables";
-import useError from "../../hooks/useError";
+import { unmountModal, isEmpty, renderErrMsg, hasErr, configStatus } from "../../utils";
+import { edit, create, errorStatus } from "../../utils/variables";
+import useStatus from "../../hooks/useStatus";
 import validatePost from "../../validation/validatePost";
 
 const PostForm = ({ type, state, id, title, content }) => {
   const initVals = { community: "", title: title || "", content: content || "" };
   const { inputs, handleSubmit, handleInputChange, setField, errors } = useForm(initVals, submitCallback, validatePost);
   const [communities, setCommunities] = useState([]);
-  const { err, setErr, errMsg, setErrMsg } = useError(false);
+  const { status, setStatus, msg, setMsg } = useStatus();
+
 
   async function submitCallback(inputs) {
     let res;
     if (type === create) res = await requestProtectedResource({ method: "POST", path: "/posts", body: inputs });
     if (type === edit) res = await requestProtectedResource({ method: "PUT", path: `/posts/${id}`, body: inputs });
-    if (res.status === 409) return configError(setErr, setErrMsg, "You posted that already!");
-    if (res.status !== 200) return configError(setErr, setErrMsg);
+    if (res.status === 409) return configStatus(setStatus, setMsg, errorStatus, "You posted that already!");
+    if (res.status !== 200) return configStatus(setStatus, setMsg, errorStatus);
 
     unmountModal();
     window.location.reload(); // subject to change..
@@ -101,7 +102,7 @@ const PostForm = ({ type, state, id, title, content }) => {
     );
   };
 
-  return <Modal title={<h1>{type === edit ? "Edit" : "Create"} Post</h1>} content={renderContent()} err={err} errMsg={errMsg} />;
+  return <Modal title={<h1>{type === edit ? "Edit" : "Create"} Post</h1>} content={renderContent()} status={status} msg={msg} />;
 };
 
 export default PostForm;

@@ -4,21 +4,22 @@ import useForm from "../../hooks/useForm";
 import validateLogin from "../../validation/validateLogin";
 import { request } from "../../api";
 import { LOGIN } from "../../actions";
-import { cacheUser, unmountModal, isEmpty, configError, renderErrMsg, hasErr } from "../../utils";
+import { cacheUser, unmountModal, isEmpty, renderErrMsg, hasErr, configStatus } from "../../utils";
 import ModalCancelButton from "../ModalCancelButton";
-import useError from "../../hooks/useError";
+import useStatus from "../../hooks/useStatus";
+import { errorStatus } from "../../utils/variables";
 
 const LoginForm = ({ dispatch }) => {
   // use form
   const initValues = { username: "", password: "" };
   const { inputs, handleSubmit, handleInputChange, errors } = useForm(initValues, submitCallback, validateLogin);
   // error on submit
-  const { err, setErr, errMsg, setErrMsg } = useError(false);
+  const { status, setStatus, msg, setMsg } = useStatus();
 
   // submit callback function
   async function submitCallback(inputs) {
     const res = await request({ method: "POST", path: "/login", body: inputs });
-    if (res.status !== 200) return configError(setErr, setErrMsg, "Invalid username or password..")
+    if (res.status !== 200) return configStatus(setStatus, setMsg, errorStatus, "Invalid username or password..");
     const data = await res.json();
     cacheUser(data.user, data.refreshToken);
     dispatch({ type: LOGIN, payload: { currUser: data.user } });
@@ -59,7 +60,7 @@ const LoginForm = ({ dispatch }) => {
     );
   };
 
-  return <Modal title={<h1>Login</h1>} content={renderContent()} err={err} errMsg={errMsg} />;
+  return <Modal title={<h1>Login</h1>} content={renderContent()} status={status} msg={msg} />;
 };
 
 export default LoginForm;
