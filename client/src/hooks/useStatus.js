@@ -1,17 +1,19 @@
-import { useState, useEffect } from "react";
+import { useEffect, useReducer } from "react";
 import { errorStatus, successStatus, idleStatus } from "../utils/variables";
+import statusReducer from "../reducers/statusReducer";
+import { RESET } from "../actions";
 
-export default (initValue = idleStatus) => {
-    const [status, setStatus] = useState(initValue);
-    const [msg, setMsg] = useState("Oops, something went wrong..");
+export default () => {
+    const [state, dispatch] = useReducer(statusReducer, { status: idleStatus, msg: "Oops, something went wrong.." });
+    const { status } = state;
 
     useEffect(() => {
         if (status === errorStatus || status === successStatus) {
             const timer = setTimeout(() => {
-                setStatus(idleStatus)
+                dispatch({ type: RESET })
             }, 1000)
             return () => clearTimeout(timer);
         }
     }, [status])
-    return { status, setStatus, msg, setMsg };
+    return [state, dispatch];
 }

@@ -33,12 +33,6 @@ export const convertKarma = karma => {
   return `${Math.round((karma + Number.EPSILON) * 100) / 100} ${magnitudes[i]}`
 }
 
-// set error for error message
-export const configStatus = (setStatus, setMsg, status, msg) => {
-  if (msg) setMsg(msg);
-  setStatus(status);
-}
-
 // form errors
 export const hasErr = (errors, field) => (errors.hasOwnProperty(field) ? "error" : "");
 export const renderErrMsg = (errors, field) => hasErr(errors, field) && <small className="error">{errors[field]}</small>;

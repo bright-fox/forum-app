@@ -3,25 +3,25 @@ import Modal from "../Modal";
 import useForm from "../../hooks/useForm";
 import ModalCancelButton from "../ModalCancelButton";
 import { requestProtectedResource } from "../../api";
-import { unmountModal, isEmpty, hasErr, renderErrMsg, configStatus } from "../../utils";
-import { edit, errorStatus } from "../../utils/variables";
+import { unmountModal, isEmpty, hasErr, renderErrMsg } from "../../utils";
+import { edit } from "../../utils/variables";
 import validateCommunity from "../../validation/validateCommunity";
 import useStatus from "../../hooks/useStatus";
+import { ERROR } from "../../actions";
 
 const CommunityForm = ({ type, id, name, description }) => {
   const { inputs, handleInputChange, handleSubmit, errors } = useForm(
     { name: name || "", description: description || "" },
     submitCallback, validateCommunity
   );
-
-  const { status, setStatus, msg, setMsg } = useStatus();
+  const [state, dispatch] = useStatus();
 
   async function submitCallback(inputs) {
     const method = type === edit ? "PUT" : "POST";
     const path = type === edit ? `/communities/${id}` : `/communities`;
     const res = await requestProtectedResource({ method, path, body: inputs });
-    if (res.status === 409) return configStatus(setStatus, setMsg, errorStatus, "The community name exists already!");
-    if (res.status !== 200) return configStatus(setStatus, setMsg, errorStatus);
+    if (res.status === 409) return dispatch({ type: ERROR, payload: { msg: "The community name exists already!" } });
+    if (res.status !== 200) return dispatch({ type: ERROR });
     unmountModal();
     window.location.reload(); // maybe there is a better alternative?
   };
@@ -60,7 +60,7 @@ const CommunityForm = ({ type, id, name, description }) => {
       </form>
     );
   };
-  return <Modal title={<h1>{type === edit ? "Edit" : "Create"} Community</h1>} content={renderContent()} status={status} msg={msg} />;
+  return <Modal title={<h1>{type === edit ? "Edit" : "Create"} Community</h1>} content={renderContent()} status={state.status} msg={state.msg} />;
 };
 
 export default CommunityForm;
