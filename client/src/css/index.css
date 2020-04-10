@@ -413,7 +413,7 @@ small.error {
 /* Notification styling */
 
 .message {
-  position: absolute;
+  position: fixed;
   width: 95%;
   margin: auto;
   left: 0;

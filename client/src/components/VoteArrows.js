@@ -2,9 +2,12 @@ import React, { useState, useContext } from "react";
 import { requestProtectedResource } from "../api";
 import UserContext from "../contexts/UserContext";
 import { redirectToAuthModal } from "../utils";
+import StatusContext from "../contexts/StatusContext";
+import { ERROR } from "../actions";
 
 const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted, userVote, userVoteId }) => {
   const { state, dispatch } = useContext(UserContext);
+  const { statusState, dispatchStatus } = useContext(StatusContext);
   const [vote, setVote] = useState(userVote || 0);
   const [voteId, setVoteId] = useState(userVoteId || null);
 
@@ -19,7 +22,7 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted, userVote, user
     // if already voted remove the vote
     if (vote === v) {
       const deleteRes = await requestProtectedResource({ method: "DELETE", path: `/votes/${voteId}/${type}s` });
-      if (deleteRes.status !== 200) return; // should trigger error dispatch --> implement later
+      if (deleteRes.status !== 200) return dispatchStatus({ type: ERROR });
       setVote(0);
       setVoteId(null)
       // trigger reload of posts or comments
@@ -28,8 +31,8 @@ const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted, userVote, user
 
     // vote for doc
     const res = await requestProtectedResource({ method: "POST", path, body: { vote: v } });
-    if (res.status === 400) return; // should trigger error dispatch --> implement later
-    if (res.status !== 200) return redirectToAuthModal(dispatch); // specify status code
+    if (res.status === 401 || res.status === 403) return redirectToAuthModal(dispatch);
+    if (res.status !== 200) return dispatchStatus({ type: ERROR });
 
     const data = await res.json();
     // update vote
