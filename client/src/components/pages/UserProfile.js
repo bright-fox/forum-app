@@ -9,6 +9,7 @@ import Pagination from "../Pagination";
 import history from "../../history";
 import UserContext from "../../contexts/UserContext";
 import { truncateText } from "../../utils";
+import { selections } from '../../utils/variables';
 
 const UserProfile = () => {
     const { userId } = useParams();
@@ -16,12 +17,19 @@ const UserProfile = () => {
     const { state } = useContext(UserContext);
     const query = new URLSearchParams(location.search).get("s");
 
-    const [selection, setSelection] = useState(query === "communities" || query === "comments" ? query : "posts");
+    const [selection, setSelection] = useState(selections.includes(query) ? query : "posts");
     const [docs, setDocs] = useState(null);
     const [user, setUser] = useState(null);
     const [currPage, setCurrPage] = useState(1);
     const [maxPage, setMaxPage] = useState(1);
     const [trigger, setTrigger] = useState({});
+
+    // reset docs
+    const resetDocs = () => {
+        setDocs(null);
+        setCurrPage(1)
+        setMaxPage(1)
+    }
 
     // get user information
     useEffect(() => {
@@ -33,6 +41,13 @@ const UserProfile = () => {
         }
         fetchData();
     }, [userId]);
+
+    // update selection to query string
+    useEffect(() => {
+        if (!selections.includes(query)) return;
+        resetDocs();
+        setSelection(query)
+    }, [query]);
 
     // get the docs of the selection
     useEffect(() => {
@@ -55,9 +70,7 @@ const UserProfile = () => {
 
     const handleSelection = e => {
         if (e.target.textContent.toLowerCase() === selection) return;
-        setDocs(null);
-        setCurrPage(1)
-        setMaxPage(1)
+        resetDocs();
         history.push(`/users/${userId}?s=${e.target.textContent.toLowerCase()}`)
         setSelection(e.target.textContent.toLowerCase());
     }
