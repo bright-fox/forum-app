@@ -5,6 +5,7 @@ import { request } from "../../api";
 import { isEmpty } from "../../utils";
 import Loader from "../Loader";
 import ErrorDisplay from "../ErrorDisplay";
+import SearchBar from "../Searchbar";
 
 
 const SearchPage = () => {
@@ -14,6 +15,7 @@ const SearchPage = () => {
 
   useEffect(() => {
     if (!query) return;
+    console.log("running query: " + query)
     const fetchData = async () => {
       const postsRes = await request({ method: "GET", path: `/posts/search?q=${query}` });
       const communitiesRes = await request({ method: "GET", path: `/communities/search?q=${query}` });
@@ -34,8 +36,8 @@ const SearchPage = () => {
           <div className="content">
             <Link to={`/posts/${post._id}`}>{post.title}</Link>
             <div className="meta">
-              ~ posted in <Link className="link">{post.community.name}</Link> by u/
-              <Link className="link">
+              ~ posted in <Link to={`/communities/${post.community._id}`} className="link">{post.community.name}</Link> by u/
+              <Link to={`/users/${post.author._id}`} className="link">
                 {post.author.username}</Link>
               <span className="pl-3">[{moment(post.createdAt).fromNow()}]</span>
             </div>
@@ -87,10 +89,16 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="ui segment">
-      <h1>Search Results</h1>
-      {!isEmpty(searchResults) ? renderSearchResults() : <Loader />}
-    </div>
+    <>
+      <div className="ui segment">
+        <h3>Search</h3>
+        <SearchBar initialValue={query} width="half width" />
+      </div>
+      {query.length > 0 && <div className="ui segment">
+        <h1>Search Results</h1>
+        {!isEmpty(searchResults) ? renderSearchResults() : <Loader />}
+      </div>}
+    </>
   );
 };
 

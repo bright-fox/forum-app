@@ -61,7 +61,7 @@ const Header = () => {
         </div>
         {/* SearchBar Only Desktop */}
         <div style={{ margin: "0 auto 0 auto" }} className="item desktop-only">
-          <SearchBar />
+          <SearchBar width="quarter width" />
         </div>
 
         {/* User Related Links */}

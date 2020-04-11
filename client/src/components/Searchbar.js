@@ -3,24 +3,24 @@ import ReactDOM from "react-dom";
 import useForm from "../hooks/useForm";
 import history from "../history";
 
-const SearchBar = () => {
+const SearchBar = ({ initialValue, width }) => {
   const formRef = useRef(null);
 
   const submitCallback = inputs => {
     if (!inputs.query) return;
     history.push(`/search?q=${inputs.query}`);
   };
-  const { inputs, handleInputChange, handleSubmit } = useForm({ query: "" }, submitCallback);
+  const { inputs, handleInputChange, handleSubmit } = useForm({ query: initialValue || "" }, submitCallback);
   return (
     <form className="ui form" onSubmit={handleSubmit} ref={formRef}>
-      <div className="ui icon input">
+      <div className={`ui icon input ${width || " "}`}>
         <input
           type="text"
           name="query"
           placeholder="Search..."
           value={inputs.query}
           onChange={handleInputChange}
-          className="m-0 ui icon input quarter width"
+          className="m-0 ui icon input"
         />
         <i
           className="search link icon"

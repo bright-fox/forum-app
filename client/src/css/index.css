@@ -289,6 +289,10 @@ div#root {
   max-width: 50%;
 }
 
+.half.width {
+  width: 50% !important;
+}
+
 small.error {
   color: #e7bdbc;
 }
