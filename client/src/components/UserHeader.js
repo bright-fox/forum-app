@@ -57,7 +57,7 @@ const UserHeader = () => {
   };
 
   return (
-    <div className="ui segment no-border py-0 flex center m-0">
+    <div className="ui segment no-border flex center m-0 p-0">
       {state.isLoggedIn ? renderDropdown() : renderAuthButtons()}
     </div>
   );

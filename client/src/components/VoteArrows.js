@@ -7,7 +7,7 @@ import { ERROR } from "../actions";
 
 const VoteArrows = ({ upvotes, type, path, setTrigger, isDeleted, userVote, userVoteId }) => {
   const { state, dispatch } = useContext(UserContext);
-  const { statusState, dispatchStatus } = useContext(StatusContext);
+  const { dispatchStatus } = useContext(StatusContext);
   const [vote, setVote] = useState(userVote || 0);
   const [voteId, setVoteId] = useState(userVoteId || null);
 
