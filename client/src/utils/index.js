@@ -42,3 +42,7 @@ export const truncateText = (text, end) => {
   if (text.length < end) return text;
   return text.substring(0, end) + " [...]";
 }
+
+export const notImplemented = () => {
+  alert("Not implemented yet");
+}

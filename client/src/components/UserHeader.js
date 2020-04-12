@@ -50,6 +50,7 @@ const UserHeader = () => {
         <Link to={`/users/${state.currUser.id}?s=posts`} className="dropdown-item">Posts</Link>
         <Link to={`/users/${state.currUser.id}?s=comments`} className="dropdown-item">Comments</Link>
         <Link to={`/users/${state.currUser.id}?s=communities`} className="dropdown-item">Communities</Link>
+        <Link to={`/users/${state.currUser.id}/settings`} className="dropdown-item">Settings</Link>
         <div className="dropdown-item" onClick={handleLogout}>Logout</div>
       </Dropdown>
     );

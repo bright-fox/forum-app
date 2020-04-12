@@ -15,6 +15,7 @@ import SearchPage from "./pages/SearchPage";
 import CommunityPage from "./pages/CommunityPage";
 import CommunitiesPage from "./pages/CommunitiesPage";
 import UserProfile from "./pages/UserProfile";
+import UserSettings from "./pages/UserSettings";
 import Notification from './Notification';
 import { errorStatus, successStatus } from "../utils/variables";
 
@@ -65,6 +66,9 @@ const App = () => {
                 </Route>
                 <Route path="/users/:userId" exact>
                   <UserProfile />
+                </Route>
+                <Route path="/users/:userId/settings" exact>
+                  <UserSettings />
                 </Route>
               </Switch>
             </div>
