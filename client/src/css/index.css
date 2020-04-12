@@ -340,6 +340,10 @@ small.error {
   align-items: center;
 }
 
+.menu-link:hover {
+  background-color: rgb(245, 245, 245) !important;
+}
+
 .menu-link:focus, .menu-link:hover {
   outline: 0;
   background-color: rgb(250, 250, 250);
@@ -469,7 +473,7 @@ small.error {
   }
 }
 
-@media screen and (max-width: 767px){
+@media screen and (max-width: 768px){
   .resize-font {
   	font-size: 1.5rem;
   }
@@ -511,6 +515,10 @@ small.error {
   .menu-link:focus, .menu-link:hover {
     outline: 0;
     background-color: darkorange !important;
+  }
+
+  .mobile-font-size {
+    font-size: 12px;
   }
 }
 

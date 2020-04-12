@@ -15,7 +15,6 @@ const SearchPage = () => {
 
   useEffect(() => {
     if (!query) return;
-    console.log("running query: " + query)
     const fetchData = async () => {
       const postsRes = await request({ method: "GET", path: `/posts/search?q=${query}` });
       const communitiesRes = await request({ method: "GET", path: `/communities/search?q=${query}` });

@@ -160,9 +160,9 @@ const UserProfile = () => {
             <div className="twelve wide column">
                 <div className="ui segment">
                     <div className="ui top attached tabular menu">
-                        <div className={`${selection === "posts" ? "active " : ""} item pointer`} onClick={handleSelection}>Posts</div>
-                        <div className={`${selection === "communities" ? "active " : ""} item pointer`} onClick={handleSelection}>Communities</div>
-                        <div className={`${selection === "comments" ? "active " : ""} item pointer`} onClick={handleSelection}>Comments</div>
+                        <div className={`${selection === "posts" ? "active " : ""} item pointer mobile-font-size`} onClick={handleSelection}>Posts</div>
+                        <div className={`${selection === "communities" ? "active " : ""} item pointer mobile-font-size`} onClick={handleSelection}>Communities</div>
+                        <div className={`${selection === "comments" ? "active " : ""} item pointer mobile-font-size`} onClick={handleSelection}>Comments</div>
                     </div>
                     <div className="ui bottom attached segment">
                         {docs ? (docs.length > 0 ? renderContent() : <ErrorDisplay />) : <Loader />}
