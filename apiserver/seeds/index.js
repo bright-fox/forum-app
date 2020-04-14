@@ -6,6 +6,10 @@ import Community from "../models/community"
 import Post from "../models/post";
 import Comment from "../models/comment";
 
+const numberOfCommunities = 3;
+const numberOfPosts = 33;
+const numberOfComments = 5;
+
 // connect to database
 console.log("Connecting from database..");
 mongoose.connect(config.DBHost, { useNewUrlParser: true, useCreateIndex: true, poolSize: 10 });
@@ -20,7 +24,7 @@ mongoose.connection.on("open", async () => {
     const data = ["first", "second", "third"];
     const gender = ["male", "female", "others"];
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < numberOfCommunities; i++) {
         // users
         const user = new User({
             username: `${data[i]}user`,
@@ -40,7 +44,7 @@ mongoose.connection.on("open", async () => {
         const savedCommunity = await community.save();
 
         // posts
-        for (let j = 0; j < 7; j++) {
+        for (let j = 0; j < numberOfPosts; j++) {
             const post = new Post({
                 title: `Post ${j + 1}`,
                 content: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
@@ -50,7 +54,7 @@ mongoose.connection.on("open", async () => {
             const savedPost = await post.save();
 
             // comments
-            for (let k = 0; k < 7; k++) {
+            for (let k = 0; k < numberOfComments; k++) {
                 const comment = new Comment({
                     content: `[${k + 1}]Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam.`,
                     author: savedUser._id,
