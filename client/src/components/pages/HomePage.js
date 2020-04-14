@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import PostList from "../PostList";
 import CommunitySidebar from "../CommunitySidebar";
 import UserContext from "../../contexts/UserContext";
+import Advertisement from "../Advertisement";
+import LinksBlock from "../LinksBlock";
 
 const HomePage = () => {
   const { state } = useContext(UserContext);
@@ -14,6 +16,8 @@ const HomePage = () => {
         </div>
         <div className="five wide column computer only">
           <CommunitySidebar />
+          <Advertisement />
+          <LinksBlock />
         </div>
       </div>
     </div>

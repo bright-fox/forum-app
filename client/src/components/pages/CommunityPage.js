@@ -13,6 +13,8 @@ import history from "../../history";
 import AuthBar from "../AuthBar";
 import Loader from "../Loader";
 import ErrorDisplay from "../ErrorDisplay";
+import Advertisement from "../Advertisement";
+import LinksBlock from "../LinksBlock";
 
 const CommunityPage = () => {
   const { communityId } = useParams();
@@ -148,6 +150,8 @@ const CommunityPage = () => {
     <div className="ui stackable grid">
       <div className="five wide column">
         {renderCommunityInfo()}
+        <Advertisement />
+        <LinksBlock />
       </div>
       <div className="eleven wide column">
         {!state.isLoggedIn && <AuthBar text="Login or Sign up to participate!" margin="mb-1" />}

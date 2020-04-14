@@ -8,7 +8,7 @@ const UserSettings = () => {
     const { state } = useContext(UserContext);
     const { userId } = useParams();
     const [user, setUser] = useState(null);
-    const [activeTab, setActiveTab] = useState("account");
+    const [activeTab,] = useState("account");
 
     useEffect(() => {
         if (!state.isLoggedIn || state.currUser.id !== userId) return;
@@ -71,7 +71,6 @@ const UserSettings = () => {
                     </div>
                 </div>
             </div>
-
         </div >
     );
 }

@@ -10,6 +10,8 @@ import history from "../../history";
 import UserContext from "../../contexts/UserContext";
 import { truncateText } from "../../utils";
 import { selections } from '../../utils/variables';
+import Advertisement from "../Advertisement";
+import LinksBlock from "../LinksBlock";
 
 const UserProfile = () => {
     const { userId } = useParams();
@@ -156,6 +158,8 @@ const UserProfile = () => {
         <div className="ui stackable centered grid">
             <div className="four wide column">
                 {user ? renderUserInfo() : <Loader />}
+                <Advertisement />
+                <LinksBlock />
             </div>
             <div className="twelve wide column">
                 <div className="ui segment">
@@ -167,7 +171,7 @@ const UserProfile = () => {
                     <div className="ui bottom attached segment">
                         {docs ? (docs.length > 0 ? renderContent() : <ErrorDisplay />) : <Loader />}
                         {docs && docs.length > 0 && <div className="flex center">
-                            <Pagination currPage={currPage} maxPage={maxPage} setCurrPage={setCurrPage} />
+                            <Pagination currPage={currPage} maxPage={maxPage} setCurrPage={setCurrPage} marginTop="20px" />
                         </div>}
                     </div>
                 </div>
