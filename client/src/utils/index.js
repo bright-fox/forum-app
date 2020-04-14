@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { Link } from "react-router-dom";
 import AuthModal from "../components/modals/AuthModal";
 import { LOGOUT } from "../actions";
 
@@ -45,4 +46,33 @@ export const truncateText = (text, end) => {
 
 export const notImplemented = () => {
   alert("Not implemented yet");
+}
+
+// pagination 
+export const createArrow = (side, cb) => {
+  return (
+    <Link to="#" key={side} className="mobile-font-size item" onClick={e => {
+      e.preventDefault();
+      cb();
+    }}>
+      <i className={`icon step ${side === "left" ? "backward" : "forward "}`} />
+    </Link>
+  )
+}
+
+export const createDots = (keyName) => {
+  return (
+    <Link to="#" key={keyName} className="mobile-font-size disabled item" onClick={e => e.preventDefault()}>
+      ...
+    </Link>
+  )
+}
+
+export const createPaginationItem = (page, currPage, cb) => {
+  return (<Link to="#" key={page} className={`mobile-font-size item ${page === currPage ? "active " : " "}`} onClick={e => {
+    e.preventDefault();
+    cb();
+  }}>
+    {page}
+  </Link>)
 }

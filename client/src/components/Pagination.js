@@ -1,72 +1,32 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { createArrow, createPaginationItem, createDots } from "../utils";
 
-const Pagination = ({ currPage, maxPage, setCurrPage }) => {
-  const createItem = ({ page, isArrow, isDots }) => {
-    if (isArrow)
-      return (
-        <Link
-          key={isArrow}
-          to="/"
-          className="item"
-          onClick={e => {
-            e.preventDefault();
-            setCurrPage(page);
-          }}
-        >
-          <i className={"arrow icon " + isArrow} />
-        </Link>
-      );
+const Pagination = ({ currPage, maxPage, setCurrPage, marginTop }) => {
+  const createLeftSide = () => {
+    const leftItems = [];
+    if (currPage - 1 === 0) return leftItems;
+    if (currPage - 1 === 1) return createPaginationItem(currPage - 1, currPage, () => setCurrPage(currPage - 1))
+    leftItems.push(createDots("leftDots"));
+    leftItems.push(createPaginationItem(currPage - 1, currPage, () => setCurrPage(currPage - 1)));
+    return leftItems;
+  }
+  const createRightSide = () => {
+    const rightItems = [];
+    if (maxPage - currPage === 0) return rightItems;
+    if (maxPage - currPage === 1) return createPaginationItem(currPage + 1, currPage, () => setCurrPage(currPage + 1))
+    rightItems.push(createPaginationItem(currPage + 1, currPage, () => setCurrPage(currPage + 1)));
+    rightItems.push(createDots("rightDots"));
+    return rightItems;
+  }
 
-    if (isDots)
-      return (
-        <Link key={isDots} to="/" className="disabled item" onClick={e => e.preventDefault()}>
-          ...
-        </Link>
-      );
-
-    return (
-      <Link
-        to="/"
-        key={page}
-        className={"item " + (page === currPage ? "active" : "")}
-        onClick={e => {
-          e.preventDefault();
-          setCurrPage(page);
-        }}
-      >
-        {page}
-      </Link>
-    );
-  };
-
-  const createPartialItems = (leftBoundary, rightBoundary) => {
-    const items = [];
-    if (rightBoundary - leftBoundary >= 5) {
-      //   items.push(createItem({ page: leftBoundary }));
-      items.push(createItem({ page: leftBoundary + 1 }));
-      items.push(createItem({ isDots: `dots${leftBoundary}${rightBoundary}` }));
-      items.push(createItem({ page: rightBoundary - 1 }));
-      items.push(createItem({ page: rightBoundary }));
-      return items;
-    }
-
-    for (let i = leftBoundary + 1; i <= rightBoundary; i++) {
-      items.push(createItem({ page: i }));
-    }
-    return items;
-  };
-
-  const renderPaginationItems = () => {
-    let items = [];
-    items.push(createItem({ isArrow: "left", page: 1 }));
-    items.push(createItem({ page: 1 }));
-    items = items.concat(createPartialItems(1, currPage));
-    items = items.concat(createPartialItems(currPage, maxPage));
-    items.push(createItem({ page: maxPage, isArrow: "right" }));
-    return items;
-  };
-  return <div className="ui pagination menu">{renderPaginationItems()}</div>;
+  return (
+    <div style={{ marginTop }} className="ui pagination menu">
+      {createArrow("left", () => setCurrPage(1))}
+      {createLeftSide()}
+      {createPaginationItem(currPage, currPage, () => setCurrPage(currPage))}
+      {createRightSide()}
+      {createArrow("right", () => setCurrPage(maxPage))}
+    </div>)
 };
 
 export default Pagination;
