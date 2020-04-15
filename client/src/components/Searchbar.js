@@ -8,7 +8,7 @@ const SearchBar = ({ initialValue, width }) => {
 
   const submitCallback = inputs => {
     if (!inputs.query) return;
-    history.push(`/search?q=${inputs.query}`);
+    history.push(`/search?q=${inputs.query}&?tab=posts`);
   };
   const { inputs, handleInputChange, handleSubmit } = useForm({ query: initialValue || "" }, submitCallback);
   return (
