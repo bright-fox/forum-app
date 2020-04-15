@@ -4,7 +4,7 @@ import useForm from "../../hooks/useForm";
 import validateLogin from "../../validation/validateLogin";
 import { request } from "../../api";
 import { LOGIN, ERROR } from "../../actions";
-import { cacheUser, unmountModal, isEmpty, renderErrMsg, hasErr } from "../../utils";
+import { cacheUser, unmountModal, isEmpty, renderErrMsg, hasErr, notImplemented } from "../../utils";
 import ModalCancelButton from "../ModalCancelButton";
 import useStatus from "../../hooks/useStatus";
 
@@ -38,7 +38,7 @@ const LoginForm = ({ dispatch }) => {
             value={inputs.username}
             onChange={handleInputChange}
           />
-          {renderErrMsg("username")}
+          {renderErrMsg(errors, "username")}
         </div>
         <div className={"field " + hasErr(errors, "password")}>
           <label htmlFor="password">Password*:</label>
@@ -49,13 +49,14 @@ const LoginForm = ({ dispatch }) => {
             value={inputs.password}
             onChange={handleInputChange}
           />
-          {renderErrMsg("password")}
+          {renderErrMsg(errors, "password")}
+          <small style={{ display: "block", float: "right" }} className="link pointer mini" onClick={notImplemented}>Forgot your password?</small>
         </div>
         <button className="ui button mini" type="submit">
           Login
         </button>
         <ModalCancelButton />
-      </form>
+      </form >
     );
   };
 

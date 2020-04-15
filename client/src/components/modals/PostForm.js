@@ -15,7 +15,6 @@ const PostForm = ({ type, state, id, title, content }) => {
   const [communities, setCommunities] = useState([]);
   const [statusState, dispatchStatus] = useStatus();
 
-
   async function submitCallback(inputs) {
     let res;
     if (type === create) res = await requestProtectedResource({ method: "POST", path: "/posts", body: inputs });
