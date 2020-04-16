@@ -56,7 +56,7 @@ mongoose.connection.on("open", async () => {
             // comments
             for (let k = 0; k < numberOfComments; k++) {
                 const comment = new Comment({
-                    content: `[${k + 1}]Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam.`,
+                    content: `Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam.`,
                     author: savedUser._id,
                     post: savedPost._id
                 })
