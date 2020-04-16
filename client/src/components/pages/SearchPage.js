@@ -9,6 +9,7 @@ import SearchBar from "../Searchbar";
 import history from "../../history";
 import VoteArrows from "../VoteArrows";
 import UserContext from "../../contexts/UserContext";
+import { truncateText } from "../../utils";
 
 const SearchPage = () => {
   const location = useLocation();
@@ -55,7 +56,7 @@ const SearchPage = () => {
                       {post.author.username}</Link>
                     <span className="pl-3">[{moment(post.createdAt).fromNow()}]</span>
                   </div>
-                  <div className="description">{post.content.substring(0, 100)}[...]</div>
+                  <div className="description">{truncateText(post.content, 100)}</div>
                 </div>
               </div>
             </div>
@@ -69,11 +70,12 @@ const SearchPage = () => {
         return (
           <div className="item" key={community._id}>
             <div className="content">
+              <img src={`${process.env.PUBLIC_URL}/assets/avatars/community_default.jpg`} alt="community avatar" className="ui avatar image" />
               <Link to={`/communities/${community._id}`}>c/{community.name}</Link>
               <div className="meta">
                 ~by {community.creator} <span className="pl-3">[{community.members} Members]</span>
               </div>
-              <div className="description">{community.description.substring(0, 100)}[...]</div>
+              <div className="description">{truncateText(community.description, 100)}</div>
             </div>
           </div>
         );
@@ -87,7 +89,7 @@ const SearchPage = () => {
           <div className="content">
             <Link to={`/users/${user._id}`}>u/{user.username}</Link>
             <div className="meta">[{user.karma} Karma]</div>
-            <div className="description">{user.biography.substring(0, 100)}[...]</div>
+            <div className="description">{truncateText(user.biography, 100)}</div>
           </div>
         </div>
       );
