@@ -12,6 +12,7 @@ import Header from "./Header";
 import HomePage from "./pages/HomePage";
 import PostPage from "./pages/PostPage";
 import SearchPage from "./pages/SearchPage";
+import SignUpPage from "./pages/SignUpPage";
 import CommunityPage from "./pages/CommunityPage";
 import CommunitiesPage from "./pages/CommunitiesPage";
 import UserProfile from "./pages/UserProfile";
@@ -69,6 +70,9 @@ const App = () => {
                 </Route>
                 <Route path="/users/:userId/settings" exact>
                   <UserSettings />
+                </Route>
+                <Route path="/register" exact>
+                  <SignUpPage />
                 </Route>
               </Switch>
             </div>

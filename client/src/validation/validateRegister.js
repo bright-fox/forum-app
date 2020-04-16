@@ -21,7 +21,15 @@ export default (field, value, errors) => {
       if (required(value)) return { ...errors, ...requiredMessage(field) };
       if (!isEmail(value)) return { ...errors, ...isEmailMessage(field) };
       return _.omit(errors, [field]);
+    case "emailConfirm":
+      if (required(value)) return { ...errors, ...requiredMessage(field) };
+      if (!isEmail(value)) return { ...errors, ...isEmailMessage(field) };
+      return _.omit(errors, [field]);
     case "password":
+      if (required(value)) return { ...errors, ...requiredMessage(field) };
+      if (!minLength(value, minPasswordLength)) return { ...errors, ...minLengthMessage(field, minPasswordLength) };
+      return _.omit(errors, [field]);
+    case "passwordConfirm":
       if (required(value)) return { ...errors, ...requiredMessage(field) };
       if (!minLength(value, minPasswordLength)) return { ...errors, ...minLengthMessage(field, minPasswordLength) };
       return _.omit(errors, [field]);

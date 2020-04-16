@@ -35,7 +35,7 @@ const SearchPage = () => {
       setSearchResults(data[tab]);
     };
     fetchData();
-  }, [query, tab, trigger]);
+  }, [query, tab, trigger, state.isLoggedIn]);
 
   const renderSearchResults = () => {
     if (tab === "posts") {

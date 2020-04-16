@@ -1,15 +1,11 @@
-import React, { useContext } from "react";
-import ReactDOM from "react-dom";
-import SignUpForm from "./modals/SignUpForm";
-import UserContext from "../contexts/UserContext";
+import React from "react";
+import history from "../history";
 
 const SignUpButton = () => {
-  const { dispatch } = useContext(UserContext);
-
   return (
     <button
       className="ui button inverted orange"
-      onClick={() => ReactDOM.render(<SignUpForm dispatch={dispatch} />, document.querySelector("#modal"))}
+      onClick={() => history.push("/register")}
     >
       Sign Up
     </button>

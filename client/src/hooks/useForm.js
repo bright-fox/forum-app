@@ -56,6 +56,7 @@ export default (initValues, callback, validate) => {
     setFields,
     resetField,
     resetForm,
-    errors
+    errors,
+    setErrors
   };
 };
