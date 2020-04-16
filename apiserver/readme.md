@@ -1,7 +1,3 @@
-# Forum App
-
-Follow the steps below to start the app.
-
 ## API Server
 
 1. You need MongoDB to run the server
@@ -30,20 +26,6 @@ npm run seed
 ````
 
 1. Start the API server
-
-```console
-npm start
-```
-
-## Client
-
-1. Install all the dependencies
-
-```console
-npm install 
-````
-
-1. Start the app
 
 ```console
 npm start
