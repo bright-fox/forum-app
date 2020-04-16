@@ -2,12 +2,12 @@
 
 1. Install all the dependencies
 
-```console
-npm install 
-````
+    ```console
+    npm install 
+    ````
 
 1. Start the app
 
-```console
-npm start
-```
+    ```console
+    npm start
+    ```
