@@ -1,14 +1,18 @@
 import React, { useRef } from "react";
 import ReactDOM from "react-dom";
+import querystring from 'query-string';
 import useForm from "../hooks/useForm";
 import history from "../history";
+import { useLocation } from "react-router-dom";
 
 const SearchBar = ({ initialValue, width }) => {
+  const location = useLocation();
+  let { tab } = querystring.parse(location.search);
   const formRef = useRef(null);
 
   const submitCallback = inputs => {
     if (!inputs.query) return;
-    history.push(`/search?q=${inputs.query}&?tab=posts`);
+    history.push(`/search?q=${inputs.query}&tab=${tab ? tab : "posts"}`);
   };
   const { inputs, handleInputChange, handleSubmit } = useForm({ query: initialValue || "" }, submitCallback);
   return (

@@ -32,7 +32,6 @@ const SearchPage = () => {
       if (res.status !== 200) return setSearchResults([]);
       const data = await res.json();
       if (state.isLoggedIn && tab === "posts") appendVotes(data[tab], "post")
-      console.log(data[tab]);
       setSearchResults(data[tab]);
     };
     fetchData();
