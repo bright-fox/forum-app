@@ -158,8 +158,8 @@ const UserProfile = () => {
         <div className="ui stackable centered grid">
             <div className="four wide column">
                 {user ? renderUserInfo() : <Loader />}
-                <Advertisement />
-                <LinksBlock />
+                <div className="desktop-only"><Advertisement /></div>
+                <div className="desktop-only"><LinksBlock /></div>
             </div>
             <div className="twelve wide column">
                 <div className="ui segment">

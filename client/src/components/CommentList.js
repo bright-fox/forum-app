@@ -50,7 +50,7 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
   const renderActions = comment => {
     if (!state.isLoggedIn) return;
     return (
-      <div className="meta">
+      <div className="meta p-0">
         <span className="link pointer" onClick={handleReply} data-id={comment._id}>
           Reply
         </span>
@@ -66,7 +66,7 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
   const renderComments = (comments, isReply) => {
     return comments.map(comment => {
       return (
-        <div className="row py-0" key={comment._id}>
+        <div className="row py-0 mt-3" key={comment._id}>
           <div className="one wide column p-0">
             <VoteArrows
               upvotes={comment.upvotes}
@@ -102,7 +102,7 @@ const CommentList = ({ postId, trigger, setTrigger }) => {
     });
   };
 
-  return <div className="ui padded grid">{renderComments(comments, false)}</div>;
+  return <div className="ui padded grid mb-3">{renderComments(comments, false)}</div>;
 };
 
 export default CommentList;
