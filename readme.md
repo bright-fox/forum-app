@@ -4,7 +4,7 @@ Follow the steps below to start the app.
 
 ## API Server
 
-1. You need MongoDB to run the server
+1. You need MongoDB to run in the background
    * The following steps show how to use a local setup and you can choose either one of these
      * Download MongoDB [via the official download center](https://www.mongodb.com/download-center/community) and run `mongod` in the CLI
      * Via Docker (*preferred way*):  Download the official docker image and run an instance of MongoDB as a container
